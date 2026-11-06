@@ -603,8 +603,8 @@
         </p>
       </div>
 
-      <!-- 4 Units Grid -->
-      <div id="units-grid" class="mt-8 lg:mt-10 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 w-[96%] mx-auto"></div>
+      <!-- 3 Units Grid -->
+      <div id="units-grid" class="mt-8 lg:mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-[1216px] w-[96%] mx-auto"></div>
 
       <!-- Heading for Plans Section at Bottom of White Container -->
       <div id="planos" class="mt-16 lg:mt-20 text-center flex flex-col items-center">
@@ -771,7 +771,7 @@
             <li><a href="#topo" class="hover:text-[#D4AF37] transition">Início</a></li>
             <li><a href="#sobre" class="hover:text-[#D4AF37] transition">Sobre a S.A</a></li>
             <li><a href="#modalidades" class="hover:text-[#D4AF37] transition">Modalidades</a></li>
-            <li><a href="#unidades" class="hover:text-[#D4AF37] transition">Nossas 4 Unidades</a></li>
+            <li><a href="#unidades" class="hover:text-[#D4AF37] transition">Nossas 3 Unidades</a></li>
             <li><a href="#planos" class="hover:text-[#D4AF37] transition">Planos e Valores</a></li>
           </ul>
         </div>
@@ -860,15 +860,15 @@
     const MARQUEE_UNITS = [
       'Unidade Antônio de Carvalho',
       'Unidade Protásio',
-      'Unidade Luderitz',
       'Unidade Pasqualini',
       'Unidade Antônio de Carvalho',
       'Unidade Protásio',
-      'Unidade Luderitz',
       'Unidade Pasqualini',
       'Unidade Antônio de Carvalho',
       'Unidade Protásio',
-      'Unidade Luderitz',
+      'Unidade Pasqualini',
+      'Unidade Antônio de Carvalho',
+      'Unidade Protásio',
       'Unidade Pasqualini',
     ];
 
@@ -971,7 +971,7 @@
           colClass: 'lg:w-[31.5%] min-h-[300px]',
           title: isCompleted ? 'Estrutura Moderna' : 'What is Lorem Ipsum?',
           desc: isCompleted
-            ? 'Equipamentos selecionados e espaço amplo em nossas 4 unidades para você realizar seu treino com máximo conforto e eficiência.'
+            ? 'Equipamentos selecionados e espaço amplo em nossas 3 unidades para você realizar seu treino com máximo conforto e eficiência.'
             : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s',
         },
         {
@@ -1074,12 +1074,6 @@
           mapQuery: 'S.A%20Treinamento%20Pasqualini',
           mapTitle: 'S.A Treinamento Pasqualini',
         },
-        {
-          name: 'Unidade\nLuderitz',
-          img: isCompleted ? './public/images/sa-156.jpg' : './public/images/img9825.jpg',
-          mapQuery: 'S.A%20Treinamento%20Unidade%20Luderitz',
-          mapTitle: 'S.A Treinamento Unidade Luderitz',
-        },
       ];
 
       document.getElementById('units-grid').innerHTML = units.map(unit => `
@@ -1173,7 +1167,7 @@
 
       // Footer texts
       document.getElementById('footer-online-desc').textContent = isCompleted
-        ? 'Agende sua aula experimental pelo WhatsApp em qualquer uma de nossas 4 unidades'
+        ? 'Agende sua aula experimental pelo WhatsApp em qualquer uma de nossas 3 unidades'
         : 'Segunda à Sexta-feira de 09h às 18h';
 
       document.getElementById('footer-brand-desc').textContent = isCompleted
@@ -1197,7 +1191,6 @@
           <p>• Unidade Protásio</p>
           <p>• Unidade Antônio de Carvalho</p>
           <p>• Unidade Pasqualini</p>
-          <p>• Unidade Luderitz</p>
           <p class="pt-2 text-[#D4AF37] font-medium">Porto Alegre - RS</p>
         `
         : `

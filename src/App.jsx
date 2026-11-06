@@ -13,15 +13,15 @@ const CAROUSEL_IMAGES = [
 const MARQUEE_UNITS = [
   'Unidade Antônio de Carvalho',
   'Unidade Protásio',
-  'Unidade Luderitz',
   'Unidade Pasqualini',
   'Unidade Antônio de Carvalho',
   'Unidade Protásio',
-  'Unidade Luderitz',
   'Unidade Pasqualini',
   'Unidade Antônio de Carvalho',
   'Unidade Protásio',
-  'Unidade Luderitz',
+  'Unidade Pasqualini',
+  'Unidade Antônio de Carvalho',
+  'Unidade Protásio',
   'Unidade Pasqualini',
 ]
 
@@ -112,7 +112,7 @@ export default function App() {
       colClass: 'lg:w-[31.5%] min-h-[300px]',
       title: isCompleted ? 'Estrutura Moderna' : 'What is Lorem Ipsum?',
       desc: isCompleted
-        ? 'Equipamentos selecionados e espaço amplo em nossas 4 unidades para você realizar seu treino com máximo conforto e eficiência.'
+        ? 'Equipamentos selecionados e espaço amplo em nossas 3 unidades para você realizar seu treino com máximo conforto e eficiência.'
         : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s',
     },
     {
@@ -183,13 +183,6 @@ export default function App() {
       mapQuery: 'S.A%20Treinamento%20Pasqualini',
       mapTitle: 'S.A Treinamento Pasqualini',
       address: 'Av. Eng. Ludolfo Boehl / Pasqualini — Porto Alegre, RS',
-    },
-    {
-      name: 'Unidade\nLuderitz',
-      img: isCompleted ? '/images/sa-156.jpg' : '/images/img9825.jpg',
-      mapQuery: 'S.A%20Treinamento%20Unidade%20Luderitz',
-      mapTitle: 'S.A Treinamento Unidade Luderitz',
-      address: 'Rua Luderitz — Porto Alegre, RS',
     },
   ]
 
@@ -695,8 +688,8 @@ export default function App() {
             </p>
           </div>
 
-          {/* 4 Units Grid (88ddfd8) */}
-          <div className="mt-8 lg:mt-10 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 w-[96%] mx-auto">
+          {/* 3 Units Grid (88ddfd8) */}
+          <div className="mt-8 lg:mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-[1216px] w-[96%] mx-auto">
             {units.map((unit, idx) => (
               <div key={idx} className="flex flex-col">
                 {/* Unit Title Box */}
@@ -911,7 +904,7 @@ export default function App() {
                 </h3>
                 <p className="font-poppins text-sm text-[#4C4C4C] mt-1">
                   {isCompleted
-                    ? 'Agende sua aula experimental pelo WhatsApp em qualquer uma de nossas 4 unidades'
+                    ? 'Agende sua aula experimental pelo WhatsApp em qualquer uma de nossas 3 unidades'
                     : 'Segunda à Sexta-feira de 09h às 18h'}
                 </p>
               </div>
@@ -1012,7 +1005,7 @@ export default function App() {
                 </li>
                 <li>
                   <a href="#unidades" className="hover:text-[#D4AF37] transition">
-                    Nossas 4 Unidades
+                    Nossas 3 Unidades
                   </a>
                 </li>
                 <li>
@@ -1033,7 +1026,6 @@ export default function App() {
                   <li>• Unidade Protásio</li>
                   <li>• Unidade Antônio de Carvalho</li>
                   <li>• Unidade Pasqualini</li>
-                  <li>• Unidade Luderitz</li>
                   <li className="pt-2 text-[#D4AF37] font-medium">Porto Alegre - RS</li>
                 </ul>
               ) : (
