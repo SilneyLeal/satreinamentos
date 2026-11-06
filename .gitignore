@@ -1,0 +1,6 @@
+node_modules/
+dist/
+bugs/
+.vercel/
+*.log
+.DS_Store

@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>S.A Treinamento — Apresentação &amp; Site Finalizado</title>
+  <link rel="icon" type="image/png" href="./public/images/favicon.png" />
+
+  <!-- Google Fonts: Bebas Neue, Poppins, Manrope, Sora -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;600;700;800&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Sora:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Font Awesome 5 -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+  />
+
+  <!-- Tailwind CSS Browser CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root {
+      --sa-gold: #D4AF37;
+      --sa-gold-light: #FFF2CD;
+      --sa-gold-dark: #8A5A19;
+      --sa-yellow: #FFDE59;
+      --sa-dark: #131313;
+      --sa-charcoal: #222222;
+      --sa-card: #161616;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='25' viewBox='0 0 30 30'><image href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAADrklEQVR4AbyWTYsVRxSGz+lZZpdVFoHsssgqiyyzuDfLkCwCgZBNQLIxIDGbSIQk3Q2GIOpCGHVA0REEQQRxISIK04I/wB/gDxAEFQRRbtU5vudU1f2audduvwZeTp3q0/XWUx+3p7p9Rke3T+vOrZOqN09oc+NobOgD/FUkNNJAI4lEIlSLVPX1I6rXGn2vE6gkUB0DTLOsnVVfOax6+VB8LxOoQNk5bYQ5pFmlT0NVXzqoevGANhf2v7tVqEKgVkAbg1Ii3SsqyURr1NVn9+nOmV9i87bHoPr+T+5ACTEhkkSGCG2GCG1OEotEMdJIsQqbP6me/PHNV6CymYO0hShJSWwFYiIXRM/zigiiyVYI/fWJ70SPfTt8Bdz4h4an+6yZuJCXaP0qRJ6D3vOYc6zA/9+o/jfSpv263yq4sVNHaQux00yMHNSIlrtKu0TQe3+JOAcK/fuV6N9fxsbGXaVq+kAq7HMmcGpOdEttRW5ycm8TzoLVUq5PMUau//pC9dDne09gavzzce4kUDfdU+ytrUDKQW5U3oc2ou2zyWqMGu/Scm79IXD9x2eiv38amwOfzCYxNTbyGHG1QCGRnEIRxXPOOVPJV0V7R/0d8lrFGGo5JiCxqvd/HH0LFoz3bXGHmXc2074yStOsnnA7sCp2M2yVcsS45HUTrn/9SHcWjI0ate08jWK2ptKnkZxeEAXPJMfl/sWcKNXlGHS0y/i3be5QlKgxqJP02NOy1xadbIGUCNtI/gxjatR2l7FRo+iugkZRJIjrZDXqNUbDWI0UZfqu5eT9Vmem2GjqcxoWQevcuOkWPflaDSmWT+BZM2eBu5Q34bI4/Mvmc3U/PY0tgcS8QJIFDNXREGUpTjrp0xEvpfohxmPt55UfPYZj88932i2X3Bn4xatNA4TXC0nJieansowyxO15TAEWQw83nxY8alHMH26aFQMS1xpfPgO45eMu0TJIElSkOscueYc56LdfLjerJhaXGlsD20w7A+ZEt3uvYx5BYaY2thrjf+5x1PqQiYgFBAv5KKtDTZEa41tIBC1iZZ8r5HnFUh52nurHKbXGh+5z52CUOZIZS4X9G893vDf3yHWrzW2wSTMf6vJyROpot3/QNlYRf2M87daQWeE89Iod8tgQ2Iv4+MPuBO/p3Zfk3DiQUsUMKkhhqW2l7EVwyh/tWAMcqM3Lf8iWW0f9Ta2eyr4D8VOtWtiExh+jcqkehvbC1tPeKz4pPkeC3flB9+eDdUrAAAA//9Ci4jOAAAABklEQVQDAHrMNerIu41iAAAAAElFTtSuQmCC' x='0' y='0' width='30' height='30' /></svg>") 0 0, auto;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      overflow-x: hidden;
+      background-color: #0d0d0d;
+      color: #ffffff;
+    }
+
+    .font-bebas {
+      font-family: "Bebas Neue", sans-serif;
+    }
+
+    /* Evita corte lateral direito em fontes condensadas com itálico sintetizado pelo navegador */
+    .font-bebas.italic {
+      padding-right: 0.14em;
+    }
+
+    .font-poppins {
+      font-family: "Poppins", sans-serif;
+    }
+
+    .font-manrope {
+      font-family: "Manrope", sans-serif;
+    }
+
+    .font-sora {
+      font-family: "Sora", sans-serif;
+    }
+
+    /* Degradê Dourado Hero (.degrade) */
+    .sa-degrade-hero {
+      display: inline-block;
+      padding-right: 0.2em;
+      padding-left: 0.04em;
+      background: linear-gradient(90deg, #D4AF37, #FFF2CD, #AA771C);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    /* Degradê Dourado Títulos de Seção */
+    .sa-degrade-title {
+      display: inline-block;
+      padding-right: 0.2em;
+      padding-left: 0.06em;
+      background: linear-gradient(
+        90deg,
+        #A8861F 0%,
+        #D4AF37 35%,
+        #F0D46A 50%,
+        #D4AF37 65%,
+        #A8861F 100%
+      );
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Header Glassmorphic Container */
+    .sa-glass-header {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      border-radius: 20px;
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    /* Botão Dourado S.A com efeito Shinery */
+    .sa-btn-gold {
+      border-radius: 10px;
+      background: #D4AF37;
+      background: linear-gradient(230deg, #D4AF37 0%, #8A5A19 100%);
+      box-shadow: 0 20px 30px -6px rgba(212, 175, 55, 0.35);
+      outline: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.5s ease;
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-family: "Bebas Neue", sans-serif;
+      font-style: italic;
+    }
+
+    .sa-btn-gold::before {
+      content: "";
+      background: linear-gradient(10deg, rgba(255, 255, 255, 0.8) 12.81%, rgba(255, 255, 255, 0) 66.66%);
+      width: 70px;
+      height: 130%;
+      position: absolute;
+      transform: translateX(-50%) skew(-25deg);
+      bottom: 0%;
+      user-select: none;
+      pointer-events: none;
+      animation: shinery 3s infinite ease-in-out;
+      filter: blur(3px);
+    }
+
+    .sa-btn-gold:hover {
+      transform: translateY(-8px);
+      box-shadow: none;
+    }
+
+    .sa-btn-gold:active {
+      opacity: 0.5;
+    }
+
+    .sa-btn-gold .sa-btn-icon {
+      transition: transform 0.5s ease;
+    }
+
+    .sa-btn-gold:hover .sa-btn-icon {
+      transform: translateX(5px) rotate(5deg);
+    }
+
+    @keyframes shinery {
+      0%, 100% {
+        left: -10%;
+        opacity: 0;
+      }
+      20% {
+        opacity: 1;
+      }
+      48% {
+        left: 110%;
+        opacity: 1;
+      }
+      51% {
+        opacity: 0;
+      }
+    }
+
+    /* Avatares de Clientes no Hero (.profile) */
+    .sa-profile-group:hover .sa-profile-item:not(:hover) {
+      filter: blur(1px) saturate(0);
+    }
+
+    .sa-profile-item {
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-left: -15px;
+    }
+
+    .sa-profile-item:first-child {
+      margin-left: 0;
+    }
+
+    .sa-profile-item:hover {
+      transform: translateX(-12px);
+      filter: saturate(1.3);
+      z-index: 10;
+    }
+
+    /* Carrossel contínuo de Unidades (Marquee) */
+    @keyframes sa-marquee {
+      0% {
+        transform: translateX(0%);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    .sa-marquee-track {
+      display: flex;
+      width: max-content;
+      animation: sa-marquee 65s linear infinite;
+    }
+
+    .sa-marquee-track:hover {
+      animation-play-state: paused;
+    }
+
+    /* Recorte Geométrico das Seções (Clip-Path Original) */
+    @media (min-width: 1025px) {
+      .sa-section-notched {
+        clip-path: polygon(
+          371.209px 60.9747px, 8px 60.9747px, 8px 60.9747px, 3.45825529px 61.341172px,
+          -0.85016448px 62.402156px, -4.86761077px 64.100004px, -8.53643504px 66.377068px,
+          -11.79898875px 69.1757px, -14.59762336px 72.438252px, -16.87469033px 76.107076px,
+          -18.57254112px 80.124524px, -19.63352719px 84.432948px, -20px 88.9747px,
+          -20px calc(100% - 89.16px), -20px calc(100% - 89.16px),
+          -19.63352719px calc(100% - 84.61922px), -18.57254112px calc(100% - 80.31136px),
+          -16.87469033px calc(100% - 76.29414px), -14.59762336px calc(100% - 72.62528px),
+          -11.79898875px calc(100% - 69.3625px), -8.53643504px calc(100% - 66.56352px),
+          -4.86761077px calc(100% - 64.28606px), -0.85016448px calc(100% - 62.58784px),
+          3.45825529px calc(100% - 61.52658px), 8px calc(100% - 61.16px),
+          371.209px calc(100% - 61.16px), 388.241px calc(100% - 55.39px),
+          452.733px calc(100% - 5.96px), 469.765px calc(100% - 0.19px),
+          calc(100% - 469.76px) calc(100% - 0.19px), calc(100% - 452.73px) calc(100% - 5.96px),
+          calc(100% - 388.24px) calc(100% - 55.39px), calc(100% - 371.21px) calc(100% - 61.16px),
+          calc(100% - 8px) calc(100% - 61.16px), calc(100% - -20px) calc(100% - 89.16px),
+          calc(100% - -20px) 88.9747px, calc(100% - 8px) 60.9747px,
+          calc(100% - 371.21px) 60.9747px, calc(100% - 388.24px) 55.199px,
+          calc(100% - 452.73px) 5.77565px, calc(100% - 469.76px) 0px,
+          469.765px 0px, 452.733px 5.77565px, 388.241px 55.199px, 371.209px 60.9747px
+        );
+      }
+    }
+
+    /* Cards de Modalidades e Unidades */
+    .sa-gold-box {
+      background-color: #161616;
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .sa-gold-box:hover {
+      background-color: #D4AF37;
+    }
+
+    .sa-gold-box .sa-gold-box-text {
+      color: #D4AF37;
+      transition: color 0.3s ease;
+    }
+
+    .sa-gold-box:hover .sa-gold-box-text {
+      color: #161616;
+    }
+
+    /* Abas de Planos Glassmorphic */
+    .sa-tabs-heading {
+      background: rgba(25, 25, 33, 0.55);
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      border-radius: 25px;
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      box-shadow:
+        inset 0 1px 0 rgba(212, 175, 55, 0.10),
+        0 10px 35px rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(212, 175, 55, 0.08);
+      padding: 8px;
+    }
+
+    .sa-tab-btn-active {
+      background: linear-gradient(230deg, #D4AF37 0%, #8A5A19 100%) !important;
+      border: 1px solid rgba(212, 175, 55, 0.35) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        inset 0 -8px 18px rgba(255, 255, 255, 0.08),
+        0 20px 30px -6px rgba(212, 175, 55, 0.35) !important;
+      color: #000000 !important;
+      font-weight: 500;
+    }
+
+    @keyframes sa-tab-fade {
+      0% {
+        filter: blur(10px);
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      100% {
+        filter: blur(0px);
+        opacity: 1;
+        transform: translateY(0px);
+      }
+    }
+
+    .sa-tab-panel-animate {
+      animation: sa-tab-fade 0.5s ease-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#0d0d0d] text-white relative overflow-x-hidden">
+
+  <!-- ==================== TELA DE ACESSO EXCLUSIVO (GATE DE HOMOLOGAÇÃO) ==================== -->
+  <div id="access-gate" class="fixed inset-0 z-[100] bg-[#0B0C0E] text-white flex flex-col justify-between p-6 overflow-hidden select-none">
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full bg-[#D4AF37]/12 blur-[140px]"
+    ></div>
+
+    <div class="relative z-10 max-w-7xl w-full mx-auto flex items-center justify-between pt-2">
+      <div class="flex items-center gap-2 text-xs font-poppins uppercase tracking-[0.16em] text-white/60">
+        <i class="fas fa-lock text-[#D4AF37]" aria-hidden="true"></i>
+        <span>Ambiente de Homologação Restrito</span>
+      </div>
+      <span class="text-xs font-poppins tracking-widest text-white/40">
+        PROJETO EXCLUSIVO • 2026
+      </span>
+    </div>
+
+    <div class="relative z-10 w-full max-w-md mx-auto my-auto">
+      <div class="rounded-2xl bg-[#141416]/95 border border-[#D4AF37]/25 shadow-[0_30px_90px_-15px_rgba(0,0,0,0.95)] p-8 sm:p-10 backdrop-blur-xl text-center">
+        <div class="flex justify-center mb-6">
+          <img
+            src="./public/images/logo-sa.png"
+            alt="S.A Treinamento"
+            class="w-24 rounded-2xl shadow-[0_0_20px_rgba(212,175,55,0.25)] border border-[#D4AF37]/30"
+          />
+        </div>
+
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-[11px] font-poppins uppercase tracking-[0.14em] text-[#FFF2CD] mb-4">
+          <span>Apresentação &amp; Acompanhamento Ao Vivo</span>
+        </div>
+
+        <h2 class="font-bebas italic text-4xl sm:text-5xl font-semibold sa-degrade-hero mb-2">
+          Acesso Exclusivo S.A Treinamento
+        </h2>
+        <p class="text-xs sm:text-sm text-white/70 font-poppins leading-relaxed mb-7">
+          Insira a credencial de acesso fornecida para visualizar a evolução e finalização do novo site oficial.
+        </p>
+
+        <form id="access-form" class="space-y-4 text-left">
+          <div>
+            <label class="block text-[11px] font-poppins uppercase tracking-wider text-white/60 mb-1.5">
+              Credencial de Acesso
+            </label>
+            <input
+              id="access-input"
+              type="password"
+              placeholder="Digite a senha de acesso..."
+              autofocus
+              class="w-full px-4 py-3.5 rounded-xl bg-[#0B0C0E] border border-white/15 text-sm text-white placeholder-white/35 focus:outline-none focus:border-[#D4AF37] transition"
+            />
+            <p id="access-error" class="hidden text-xs text-red-400 mt-2 font-poppins">
+              Credencial inválida. Verifique a senha informada e tente novamente.
+            </p>
+          </div>
+
+          <button
+            type="submit"
+            class="sa-btn-gold w-full py-4 px-6 text-[24px] tracking-wider"
+          >
+            <span>Acessar Ambiente do Projeto</span>
+            <i class="fas fa-arrow-right text-[18px] ml-2.5 sa-btn-icon" aria-hidden="true"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl w-full mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-white/40 pb-2">
+      <span>© 2026 S.A Treinamento • Ambiente de Homologação</span>
+      <span>Viva o agora, viva a S.A!</span>
+    </div>
+  </div>
+
+  <!-- ==================== FLOATING HEADER (elementor-228) ==================== -->
+  <header class="relative z-30 w-full">
+    <!-- Mobile Logo Header -->
+    <div class="md:hidden flex justify-center pt-8 pb-2">
+      <a href="#topo" class="inline-block">
+        <img
+          src="./public/images/logo-sa.png"
+          alt="S.A Treinamento"
+          class="w-24 rounded-2xl shadow-[0_0_10px_rgba(0,0,0,0.5)] brightness-90"
+        />
+      </a>
+    </div>
+
+    <!-- Desktop/Tablet Floating Glassmorphic Bar -->
+    <div class="hidden md:flex sa-glass-header w-[85%] max-w-[1216px] mx-auto translate-y-[30px] px-6 py-2.5 items-center justify-between">
+      <a href="#topo" class="inline-block ml-6 lg:ml-10">
+        <img
+          src="./public/images/logo-sa.png"
+          alt="S.A Treinamento"
+          class="w-[82px] rounded-2xl shadow-[0_0_10px_rgba(0,0,0,0.5)] brightness-90 hover:brightness-100 transition"
+        />
+      </a>
+
+      <nav id="header-nav" class="hidden lg:flex items-center gap-8 font-bebas tracking-wider text-xl text-white/90 italic">
+        <a href="#sobre" class="hover:text-[#D4AF37] transition">A S.A Treinamento</a>
+        <a href="#modalidades" class="hover:text-[#D4AF37] transition">Modalidades</a>
+        <a href="#unidades" class="hover:text-[#D4AF37] transition">Unidades</a>
+        <a href="#planos" class="hover:text-[#D4AF37] transition">Planos</a>
+        <a href="#depoimentos" class="hover:text-[#D4AF37] transition">Alunos</a>
+      </nav>
+
+      <a
+        href="#oferta"
+        class="sa-btn-gold px-8 py-3.5 text-[20px] tracking-[0.6px] leading-[0.9em]"
+      >
+        <i class="fab fa-whatsapp text-[20px] mr-2.5 sa-btn-icon" aria-hidden="true"></i>
+        <span>Contato pelo WhatsApp</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ==================== HERO SECTION (880170b) ==================== -->
+  <section
+    id="topo"
+    class="relative min-h-[860px] lg:min-h-[900px] flex flex-col justify-center pt-16 lg:pt-28 pb-12 -mt-6 lg:-mt-[80px] overflow-hidden bg-black"
+  >
+    <div
+      class="absolute inset-0 bg-cover bg-center opacity-50"
+      style="background-image: url('./public/images/img9788.jpg')"
+    ></div>
+    <div
+      class="absolute inset-0 pointer-events-none"
+      style="background: radial-gradient(circle at 35% 50%, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.82) 76%, #000000 100%)"
+    ></div>
+
+    <!-- Hero Main Container -->
+    <div class="relative z-10 w-full max-w-[1216px] mx-auto px-6 lg:px-8 pt-12 lg:pt-16">
+      <div class="flex flex-col items-center lg:items-start text-center lg:text-left">
+        <h1 class="font-bebas italic font-semibold text-[53px] sm:text-[68px] lg:text-[73px] leading-[1.05] sa-degrade-hero tracking-wide hover:scale-105 transition-transform duration-300 origin-left">
+          Viva o Agora
+        </h1>
+        <h2 class="font-bebas italic font-semibold text-[82px] sm:text-[90px] lg:text-[96px] leading-[0.95] sa-degrade-hero tracking-wide -mt-1">
+          Viva a S.A!
+        </h2>
+
+        <p class="font-poppins font-light italic text-[15px] lg:text-[16px] text-white/95 max-w-[430px] pt-4 pb-6 leading-relaxed">
+          + de 8 anos transformando sua qualidade de vida com treinos personalizados,
+          acompanhamento próximo e resultados que fazem a diferença.
+        </p>
+
+        <a
+          href="#oferta"
+          class="sa-btn-gold px-8 sm:px-10 py-5 text-[22px] lg:text-[27px] tracking-wide"
+        >
+          <i class="fab fa-whatsapp text-[22px] mr-2.5 sa-btn-icon" aria-hidden="true"></i>
+          <span>Agendar Aula Experimental</span>
+        </a>
+
+        <!-- Client Avatars + Quote (c497cf0) -->
+        <div class="mt-7 flex flex-col sm:flex-row items-center gap-4">
+          <div class="flex items-center sa-profile-group">
+            <img
+              src="./public/images/cliente3.webp"
+              alt="Cliente S.A 1"
+              class="sa-profile-item w-14 h-14 rounded-full object-cover border-2 border-[#D4AF37]/40"
+            />
+            <img
+              src="./public/images/cliente2.webp"
+              alt="Cliente S.A 2"
+              class="sa-profile-item w-14 h-14 rounded-full object-cover border-2 border-[#D4AF37]/40"
+            />
+            <img
+              src="./public/images/cliente1.webp"
+              alt="Cliente S.A 3"
+              class="sa-profile-item w-14 h-14 rounded-full object-cover border-2 border-[#D4AF37]/40"
+            />
+          </div>
+          <p class="font-poppins font-medium italic text-[13px] sm:text-[16px] text-white leading-snug text-center sm:text-left">
+            &ldquo;Não troco a S.A por nenhuma outra. <br />
+            Treinar na S.A mudou minha rotina.&rdquo;
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Marquee Carousel of Units at Bottom of Hero (d3886ea) -->
+    <div class="relative z-10 mt-14 lg:mt-24 overflow-hidden w-full">
+      <div id="marquee-track" class="sa-marquee-track gap-4 px-4"></div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION: MUITO PRAZER, NÓS SOMOS A S.A TREINAMENTO (61bbec6) ==================== -->
+  <section
+    id="sobre"
+    class="sa-section-notched relative z-20 bg-white text-[#222222] pt-20 lg:pt-28 pb-24 lg:pb-32 -mt-6 lg:-mt-12"
+  >
+    <div class="max-w-[1216px] mx-auto px-4 sm:px-6">
+      <div class="text-center flex flex-col items-center">
+        <h2 class="font-bebas italic font-semibold text-[32px] sm:text-[44px] lg:text-[52px] text-[#222222] tracking-[0.5px] leading-none">
+          Muito prazer, nós somos a
+        </h2>
+        <h2 class="font-bebas italic font-semibold text-[58px] sm:text-[84px] lg:text-[110px] sa-degrade-title tracking-[0.5px] leading-none -mt-1">
+          S.A Treinamento
+        </h2>
+        <p class="font-poppins italic font-normal text-[15px] lg:text-[16px] text-[#222222] max-w-[780px] mt-2 leading-relaxed">
+          Proporcionamos um ambiente de acolhimento, orientação e estímulo em um espaço
+          <br class="hidden lg:inline" />
+          que incentiva o movimento como parte do seu estilo de vida equilibrado e prazeroso.
+        </p>
+      </div>
+
+      <!-- 7-Photo Bento Grid -->
+      <div id="bento-grid" class="mt-10 lg:mt-16 flex flex-wrap justify-center gap-5"></div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION: VOCÊ SABE TUDO QUE A S.A TEM PARA OFERECER? (9cd31d1) ==================== -->
+  <section
+    id="modalidades"
+    class="sa-section-notched relative z-20 bg-[#222222] text-white pt-20 lg:pt-28 pb-24 lg:pb-32 -mt-6 lg:-mt-14"
+  >
+    <div class="max-w-[1380px] mx-auto px-4 sm:px-6">
+      <div class="text-center flex flex-col items-center">
+        <h2 class="font-bebas italic font-semibold text-[39px] sm:text-[52px] lg:text-[62px] text-white tracking-[0.5px] leading-none">
+          Você sabe tudo que a
+        </h2>
+        <h2 class="font-bebas italic font-semibold text-[41px] sm:text-[54px] lg:text-[62px] sa-degrade-title tracking-[0.5px] leading-tight">
+          S.A tem PARA oferecer?
+        </h2>
+        <p class="font-poppins italic font-normal text-[15px] lg:text-[16px] text-white/90 mt-1">
+          Conheça nossas modalidades e se surpreenda com a S.A Treinamentos!
+        </p>
+      </div>
+
+      <div class="mt-8 lg:mt-12 flex flex-col lg:flex-row items-center gap-8">
+        <!-- Left Column: Image Carousel -->
+        <div class="w-full lg:w-[55%] p-2 sm:p-5">
+          <div id="carousel-frame" class="relative rounded-[20px] overflow-hidden shadow-2xl bg-[#161616] aspect-[3/2]">
+            <div id="carousel-slides"></div>
+
+            <button
+              type="button"
+              id="btn-prev-slide"
+              aria-label="Slide anterior"
+              class="absolute left-4 top-1/2 -translate-y-1/2 z-20 text-[#D4AF37] hover:scale-110 transition text-3xl sm:text-4xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] cursor-pointer"
+            >
+              <i class="fas fa-chevron-circle-left" aria-hidden="true"></i>
+            </button>
+
+            <button
+              type="button"
+              id="btn-next-slide"
+              aria-label="Próximo slide"
+              class="absolute right-4 top-1/2 -translate-y-1/2 z-20 text-[#D4AF37] hover:scale-110 transition text-3xl sm:text-4xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] cursor-pointer"
+            >
+              <i class="fas fa-chevron-circle-right" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <!-- Pagination Dots -->
+          <div id="carousel-dots" class="flex justify-center items-center gap-2.5 mt-4"></div>
+        </div>
+
+        <!-- Right Column: 6 Modality Cards + CTA Button -->
+        <div class="w-full lg:w-[45%] flex flex-col gap-2.5 p-2 sm:p-5">
+          <div id="modalities-list" class="flex flex-col gap-2.5"></div>
+
+          <a
+            href="#oferta"
+            class="sa-btn-gold w-full py-5 px-8 text-[22px] lg:text-[27px] mt-2"
+          >
+            <i class="fas fa-arrow-alt-circle-right text-[20px] mr-2.5 sa-btn-icon" aria-hidden="true"></i>
+            <span>Agendar Aula Experimental</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION: QUER TREINAR PERTO DE CASA? ESCOLHA A SUA UNIDADE! (b4eaa1c) ==================== -->
+  <section
+    id="unidades"
+    class="sa-section-notched relative z-20 bg-white text-[#222222] pt-20 lg:pt-28 pb-24 lg:pb-28 -mt-6 lg:-mt-14"
+  >
+    <div class="max-w-[1520px] mx-auto px-4 sm:px-6">
+      <div class="text-center flex flex-col items-center">
+        <h2 class="font-bebas italic font-semibold text-[30px] sm:text-[44px] lg:text-[52px] text-[#222222] tracking-[0.5px] leading-none">
+          Quer treinar perto de casa?
+        </h2>
+        <h2 class="font-bebas italic font-semibold text-[44px] sm:text-[68px] lg:text-[80px] sa-degrade-title tracking-[0.5px] leading-none mt-1">
+          Escolha a sua unidade!
+        </h2>
+        <p class="font-poppins italic font-normal text-[15px] lg:text-[16px] text-[#222222] mt-2">
+          Conheça nossas modalidades e se surpreenda com a S.A Treinamentos!
+        </p>
+      </div>
+
+      <!-- 4 Units Grid -->
+      <div id="units-grid" class="mt-8 lg:mt-10 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 w-[96%] mx-auto"></div>
+
+      <!-- Heading for Plans Section at Bottom of White Container -->
+      <div id="planos" class="mt-16 lg:mt-20 text-center flex flex-col items-center">
+        <h2 class="font-bebas italic font-semibold text-[32px] sm:text-[44px] lg:text-[52px] text-[#222222] tracking-[0.5px] leading-none">
+          Vem pra S.A treinamento
+        </h2>
+        <h2 class="font-bebas italic font-semibold text-[46px] sm:text-[68px] lg:text-[80px] sa-degrade-title tracking-[0.5px] leading-none mt-1">
+          Escolha o seu plano!
+        </h2>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION: ABAS DE PLANOS (765512f) ==================== -->
+  <section
+    id="oferta"
+    class="relative z-10 bg-[#131313] pt-16 lg:pt-20 pb-28 -mt-12 lg:-mt-16 flex flex-col items-center px-4"
+  >
+    <div
+      id="raw-plan-warning"
+      class="hidden mb-6 px-4 py-2 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-poppins text-center"
+    >
+      Nota: No site atual em WordPress, o antigo dev ocultou este bloco porque deixou os textos de curso Elementor abaixo.
+    </div>
+
+    <!-- Glassmorphic Tabs Bar -->
+    <div
+      role="tablist"
+      aria-label="Escolha o seu plano"
+      class="sa-tabs-heading flex flex-wrap items-center justify-center gap-3 sm:gap-10 px-4 py-2"
+    >
+      <button
+        type="button"
+        data-tab="mensal"
+        class="tab-btn sa-tab-btn-active px-7 py-3 rounded-[18px] font-bebas italic text-[21px] tracking-[1.2px] transition-all cursor-pointer"
+      >
+        Mensal
+      </button>
+      <button
+        type="button"
+        data-tab="anual"
+        class="tab-btn text-white/75 hover:text-white hover:-translate-y-0.5 px-7 py-3 rounded-[18px] font-bebas italic text-[21px] tracking-[1.2px] transition-all cursor-pointer"
+      >
+        Anual
+      </button>
+      <button
+        type="button"
+        data-tab="duplas"
+        class="tab-btn text-white/75 hover:text-white hover:-translate-y-0.5 px-7 py-3 rounded-[18px] font-bebas italic text-[21px] tracking-[1.2px] transition-all cursor-pointer"
+      >
+        Duplas
+      </button>
+    </div>
+
+    <!-- Active Plan Card -->
+    <div
+      id="plan-card"
+      class="sa-tab-panel-animate mt-8 w-full max-w-[480px] bg-[#1F1F1F] rounded-[25px] shadow-[0_0_25px_rgba(0,0,0,0.75)] border border-white/5 px-6 sm:px-10 pt-8 pb-10 flex flex-col items-center text-center"
+    ></div>
+  </section>
+
+  <!-- ==================== SECTION: O QUE DIZEM NOSSOS ALUNOS? (bf0a35b) ==================== -->
+  <section
+    id="depoimentos"
+    class="sa-section-notched relative z-20 bg-[#131313] py-24 lg:py-36 px-6 lg:px-14 -mt-12"
+  >
+    <div class="max-w-[1280px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-10">
+      <div class="w-full lg:w-[27%] text-center lg:text-left">
+        <h2 class="font-bebas italic font-semibold text-[44px] lg:text-[52px] leading-[1.1] tracking-[0.5px] text-white">
+          O que dizem <span class="text-[#D4AF37]">nossos Alunos?</span>
+        </h2>
+      </div>
+
+      <div id="testimonials-grid" class="w-full lg:w-[73%] grid grid-cols-1 md:grid-cols-3 gap-6 pt-6"></div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER (elementor-233) ==================== -->
+  <footer class="relative z-20">
+    <!-- Top Online Attendance Banner -->
+    <div class="bg-white text-[#222222] py-8 px-6 border-b border-black/10">
+      <div class="max-w-[1216px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+          <div class="w-14 h-14 rounded-full bg-[#FFD700]/20 flex items-center justify-center text-[#D4AF37] text-3xl">
+            <i class="fab fa-whatsapp" aria-hidden="true"></i>
+          </div>
+          <div>
+            <h3 class="font-bebas text-[28px] tracking-wide text-[#222222] leading-none">
+              Atendimento <b class="text-[#D4AF37]">Online</b>
+            </h3>
+            <p id="footer-online-desc" class="font-poppins text-sm text-[#4C4C4C] mt-1"></p>
+          </div>
+        </div>
+
+        <a
+          href="https://wa.me/5551999009900"
+          target="_blank"
+          rel="noreferrer"
+          class="bg-[#222222] hover:bg-[#4C4C4C] text-white font-manrope font-extrabold text-base px-9 py-4 rounded-[6px] transition inline-flex items-center gap-2"
+        >
+          <i class="fab fa-whatsapp text-lg text-[#D4AF37]" aria-hidden="true"></i>
+          <span>Contato via WhatsApp</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Newsletter Section -->
+    <div class="bg-[#1A1A1A] border-b border-white/10 py-10 px-6">
+      <div class="max-w-[1216px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
+        <div class="text-center lg:text-left">
+          <h2 class="font-bebas text-[40px] font-bold text-[#FFDE59] leading-none">
+            Inscreva-se já!
+          </h2>
+          <p class="font-poppins text-base text-white/80 mt-1">
+            Inscreva-se para ficar sempre atualizado com dicas e novidades da S.A Treinamento
+          </p>
+        </div>
+
+        <form
+          onsubmit="event.preventDefault(); alert('Inscrição recebida com sucesso!');"
+          class="w-full lg:w-[58%] grid grid-cols-1 sm:grid-cols-3 gap-3"
+        >
+          <input
+            type="text"
+            placeholder="Nome"
+            required
+            class="bg-white text-[#222222] rounded-[8px] px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-[#D4AF37]"
+          />
+          <input
+            type="email"
+            placeholder="E-mail"
+            required
+            class="bg-white text-[#222222] rounded-[8px] px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-[#D4AF37]"
+          />
+          <button
+            type="submit"
+            class="sa-btn-gold rounded-[8px] py-3.5 px-6 text-[22px] tracking-wider"
+          >
+            ASSINAR
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Main Footer Columns -->
+    <div class="bg-[#0d0d0d] text-white py-20 px-6">
+      <div class="max-w-[1216px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div class="flex flex-col items-center md:items-start text-center md:text-left">
+          <img
+            src="./public/images/logo-sa.png"
+            alt="S.A Treinamento"
+            class="w-[140px] rounded-xl mb-4"
+          />
+          <p id="footer-brand-desc" class="font-poppins text-sm text-white/80 leading-relaxed"></p>
+          <div class="mt-4 text-xs text-white/50 space-y-0.5">
+            <p id="footer-company-name"></p>
+            <p id="footer-company-doc"></p>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-center md:items-start text-center md:text-left">
+          <h4 class="font-poppins font-bold text-[#FFDE59] text-lg mb-4">Links úteis</h4>
+          <ul class="space-y-2.5 text-sm text-white/80">
+            <li><a href="#topo" class="hover:text-[#D4AF37] transition">Início</a></li>
+            <li><a href="#sobre" class="hover:text-[#D4AF37] transition">Sobre a S.A</a></li>
+            <li><a href="#modalidades" class="hover:text-[#D4AF37] transition">Modalidades</a></li>
+            <li><a href="#unidades" class="hover:text-[#D4AF37] transition">Nossas 4 Unidades</a></li>
+            <li><a href="#planos" class="hover:text-[#D4AF37] transition">Planos e Valores</a></li>
+          </ul>
+        </div>
+
+        <div class="flex flex-col items-center md:items-start text-center md:text-left">
+          <h4 id="footer-col3-title" class="font-poppins font-bold text-[#FFDE59] text-lg mb-4"></h4>
+          <div id="footer-col3-body" class="space-y-2 text-sm text-white/80"></div>
+        </div>
+
+        <div class="flex flex-col items-center md:items-start text-center md:text-left">
+          <h4 class="font-poppins font-bold text-[#FFDE59] text-lg mb-4">Redes sociais</h4>
+          <div class="flex items-center gap-4">
+            <a
+              href="https://wa.me/5551999009900"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="WhatsApp"
+              class="w-11 h-11 rounded-lg bg-[#1F1F1F] border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition text-xl"
+            >
+              <i class="fab fa-whatsapp" aria-hidden="true"></i>
+            </a>
+            <a
+              href="https://www.instagram.com/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Instagram"
+              class="w-11 h-11 rounded-lg bg-[#1F1F1F] border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition text-xl"
+            >
+              <i class="fab fa-instagram" aria-hidden="true"></i>
+            </a>
+            <a
+              href="https://www.facebook.com/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Facebook"
+              class="w-11 h-11 rounded-lg bg-[#1F1F1F] border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition text-xl"
+            >
+              <i class="fab fa-facebook" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Copyright Bar -->
+    <div class="bg-white text-[#222222] py-5 px-6 text-sm">
+      <div class="max-w-[1216px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center justify-center gap-1.5">
+          <strong id="footer-copy-brand">© S.A Treinamento –</strong>
+          <span>Todos os direitos reservados.</span>
+        </div>
+        <div class="text-xs text-[#4C4C4C]">Viva o agora, viva a S.A!</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== FLOATING MODE SWITCHER FOR PREVIEW ==================== -->
+  <div class="fixed bottom-4 right-4 z-50 flex items-center gap-1.5 bg-black/90 backdrop-blur-md border border-[#D4AF37]/50 rounded-full p-1.5 shadow-2xl text-xs font-poppins">
+    <button
+      type="button"
+      id="mode-completed"
+      class="px-3.5 py-1.5 rounded-full font-semibold transition cursor-pointer bg-[#D4AF37] text-black"
+    >
+      ✓ Site Finalizado
+    </button>
+    <button
+      type="button"
+      id="mode-raw"
+      class="px-3.5 py-1.5 rounded-full font-medium transition cursor-pointer text-white/75 hover:text-white"
+    >
+      Espelho Original (Inacabado)
+    </button>
+  </div>
+
+  <script>
+    const CAROUSEL_IMAGES = [
+      { src: './public/images/img4815.jpg', alt: 'IMG_4815 - S.A Treinamento' },
+      { src: './public/images/sa-137.jpg', alt: 'S A Treinamento_ 137 - S.A Treinamento' },
+      { src: './public/images/img9788.jpg', alt: 'IMG_9788 - S.A Treinamento' },
+      { src: './public/images/sa-156.jpg', alt: 'S A Treinamento_ 156 - S.A Treinamento' },
+      { src: './public/images/img9825.jpg', alt: 'IMG_9825 - S.A Treinamento' },
+      { src: './public/images/img9772.jpg', alt: 'IMG_9772 - S.A Treinamento' },
+      { src: './public/images/img0177.jpg', alt: 'IMG_0177 - S.A Treinamento' },
+    ];
+
+    const MARQUEE_UNITS = [
+      'Unidade Antônio de Carvalho',
+      'Unidade Protásio',
+      'Unidade Luderitz',
+      'Unidade Pasqualini',
+      'Unidade Antônio de Carvalho',
+      'Unidade Protásio',
+      'Unidade Luderitz',
+      'Unidade Pasqualini',
+      'Unidade Antônio de Carvalho',
+      'Unidade Protásio',
+      'Unidade Luderitz',
+      'Unidade Pasqualini',
+    ];
+
+    let viewMode = 'completed';
+    let activeSlide = 0;
+    let activeTab = 'mensal';
+    const whatsappNumber = '5551999009900';
+
+    // Render Marquee once
+    const marqueeTrack = document.getElementById('marquee-track');
+    marqueeTrack.innerHTML = [...MARQUEE_UNITS, ...MARQUEE_UNITS].map(unit => `
+      <div class="inline-flex items-center bg-[#222222] border border-[#7d7d7d]/50 px-3.5 py-2 rounded-[25px] shrink-0">
+        <span class="inline-flex items-center justify-center bg-black border border-[#7d7d7d]/50 p-2.5 mr-2.5 rounded-full text-[#FFD700] text-[15px]">
+          <i class="fas fa-check-circle" aria-hidden="true"></i>
+        </span>
+        <span class="bg-[#333333] border border-[#7d7d7d]/50 px-4 py-2 rounded-[25px] font-bebas font-medium tracking-[2.5px] text-[#F5F5F5] text-[17px]">
+          ${unit}
+        </span>
+      </div>
+    `).join('');
+
+    // Render Carousel Slides & Dots
+    function renderCarousel() {
+      const slidesContainer = document.getElementById('carousel-slides');
+      const dotsContainer = document.getElementById('carousel-dots');
+
+      slidesContainer.innerHTML = CAROUSEL_IMAGES.map((slide, idx) => `
+        <img
+          src="${slide.src}"
+          alt="${slide.alt}"
+          class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
+            idx === activeSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+          }"
+        />
+      `).join('');
+
+      dotsContainer.innerHTML = CAROUSEL_IMAGES.map((_, idx) => `
+        <button
+          type="button"
+          onclick="setSlide(${idx})"
+          aria-label="Ir para o slide ${idx + 1}"
+          class="h-2.5 rounded-full transition-all cursor-pointer ${
+            idx === activeSlide ? 'bg-[#D4AF37] w-6' : 'bg-white/50 hover:bg-white w-2.5'
+          }"
+        ></button>
+      `).join('');
+    }
+
+    window.setSlide = function(idx) {
+      activeSlide = (idx + CAROUSEL_IMAGES.length) % CAROUSEL_IMAGES.length;
+      renderCarousel();
+    };
+
+    document.getElementById('btn-prev-slide').addEventListener('click', () => setSlide(activeSlide - 1));
+    document.getElementById('btn-next-slide').addEventListener('click', () => setSlide(activeSlide + 1));
+
+    setInterval(() => {
+      setSlide(activeSlide + 1);
+    }, 5000);
+
+    function renderAll() {
+      const isCompleted = viewMode === 'completed';
+
+      // Header nav visibility
+      const headerNav = document.getElementById('header-nav');
+      headerNav.style.display = isCompleted ? '' : 'none';
+
+      // Bento Grid
+      const bentoCards = [
+        {
+          img: './public/images/img9825.jpg',
+          pos: 'object-top',
+          colClass: 'lg:w-[63%] min-h-[360px] lg:min-h-[400px]',
+          title: isCompleted ? 'Treinos 100% Personalizados' : 'What is Lorem Ipsum?',
+          desc: isCompleted
+            ? 'Na S.A Treinamento seu treino é planejado de acordo com seus objetivos, histórico e rotina, garantindo evolução segura e constante.'
+            : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s',
+        },
+        {
+          img: './public/images/sa-155.jpg',
+          pos: 'object-bottom',
+          colClass: 'lg:w-[34%] min-h-[300px] lg:min-h-[400px]',
+          title: isCompleted ? 'Acompanhamento Próximo' : 'What is Lorem Ipsum?',
+          desc: isCompleted
+            ? 'Professores presentes em todos os momentos para orientar cada movimento, corrigir postura e manter sua motivação em alta.'
+            : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s',
+        },
+        {
+          img: './public/images/img9772.jpg',
+          pos: 'object-top',
+          colClass: 'lg:w-[31.5%] min-h-[300px]',
+          title: isCompleted ? 'Ambiente Acolhedor' : 'What is Lorem Ipsum?',
+          desc: isCompleted
+            ? 'Um espaço pensado para você se sentir bem, sem julgamentos e com uma comunidade que vibra com cada conquista sua.'
+            : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s',
+        },
+        {
+          img: './public/images/img9788.jpg',
+          pos: 'object-top',
+          colClass: 'lg:w-[31.5%] min-h-[300px]',
+          title: isCompleted ? 'Estrutura Moderna' : 'What is Lorem Ipsum?',
+          desc: isCompleted
+            ? 'Equipamentos selecionados e espaço amplo em nossas 4 unidades para você realizar seu treino com máximo conforto e eficiência.'
+            : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s',
+        },
+        {
+          img: './public/images/sa-251.jpg',
+          pos: 'object-center',
+          colClass: 'lg:w-[31.5%] min-h-[300px]',
+          title: isCompleted ? 'Mais Qualidade de Vida' : 'What is Lorem Ipsum?',
+          desc: isCompleted
+            ? 'Mais disposição para o dia a dia, redução do estresse, melhora do sono e fortalecimento para viver o agora com saúde.'
+            : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s',
+        },
+        {
+          img: './public/images/img5815.jpg',
+          pos: 'object-center',
+          colClass: 'lg:w-[46%] min-h-[300px]',
+          title: isCompleted ? 'Equipe Especializada' : 'What is Lorem Ipsum?',
+          desc: isCompleted
+            ? 'Mais de 8 anos de experiência transformando vidas através do movimento consciente, com profissionais apaixonados pelo que fazem.'
+            : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s thrilling chapters awaiting you in our package.',
+        },
+        {
+          img: './public/images/img0177.jpg',
+          pos: 'object-center',
+          colClass: 'lg:w-[51%] min-h-[300px]',
+          title: isCompleted ? 'Resultados que Fazem a Diferença' : 'What is Lorem Ipsum?',
+          desc: isCompleted
+            ? 'Metodologia validada por centenas de alunos que transformaram o exercício físico em uma parte prazerosa da rotina.'
+            : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s thrilling chapters awaiting you in our package.',
+        },
+      ];
+
+      document.getElementById('bento-grid').innerHTML = bentoCards.map(card => `
+        <div class="group relative w-full ${card.colClass} rounded-[40px] lg:rounded-[50px] overflow-hidden shadow-md cursor-pointer">
+          <img
+            src="${card.img}"
+            alt="${card.title}"
+            loading="lazy"
+            class="absolute inset-0 w-full h-full object-cover ${card.pos} transition-transform duration-500 group-hover:scale-105"
+          />
+          <div class="absolute inset-0 bg-black/20 transition-opacity duration-300 group-hover:opacity-0"></div>
+          <div class="relative z-10 h-full w-full bg-black/65 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-8 lg:p-12 flex flex-col justify-center rounded-[40px] lg:rounded-[50px]">
+            <h3 class="font-bebas font-semibold text-[36px] lg:text-[45px] leading-[1.2] text-white mb-2">
+              ${card.title}
+            </h3>
+            <p class="font-poppins text-[15px] lg:text-[17px] text-white/95 leading-relaxed">
+              ${card.desc}
+            </p>
+          </div>
+        </div>
+      `).join('');
+
+      // Modalities
+      const modalities = isCompleted
+        ? [
+            'Treinamento Funcional Personalizado',
+            'Musculação com Acompanhamento Próximo',
+            'Condicionamento Físico e Emagrecimento',
+            'Fortalecimento Muscular e Prevenção de Lesões',
+            'Mobilidade, Postura e Qualidade de Vida',
+            'Preparação Física e Performance Esportiva',
+          ]
+        : [
+            'Adicione nome da modalidade',
+            'Adicione nome da modalidade',
+            'Adicione nome da modalidade',
+            'Adicione nome da modalidade',
+            'Adicione nome da modalidade',
+            'Adicione nome da modalidade',
+          ];
+
+      document.getElementById('modalities-list').innerHTML = modalities.map((modName, idx) => `
+        <div
+          onclick="setSlide(${idx})"
+          class="sa-gold-box px-5 py-4 cursor-pointer flex items-center justify-between"
+        >
+          <h3 class="sa-gold-box-text font-bebas italic font-medium text-[21px] sm:text-[24px] xl:text-[26px] tracking-[1.2px] leading-tight">
+            ${modName}
+          </h3>
+          ${isCompleted ? '<i class="fas fa-dumbbell sa-gold-box-text text-lg opacity-80" aria-hidden="true"></i>' : ''}
+        </div>
+      `).join('');
+
+      // Units
+      const units = [
+        {
+          name: 'Unidade\nProtásio',
+          img: './public/images/img9825.jpg',
+          mapQuery: 'S.A%20Treinamento%20Unidade%20Prot%C3%A1sio',
+          mapTitle: 'S.A Treinamento Unidade Protásio',
+        },
+        {
+          name: 'Unidade\nAntônio de Carvalho',
+          img: isCompleted ? './public/images/img4815.jpg' : './public/images/img9825.jpg',
+          mapQuery: 'S.A%20Treinamento%20Ant%C3%B4nio',
+          mapTitle: 'S.A Treinamento Antônio',
+        },
+        {
+          name: 'Unidade\nPasqualini',
+          img: isCompleted ? './public/images/sa-137.jpg' : './public/images/img9825.jpg',
+          mapQuery: 'S.A%20Treinamento%20Pasqualini',
+          mapTitle: 'S.A Treinamento Pasqualini',
+        },
+        {
+          name: 'Unidade\nLuderitz',
+          img: isCompleted ? './public/images/sa-156.jpg' : './public/images/img9825.jpg',
+          mapQuery: 'S.A%20Treinamento%20Unidade%20Luderitz',
+          mapTitle: 'S.A Treinamento Unidade Luderitz',
+        },
+      ];
+
+      document.getElementById('units-grid').innerHTML = units.map(unit => `
+        <div class="flex flex-col">
+          <div class="sa-gold-box p-5 text-center mb-2.5">
+            <h3 class="sa-gold-box-text font-bebas italic font-medium text-[30px] tracking-[1.3px] leading-[1.1] whitespace-pre-line">${unit.name}</h3>
+          </div>
+          <img
+            src="${unit.img}"
+            alt="${unit.mapTitle}"
+            loading="lazy"
+            class="w-full h-[220px] object-cover rounded-t-[20px] shadow-[0_0_10px_rgba(0,0,0,0.5)]"
+          />
+          <div class="rounded-b-[20px] overflow-hidden shadow-[0_0_10px_rgba(0,0,0,0.5)] bg-[#161616]">
+            <iframe
+              loading="lazy"
+              src="https://maps.google.com/maps?q=${unit.mapQuery}&t=m&z=13&output=embed&iwloc=near"
+              title="${unit.mapTitle}"
+              aria-label="${unit.mapTitle}"
+              class="w-full h-[180px] border-0 brightness-[0.72] hover:brightness-100 transition duration-300"
+            ></iframe>
+          </div>
+          <a
+            href="#oferta"
+            class="sa-btn-gold w-full py-5 px-6 text-[22px] lg:text-[26px] mt-3"
+          >
+            <i class="fas fa-arrow-alt-circle-right text-[20px] mr-2.5 sa-btn-icon" aria-hidden="true"></i>
+            <span>Agendar Aula Experimental</span>
+          </a>
+        </div>
+      `).join('');
+
+      // Plans
+      document.getElementById('raw-plan-warning').classList.toggle('hidden', isCompleted);
+      renderPlanCard();
+
+      // Testimonials
+      const testimonials = isCompleted
+        ? [
+            {
+              name: 'Amanda Alves',
+              avatar: './public/images/avatar-depoimento.png',
+              text: 'Não troco a S.A por nenhuma outra! Desde que comecei a treinar aqui minha disposição mudou completamente. Os professores acompanham cada exercício de perto e o astral da turma é incrível.',
+            },
+            {
+              name: 'Juliana Martins',
+              avatar: './public/images/cliente2.webp',
+              text: 'Eu sempre tive dificuldade de manter constância em academias convencionais. Na S.A encontrei acolhimento, orientação de verdade e um treino pensado pra minha rotina. Recomendo de olhos fechados!',
+            },
+            {
+              name: 'Rafael Oliveira',
+              avatar: './public/images/cliente1.webp',
+              text: 'Estrutura excelente e profissionais super atenciosos. Mais de um ano treinando na unidade e os resultados na minha saúde, postura e qualidade de vida fizeram toda a diferença.',
+            },
+          ]
+        : [
+            {
+              name: 'Amanda Alves',
+              avatar: './public/images/avatar-depoimento.png',
+              text: 'Lorem ipsum dolor sit amet. Qui aperiam quibusdam cum unde facere a voluptas sint ut galisum officia quo sunt adipisci. Est tenetur culpa quo sunt nihil et voluptates accusamus in ratione necessitatibus quo eaque fugiat.',
+            },
+            {
+              name: 'Amanda Alves',
+              avatar: './public/images/avatar-depoimento.png',
+              text: 'Lorem ipsum dolor sit amet. Qui aperiam quibusdam cum unde facere a voluptas sint ut galisum officia quo sunt adipisci. Est tenetur culpa quo sunt nihil et voluptates accusamus in ratione necessitatibus quo eaque fugiat.',
+            },
+            {
+              name: 'Amanda Alves',
+              avatar: './public/images/avatar-depoimento.png',
+              text: 'Lorem ipsum dolor sit amet. Qui aperiam quibusdam cum unde facere a voluptas sint ut galisum officia quo sunt adipisci. Est tenetur culpa quo sunt nihil et voluptates accusamus in ratione necessitatibus quo eaque fugiat.',
+            },
+          ];
+
+      document.getElementById('testimonials-grid').innerHTML = testimonials.map(item => `
+        <div class="bg-white/60 hover:bg-white transition-colors duration-300 rounded-[8px] px-5 pb-6 pt-0 flex flex-col shadow-lg">
+          <div class="-mt-5 mb-2 flex flex-col items-start">
+            <img
+              src="${item.avatar}"
+              alt="${item.name}"
+              class="w-16 h-16 rounded-full object-cover border-2 border-[#D4AF37] shadow-md mb-2"
+            />
+            <h3 class="font-bebas font-semibold text-[20px] tracking-[1px] text-[#081526]">
+              ${item.name}
+            </h3>
+          </div>
+          <p class="font-sora font-normal text-[13px] leading-[1.4] text-[#081526]">
+            ${item.text}
+          </p>
+        </div>
+      `).join('');
+
+      // Footer texts
+      document.getElementById('footer-online-desc').textContent = isCompleted
+        ? 'Agende sua aula experimental pelo WhatsApp em qualquer uma de nossas 4 unidades'
+        : 'Segunda à Sexta-feira de 09h às 18h';
+
+      document.getElementById('footer-brand-desc').textContent = isCompleted
+        ? 'Transformando sua qualidade de vida há mais de 8 anos. Viva o agora, viva a S.A!'
+        : 'Seu melhor texto aqui!';
+
+      document.getElementById('footer-company-name').textContent = isCompleted
+        ? 'S.A TREINAMENTO FUNCIONAL'
+        : 'EMPRESA LTDA';
+
+      document.getElementById('footer-company-doc').textContent = isCompleted
+        ? 'Porto Alegre • RS'
+        : '00.999.000/0001-00';
+
+      document.getElementById('footer-col3-title').textContent = isCompleted
+        ? 'Nossas Unidades'
+        : 'Atendimento';
+
+      document.getElementById('footer-col3-body').innerHTML = isCompleted
+        ? `
+          <p>• Unidade Protásio</p>
+          <p>• Unidade Antônio de Carvalho</p>
+          <p>• Unidade Pasqualini</p>
+          <p>• Unidade Luderitz</p>
+          <p class="pt-2 text-[#D4AF37] font-medium">Porto Alegre - RS</p>
+        `
+        : `
+          <p>(11) 99900-9900</p>
+          <p>contato@email.com</p>
+          <p>Rua Teste, 00</p>
+          <p>Segunda à Sexta-feira de 09h às 18h</p>
+        `;
+
+      document.getElementById('footer-copy-brand').textContent = isCompleted
+        ? '© S.A Treinamento –'
+        : '© Modelo WP –';
+    }
+
+    function renderPlanCard() {
+      const isCompleted = viewMode === 'completed';
+      const plans = {
+        mensal: {
+          title: 'Plano Mensal',
+          subtitle: 'à partir de',
+          price: 'R$97,00',
+          note: isCompleted ? 'sem fidelidade • consulte unidades' : null,
+          features: isCompleted
+            ? [
+                'TREINOS PERSONALIZADOS COM ACOMPANHAMENTO',
+                'AVALIAÇÃO FÍSICA E PLANEJAMENTO DE METAS',
+                'HORÁRIOS FLEXÍVEIS EM NOSSAS UNIDADES',
+                'AMBIENTE ACOLHEDOR E ESTRUTURA COMPLETA',
+              ]
+            : [
+                'ACESSO A BIBLIOTECA DE SEÇÕES',
+                'PLUGIN PRO ELEMENTS',
+                'AULAS DE PERSONALIZAÇÃO E OTIMIZAÇÃO',
+                'ATUALIZAÇÕES SEMANAIS',
+              ],
+        },
+        anual: {
+          title: 'Plano Anual',
+          subtitle: 'à partir de',
+          price: 'R$114,00',
+          note: 'pagamento mensal',
+          features: isCompleted
+            ? [
+                'MELHOR CUSTO-BENEFÍCIO PARA SUA CONSTÂNCIA',
+                'TREINOS PERSONALIZADOS E REAVALIAÇÕES PERIÓDICAS',
+                'ACOMPANHAMENTO PRÓXIMO DE PROFESSORES',
+                'ACESSO COMPLETO À METODOLOGIA S.A TREINAMENTO',
+              ]
+            : [
+                'ACESSO A BIBLIOTECA DE SEÇÕES',
+                'PLUGIN PRO ELEMENTS',
+                'AULAS DE PERSONALIZAÇÃO E OTIMIZAÇÃO',
+                'ATUALIZAÇÕES SEMANAIS',
+              ],
+        },
+        duplas: {
+          title: 'Plano em duplas',
+          subtitle: 'de R$126,00 por apenas',
+          price: 'R$97,00',
+          note: isCompleted ? 'por pessoa • treine com um amigo ou familiar' : null,
+          features: isCompleted
+            ? [
+                'DESCONTO ESPECIAL PARA TREINAR EM DUPLA',
+                'TREINO INDIVIDUALIZADO PARA CADA OBJETIVO',
+                'MAIS MOTIVAÇÃO E COMPROMETIMENTO NA ROTINA',
+                'ACOMPANHAMENTO COMPLETO DA EQUIPE S.A',
+              ]
+            : [
+                'ACESSO A BIBLIOTECA DE SEÇÕES',
+                'PLUGIN PRO ELEMENTS',
+                'AULAS DE PERSONALIZAÇÃO E OTIMIZAÇÃO',
+                'ATUALIZAÇÕES SEMANAIS',
+              ],
+        },
+      };
+
+      const plan = plans[activeTab];
+      const card = document.getElementById('plan-card');
+      card.innerHTML = `
+        <h3 class="font-bebas font-semibold text-[34px] tracking-[1.3px] text-[#F5F5F5]">
+          ${plan.title}
+        </h3>
+        <p class="font-poppins text-sm text-[#ACACAC] mt-1">
+          ${plan.subtitle}
+        </p>
+        <div class="font-bebas font-semibold text-[70px] leading-none sa-degrade-hero tracking-[1px] my-1">
+          ${plan.price}
+        </div>
+        ${plan.note ? `<p class="font-poppins italic text-xs text-[#ACACAC] mb-2">${plan.note}</p>` : ''}
+        <ul class="w-full text-left space-y-3 my-6 px-2">
+          ${plan.features.map(feat => `
+            <li class="flex items-center gap-3">
+              <span class="text-[#D4AF37] text-sm shrink-0">
+                <i class="far fa-arrow-alt-circle-right" aria-hidden="true"></i>
+              </span>
+              <span class="font-bebas font-normal text-[19px] tracking-[0.6px] text-[#F5F5F5]">
+                ${feat}
+              </span>
+            </li>
+          `).join('')}
+        </ul>
+        <a
+          href="https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Olá! Gostaria de agendar uma aula experimental na S.A Treinamento e saber mais sobre o ${plan.title}.`)}"
+          target="_blank"
+          rel="noreferrer"
+          class="sa-btn-gold w-full py-5 px-8 text-[25px] lg:text-[27px]"
+        >
+          <i class="fas fa-arrow-alt-circle-right text-[20px] mr-2.5 sa-btn-icon" aria-hidden="true"></i>
+          <span>Agendar Aula Experimental</span>
+        </a>
+        <img
+          src="./public/images/selos-carts-white.webp"
+          alt="Formas de pagamento e segurança"
+          class="w-1/2 max-w-[220px] mt-5 opacity-90"
+        />
+      `;
+    }
+
+    // Tab buttons listener
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeTab = btn.getAttribute('data-tab');
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          if (b.getAttribute('data-tab') === activeTab) {
+            b.className = 'tab-btn sa-tab-btn-active px-7 py-3 rounded-[18px] font-bebas italic text-[21px] tracking-[1.2px] transition-all cursor-pointer';
+          } else {
+            b.className = 'tab-btn text-white/75 hover:text-white hover:-translate-y-0.5 px-7 py-3 rounded-[18px] font-bebas italic text-[21px] tracking-[1.2px] transition-all cursor-pointer';
+          }
+        });
+        renderPlanCard();
+      });
+    });
+
+    // Mode switcher listeners
+    const btnCompleted = document.getElementById('mode-completed');
+    const btnRaw = document.getElementById('mode-raw');
+
+    btnCompleted.addEventListener('click', () => {
+      viewMode = 'completed';
+      btnCompleted.className = 'px-3.5 py-1.5 rounded-full font-semibold transition cursor-pointer bg-[#D4AF37] text-black';
+      btnRaw.className = 'px-3.5 py-1.5 rounded-full font-medium transition cursor-pointer text-white/75 hover:text-white';
+      renderAll();
+    });
+
+    btnRaw.addEventListener('click', () => {
+      viewMode = 'raw';
+      btnRaw.className = 'px-3.5 py-1.5 rounded-full font-semibold transition cursor-pointer bg-[#D4AF37] text-black';
+      btnCompleted.className = 'px-3.5 py-1.5 rounded-full font-medium transition cursor-pointer text-white/75 hover:text-white';
+      renderAll();
+    });
+
+    // Access Gate (senha: sa2026)
+    const ACCESS_CODE = 'sa2026';
+    const accessGate = document.getElementById('access-gate');
+    const accessForm = document.getElementById('access-form');
+    const accessInput = document.getElementById('access-input');
+    const accessError = document.getElementById('access-error');
+
+    try {
+      if (sessionStorage.getItem('sa_homolog_unlocked') === 'true') {
+        accessGate.style.display = 'none';
+      }
+    } catch (e) {}
+
+    accessForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (accessInput.value.trim().toLowerCase() === ACCESS_CODE) {
+        accessGate.style.display = 'none';
+        accessError.classList.add('hidden');
+        try {
+          sessionStorage.setItem('sa_homolog_unlocked', 'true');
+        } catch (err) {}
+      } else {
+        accessError.classList.remove('hidden');
+      }
+    });
+
+    // Initial render
+    renderCarousel();
+    renderAll();
+  </script>
+</body>
+</html>
+
