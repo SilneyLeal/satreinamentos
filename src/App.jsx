@@ -1,33 +1,41 @@
 import React, { useState, useEffect } from 'react'
-
-const CAROUSEL_IMAGES = [
-  { src: '/images/img4815.jpg', alt: 'IMG_4815 - S.A Treinamento' },
-  { src: '/images/sa-137.jpg', alt: 'S A Treinamento_ 137 - S.A Treinamento' },
-  { src: '/images/img9788.jpg', alt: 'IMG_9788 - S.A Treinamento' },
-  { src: '/images/sa-156.jpg', alt: 'S A Treinamento_ 156 - S.A Treinamento' },
-  { src: '/images/img9825.jpg', alt: 'IMG_9825 - S.A Treinamento' },
-  { src: '/images/img9772.jpg', alt: 'IMG_9772 - S.A Treinamento' },
-  { src: '/images/img0177.jpg', alt: 'IMG_0177 - S.A Treinamento' },
-]
-
-const MARQUEE_UNITS = [
-  'Unidade Antônio de Carvalho',
-  'Unidade Protásio',
-  'Unidade Pasqualini',
-  'Unidade Antônio de Carvalho',
-  'Unidade Protásio',
-  'Unidade Pasqualini',
-  'Unidade Antônio de Carvalho',
-  'Unidade Protásio',
-  'Unidade Pasqualini',
-  'Unidade Antônio de Carvalho',
-  'Unidade Protásio',
-  'Unidade Pasqualini',
-]
+import AdminPanel from './AdminPanel'
+import { loadSiteData } from './defaultSiteData'
 
 const ACCESS_CODE = 'sa2026'
 
 export default function App() {
+  // Detect /painel route or ?painel query parameter
+  const [isAdminRoute, setIsAdminRoute] = useState(() => {
+    const path = window.location.pathname.toLowerCase()
+    const search = window.location.search.toLowerCase()
+    return path === '/painel' || path.startsWith('/painel/') || search.includes('painel')
+  })
+
+  // Editable CMS site data loaded from localStorage (with full default fallback)
+  const [siteData, setSiteData] = useState(() => loadSiteData())
+
+  // Selected blog post for reading full article in modal
+  const [selectedPost, setSelectedPost] = useState(null)
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname.toLowerCase()
+      const search = window.location.search.toLowerCase()
+      setIsAdminRoute(path === '/painel' || path.startsWith('/painel/') || search.includes('painel'))
+      setSiteData(loadSiteData())
+    }
+    const handleStorage = () => {
+      setSiteData(loadSiteData())
+    }
+    window.addEventListener('popstate', handlePopState)
+    window.addEventListener('storage', handleStorage)
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+      window.removeEventListener('storage', handleStorage)
+    }
+  }, [])
+
   // Access Gate State (Homologação Restrita)
   const [isUnlocked, setIsUnlocked] = useState(() => {
     try {
@@ -39,13 +47,38 @@ export default function App() {
   const [accessInput, setAccessInput] = useState('')
   const [accessError, setAccessError] = useState(false)
 
-  // 'completed' shows the finished version; 'raw' shows the exact unfinished texts from satreinamento.com.br
+  // 'completed' shows the finished/editable version; 'raw' shows the exact unfinished texts from satreinamento.com.br
   const [viewMode, setViewMode] = useState('completed')
   const [activeSlide, setActiveSlide] = useState(0)
   const [activeTab, setActiveTab] = useState('mensal')
-  const [whatsappNumber] = useState('5551999009900')
 
   const isCompleted = viewMode === 'completed'
+  const whatsappNumber = siteData.whatsappNumber || '5551999009900'
+
+  const carouselImages = siteData.modalitiesSection?.carouselImages?.length
+    ? siteData.modalitiesSection.carouselImages
+    : [{ src: '/images/img4815.jpg', alt: 'S.A Treinamento' }]
+
+  // Auto-advance carousel every 5s like Elementor's swiper settings (autoplay_speed: 5000)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % carouselImages.length)
+    }, 5000)
+    return () => clearInterval(timer)
+  }, [carouselImages.length])
+
+  // If user is on /painel, render the Admin CMS Panel directly
+  if (isAdminRoute) {
+    return (
+      <AdminPanel
+        onBackToSite={() => {
+          window.history.pushState({}, '', '/')
+          setSiteData(loadSiteData())
+          setIsAdminRoute(false)
+        }}
+      />
+    )
+  }
 
   const handleUnlock = (e) => {
     e.preventDefault()
@@ -62,97 +95,48 @@ export default function App() {
     }
   }
 
-  // Auto-advance carousel every 5s like Elementor's swiper settings (autoplay_speed: 5000)
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % CAROUSEL_IMAGES.length)
-    }, 5000)
-    return () => clearInterval(timer)
-  }, [])
-
   const prevSlide = () => {
-    setActiveSlide((prev) => (prev - 1 + CAROUSEL_IMAGES.length) % CAROUSEL_IMAGES.length)
+    setActiveSlide((prev) => (prev - 1 + carouselImages.length) % carouselImages.length)
   }
 
   const nextSlide = () => {
-    setActiveSlide((prev) => (prev + 1) % CAROUSEL_IMAGES.length)
+    setActiveSlide((prev) => (prev + 1) % carouselImages.length)
   }
 
-  const bentoCards = [
-    {
-      img: '/images/img9825.jpg',
-      pos: 'object-top',
-      colClass: 'lg:w-[63%] min-h-[360px] lg:min-h-[400px]',
-      title: isCompleted ? 'Treinos 100% Personalizados' : 'What is Lorem Ipsum?',
-      desc: isCompleted
-        ? 'Na S.A Treinamento seu treino é planejado de acordo com seus objetivos, histórico e rotina, garantindo evolução segura e constante.'
-        : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s',
-    },
-    {
-      img: '/images/sa-155.jpg',
-      pos: 'object-bottom',
-      colClass: 'lg:w-[34%] min-h-[300px] lg:min-h-[400px]',
-      title: isCompleted ? 'Acompanhamento Próximo' : 'What is Lorem Ipsum?',
-      desc: isCompleted
-        ? 'Professores presentes em todos os momentos para orientar cada movimento, corrigir postura e manter sua motivação em alta.'
-        : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s',
-    },
-    {
-      img: '/images/img9772.jpg',
-      pos: 'object-top',
-      colClass: 'lg:w-[31.5%] min-h-[300px]',
-      title: isCompleted ? 'Ambiente Acolhedor' : 'What is Lorem Ipsum?',
-      desc: isCompleted
-        ? 'Um espaço pensado para você se sentir bem, sem julgamentos e com uma comunidade que vibra com cada conquista sua.'
-        : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s',
-    },
-    {
-      img: '/images/img9788.jpg',
-      pos: 'object-top',
-      colClass: 'lg:w-[31.5%] min-h-[300px]',
-      title: isCompleted ? 'Estrutura Moderna' : 'What is Lorem Ipsum?',
-      desc: isCompleted
-        ? 'Equipamentos selecionados e espaço amplo em nossas 3 unidades para você realizar seu treino com máximo conforto e eficiência.'
-        : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s',
-    },
-    {
-      img: '/images/sa-251.jpg',
-      pos: 'object-center',
-      colClass: 'lg:w-[31.5%] min-h-[300px]',
-      title: isCompleted ? 'Mais Qualidade de Vida' : 'What is Lorem Ipsum?',
-      desc: isCompleted
-        ? 'Mais disposição para o dia a dia, redução do estresse, melhora do sono e fortalecimento para viver o agora com saúde.'
-        : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s',
-    },
-    {
-      img: '/images/img5815.jpg',
-      pos: 'object-center',
-      colClass: 'lg:w-[46%] min-h-[300px]',
-      title: isCompleted ? 'Equipe Especializada' : 'What is Lorem Ipsum?',
-      desc: isCompleted
-        ? 'Mais de 8 anos de experiência transformando vidas através do movimento consciente, com profissionais apaixonados pelo que fazem.'
-        : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s thrilling chapters awaiting you in our package.',
-    },
-    {
-      img: '/images/img0177.jpg',
-      pos: 'object-center',
-      colClass: 'lg:w-[51%] min-h-[300px]',
-      title: isCompleted ? 'Resultados que Fazem a Diferença' : 'What is Lorem Ipsum?',
-      desc: isCompleted
-        ? 'Metodologia validada por centenas de alunos que transformaram o exercício físico em uma parte prazerosa da rotina.'
-        : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s thrilling chapters awaiting you in our package.',
-    },
-  ]
+  // Dynamic Marquee Units derived from current units list
+  const unitSingleLineNames = (siteData.unitsSection?.items || []).map((u) =>
+    (u.name || '').replace(/\s*\n\s*/g, ' ').trim()
+  )
+  const marqueeUnits =
+    unitSingleLineNames.length > 0
+      ? [
+          ...unitSingleLineNames,
+          ...unitSingleLineNames,
+          ...unitSingleLineNames,
+          ...unitSingleLineNames,
+        ]
+      : [
+          'Unidade Antônio de Carvalho',
+          'Unidade Protásio',
+          'Unidade Pasqualini',
+          'Unidade Antônio de Carvalho',
+          'Unidade Protásio',
+          'Unidade Pasqualini',
+        ]
+
+  const bentoCards = isCompleted
+    ? siteData.about.cards
+    : siteData.about.cards.map((c, idx) => ({
+        ...c,
+        title: 'What is Lorem Ipsum?',
+        desc:
+          idx >= 5
+            ? 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s thrilling chapters awaiting you in our package.'
+            : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s',
+      }))
 
   const modalities = isCompleted
-    ? [
-        'Treinamento Funcional Personalizado',
-        'Musculação com Acompanhamento Próximo',
-        'Condicionamento Físico e Emagrecimento',
-        'Fortalecimento Muscular e Prevenção de Lesões',
-        'Mobilidade, Postura e Qualidade de Vida',
-        'Preparação Física e Performance Esportiva',
-      ]
+    ? siteData.modalitiesSection.items
     : [
         'Adicione nome da modalidade',
         'Adicione nome da modalidade',
@@ -162,108 +146,37 @@ export default function App() {
         'Adicione nome da modalidade',
       ]
 
-  const units = [
-    {
-      name: 'Unidade\nProtásio',
-      img: '/images/img9825.jpg',
-      mapQuery: 'S.A%20Treinamento%20Unidade%20Prot%C3%A1sio',
-      mapTitle: 'S.A Treinamento Unidade Protásio',
-      address: 'Av. Protásio Alves — Porto Alegre, RS',
-    },
-    {
-      name: 'Unidade\nAntônio de Carvalho',
-      img: isCompleted ? '/images/img4815.jpg' : '/images/img9825.jpg',
-      mapQuery: 'S.A%20Treinamento%20Ant%C3%B4nio',
-      mapTitle: 'S.A Treinamento Antônio',
-      address: 'Av. Antônio de Carvalho — Porto Alegre, RS',
-    },
-    {
-      name: 'Unidade\nPasqualini',
-      img: isCompleted ? '/images/sa-137.jpg' : '/images/img9825.jpg',
-      mapQuery: 'S.A%20Treinamento%20Pasqualini',
-      mapTitle: 'S.A Treinamento Pasqualini',
-      address: 'Av. Eng. Ludolfo Boehl / Pasqualini — Porto Alegre, RS',
-    },
+  const units = (siteData.unitsSection?.items || []).map((u) => ({
+    ...u,
+    img: isCompleted ? u.img : '/images/img9825.jpg',
+  }))
+
+  const rawFeatures = [
+    'ACESSO A BIBLIOTECA DE SEÇÕES',
+    'PLUGIN PRO ELEMENTS',
+    'AULAS DE PERSONALIZAÇÃO E OTIMIZAÇÃO',
+    'ATUALIZAÇÕES SEMANAIS',
   ]
 
   const plans = {
     mensal: {
-      title: 'Plano Mensal',
-      subtitle: 'à partir de',
-      price: 'R$97,00',
-      note: isCompleted ? 'sem fidelidade • consulte unidades' : null,
-      features: isCompleted
-        ? [
-            'TREINOS PERSONALIZADOS COM ACOMPANHAMENTO',
-            'AVALIAÇÃO FÍSICA E PLANEJAMENTO DE METAS',
-            'HORÁRIOS FLEXÍVEIS EM NOSSAS UNIDADES',
-            'AMBIENTE ACOLHEDOR E ESTRUTURA COMPLETA',
-          ]
-        : [
-            'ACESSO A BIBLIOTECA DE SEÇÕES',
-            'PLUGIN PRO ELEMENTS',
-            'AULAS DE PERSONALIZAÇÃO E OTIMIZAÇÃO',
-            'ATUALIZAÇÕES SEMANAIS',
-          ],
+      ...siteData.plansSection.plans.mensal,
+      note: isCompleted ? siteData.plansSection.plans.mensal.note : null,
+      features: isCompleted ? siteData.plansSection.plans.mensal.features : rawFeatures,
     },
     anual: {
-      title: 'Plano Anual',
-      subtitle: 'à partir de',
-      price: 'R$114,00',
-      note: 'pagamento mensal',
-      features: isCompleted
-        ? [
-            'MELHOR CUSTO-BENEFÍCIO PARA SUA CONSTÂNCIA',
-            'TREINOS PERSONALIZADOS E REAVALIAÇÕES PERIÓDICAS',
-            'ACOMPANHAMENTO PRÓXIMO DE PROFESSORES',
-            'ACESSO COMPLETO À METODOLOGIA S.A TREINAMENTO',
-          ]
-        : [
-            'ACESSO A BIBLIOTECA DE SEÇÕES',
-            'PLUGIN PRO ELEMENTS',
-            'AULAS DE PERSONALIZAÇÃO E OTIMIZAÇÃO',
-            'ATUALIZAÇÕES SEMANAIS',
-          ],
+      ...siteData.plansSection.plans.anual,
+      features: isCompleted ? siteData.plansSection.plans.anual.features : rawFeatures,
     },
     duplas: {
-      title: 'Plano em duplas',
-      subtitle: 'de R$126,00 por apenas',
-      price: 'R$97,00',
-      note: isCompleted ? 'por pessoa • treine com um amigo ou familiar' : null,
-      features: isCompleted
-        ? [
-            'DESCONTO ESPECIAL PARA TREINAR EM DUPLA',
-            'TREINO INDIVIDUALIZADO PARA CADA OBJETIVO',
-            'MAIS MOTIVAÇÃO E COMPROMETIMENTO NA ROTINA',
-            'ACOMPANHAMENTO COMPLETO DA EQUIPE S.A',
-          ]
-        : [
-            'ACESSO A BIBLIOTECA DE SEÇÕES',
-            'PLUGIN PRO ELEMENTS',
-            'AULAS DE PERSONALIZAÇÃO E OTIMIZAÇÃO',
-            'ATUALIZAÇÕES SEMANAIS',
-          ],
+      ...siteData.plansSection.plans.duplas,
+      note: isCompleted ? siteData.plansSection.plans.duplas.note : null,
+      features: isCompleted ? siteData.plansSection.plans.duplas.features : rawFeatures,
     },
   }
 
   const testimonials = isCompleted
-    ? [
-        {
-          name: 'Amanda Alves',
-          avatar: '/images/avatar-depoimento.png',
-          text: 'Não troco a S.A por nenhuma outra! Desde que comecei a treinar aqui minha disposição mudou completamente. Os professores acompanham cada exercício de perto e o astral da turma é incrível.',
-        },
-        {
-          name: 'Juliana Martins',
-          avatar: '/images/cliente2.webp',
-          text: 'Eu sempre tive dificuldade de manter constância em academias convencionais. Na S.A encontrei acolhimento, orientação de verdade e um treino pensado pra minha rotina. Recomendo de olhos fechados!',
-        },
-        {
-          name: 'Rafael Oliveira',
-          avatar: '/images/cliente1.webp',
-          text: 'Estrutura excelente e profissionais super atenciosos. Mais de um ano treinando na unidade e os resultados na minha saúde, postura e qualidade de vida fizeram toda a diferença.',
-        },
-      ]
+    ? siteData.testimonials
     : [
         {
           name: 'Amanda Alves',
@@ -281,6 +194,8 @@ export default function App() {
           text: 'Lorem ipsum dolor sit amet. Qui aperiam quibusdam cum unde facere a voluptas sint ut galisum officia quo sunt adipisci. Est tenetur culpa quo sunt nihil et voluptates accusamus in ratione necessitatibus quo eaque fugiat.',
         },
       ]
+
+  const blogPosts = siteData.blogSection?.posts || []
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white relative overflow-x-hidden">
@@ -405,8 +320,8 @@ export default function App() {
               <a href="#planos" className="hover:text-[#D4AF37] transition">
                 Planos
               </a>
-              <a href="#depoimentos" className="hover:text-[#D4AF37] transition">
-                Alunos
+              <a href="#blog" className="hover:text-[#D4AF37] transition">
+                Blog
               </a>
             </nav>
           )}
@@ -416,7 +331,7 @@ export default function App() {
             className="sa-btn-gold px-8 py-3.5 text-[20px] tracking-[0.6px] leading-[0.9em]"
           >
             <i className="fab fa-whatsapp text-[20px] mr-2.5 sa-btn-icon" aria-hidden="true"></i>
-            <span>Contato pelo WhatsApp</span>
+            <span>{siteData.header?.ctaText || 'Contato pelo WhatsApp'}</span>
           </a>
         </div>
       </header>
@@ -429,7 +344,9 @@ export default function App() {
         {/* Background Image in Full Color with Soft Dark Vignette */}
         <div
           className="absolute inset-0 bg-cover bg-center opacity-50"
-          style={{ backgroundImage: `url('/images/img9788.jpg')` }}
+          style={{
+            backgroundImage: `url('${siteData.hero?.bgImage || '/images/img9788.jpg'}')`,
+          }}
         />
         <div
           className="absolute inset-0 pointer-events-none"
@@ -443,15 +360,14 @@ export default function App() {
         <div className="relative z-10 w-full max-w-[1216px] mx-auto px-6 lg:px-8 pt-12 lg:pt-16">
           <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
             <h1 className="font-bebas italic font-semibold text-[53px] sm:text-[68px] lg:text-[73px] leading-[1.05] sa-degrade-hero tracking-wide hover:scale-105 transition-transform duration-300 origin-left">
-              Viva o Agora
+              {siteData.hero?.titleLine1}
             </h1>
             <h2 className="font-bebas italic font-semibold text-[82px] sm:text-[90px] lg:text-[96px] leading-[0.95] sa-degrade-hero tracking-wide -mt-1">
-              Viva a S.A!
+              {siteData.hero?.titleLine2}
             </h2>
 
             <p className="font-poppins font-light italic text-[15px] lg:text-[16px] text-white/95 max-w-[430px] pt-4 pb-6 leading-relaxed">
-              + de 8 anos transformando sua qualidade de vida com treinos personalizados,
-              acompanhamento próximo e resultados que fazem a diferença.
+              {siteData.hero?.description}
             </p>
 
             <a
@@ -459,31 +375,28 @@ export default function App() {
               className="sa-btn-gold px-8 sm:px-10 py-5 text-[22px] lg:text-[27px] tracking-wide"
             >
               <i className="fab fa-whatsapp text-[22px] mr-2.5 sa-btn-icon" aria-hidden="true"></i>
-              <span>Agendar Aula Experimental</span>
+              <span>{siteData.hero?.ctaText || 'Agendar Aula Experimental'}</span>
             </a>
 
             {/* Client Avatars + Quote (c497cf0) */}
             <div className="mt-7 flex flex-col sm:flex-row items-center gap-4">
               <div className="flex items-center sa-profile-group">
-                <img
-                  src="/images/cliente3.webp"
-                  alt="Cliente S.A 1"
-                  className="sa-profile-item w-14 h-14 rounded-full object-cover border-2 border-[#D4AF37]/40"
-                />
-                <img
-                  src="/images/cliente2.webp"
-                  alt="Cliente S.A 2"
-                  className="sa-profile-item w-14 h-14 rounded-full object-cover border-2 border-[#D4AF37]/40"
-                />
-                <img
-                  src="/images/cliente1.webp"
-                  alt="Cliente S.A 3"
-                  className="sa-profile-item w-14 h-14 rounded-full object-cover border-2 border-[#D4AF37]/40"
-                />
+                {(siteData.hero?.avatars || [
+                  '/images/cliente3.webp',
+                  '/images/cliente2.webp',
+                  '/images/cliente1.webp',
+                ]).map((avatarSrc, idx) => (
+                  <img
+                    key={idx}
+                    src={avatarSrc}
+                    alt={`Cliente S.A ${idx + 1}`}
+                    className="sa-profile-item w-14 h-14 rounded-full object-cover border-2 border-[#D4AF37]/40"
+                  />
+                ))}
               </div>
               <p className="font-poppins font-medium italic text-[13px] sm:text-[16px] text-white leading-snug text-center sm:text-left">
-                &ldquo;Não troco a S.A por nenhuma outra. <br />
-                Treinar na S.A mudou minha rotina.&rdquo;
+                &ldquo;{siteData.hero?.quoteLine1} <br />
+                {siteData.hero?.quoteLine2}&rdquo;
               </p>
             </div>
           </div>
@@ -492,7 +405,7 @@ export default function App() {
         {/* Marquee Carousel of Units at Bottom of Hero (d3886ea) */}
         <div className="relative z-10 mt-14 lg:mt-24 overflow-hidden w-full">
           <div className="sa-marquee-track gap-4 px-4">
-            {[...MARQUEE_UNITS, ...MARQUEE_UNITS].map((unit, idx) => (
+            {[...marqueeUnits, ...marqueeUnits].map((unit, idx) => (
               <div
                 key={idx}
                 className="inline-flex items-center bg-[#222222] border border-[#7d7d7d]/50 px-3.5 py-2 rounded-[25px] shrink-0"
@@ -518,15 +431,13 @@ export default function App() {
           {/* Heading */}
           <div className="text-center flex flex-col items-center">
             <h2 className="font-bebas italic font-semibold text-[32px] sm:text-[44px] lg:text-[52px] text-[#222222] tracking-[0.5px] leading-none">
-              Muito prazer, nós somos a
+              {siteData.about?.subtitleTop}
             </h2>
             <h2 className="font-bebas italic font-semibold text-[58px] sm:text-[84px] lg:text-[110px] sa-degrade-title tracking-[0.5px] leading-none -mt-1">
-              S.A Treinamento
+              {siteData.about?.titleMain}
             </h2>
             <p className="font-poppins italic font-normal text-[15px] lg:text-[16px] text-[#222222] max-w-[780px] mt-2 leading-relaxed">
-              Proporcionamos um ambiente de acolhimento, orientação e estímulo em um espaço{' '}
-              <br className="hidden lg:inline" />
-              que incentiva o movimento como parte do seu estilo de vida equilibrado e prazeroso.
+              {siteData.about?.description}
             </p>
           </div>
 
@@ -541,7 +452,7 @@ export default function App() {
                   src={card.img}
                   alt={card.title}
                   loading="lazy"
-                  className={`absolute inset-0 w-full h-full object-cover ${card.pos} transition-transform duration-500 group-hover:scale-105`}
+                  className={`absolute inset-0 w-full h-full object-cover ${card.pos || 'object-center'} transition-transform duration-500 group-hover:scale-105`}
                 />
                 {/* Subtle dark vignette so image looks rich */}
                 <div className="absolute inset-0 bg-black/20 transition-opacity duration-300 group-hover:opacity-0" />
@@ -569,13 +480,13 @@ export default function App() {
           {/* Heading */}
           <div className="text-center flex flex-col items-center">
             <h2 className="font-bebas italic font-semibold text-[39px] sm:text-[52px] lg:text-[62px] text-white tracking-[0.5px] leading-none">
-              Você sabe tudo que a
+              {siteData.modalitiesSection?.subtitleTop}
             </h2>
             <h2 className="font-bebas italic font-semibold text-[41px] sm:text-[54px] lg:text-[62px] sa-degrade-title tracking-[0.5px] leading-tight">
-              S.A tem PARA oferecer?
+              {siteData.modalitiesSection?.titleMain}
             </h2>
             <p className="font-poppins italic font-normal text-[15px] lg:text-[16px] text-white/90 mt-1">
-              Conheça nossas modalidades e se surpreenda com a S.A Treinamentos!
+              {siteData.modalitiesSection?.description}
             </p>
           </div>
 
@@ -584,9 +495,9 @@ export default function App() {
             {/* Left Column: Image Carousel (c5d5468) */}
             <div className="w-full lg:w-[55%] p-2 sm:p-5">
               <div className="relative rounded-[20px] overflow-hidden shadow-2xl bg-[#161616] aspect-[3/2]">
-                {CAROUSEL_IMAGES.map((slide, idx) => (
+                {carouselImages.map((slide, idx) => (
                   <img
-                    key={slide.src}
+                    key={`${slide.src}-${idx}`}
                     src={slide.src}
                     alt={slide.alt}
                     className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
@@ -618,7 +529,7 @@ export default function App() {
 
               {/* Pagination Dots Outside */}
               <div className="flex justify-center items-center gap-2.5 mt-4">
-                {CAROUSEL_IMAGES.map((_, idx) => (
+                {carouselImages.map((_, idx) => (
                   <button
                     key={idx}
                     type="button"
@@ -634,12 +545,12 @@ export default function App() {
               </div>
             </div>
 
-            {/* Right Column: 6 Modality Cards + CTA Button (74d9e66) */}
+            {/* Right Column: Modality Cards + CTA Button (74d9e66) */}
             <div className="w-full lg:w-[45%] flex flex-col gap-2.5 p-2 sm:p-5">
               {modalities.map((modName, idx) => (
                 <div
                   key={idx}
-                  onClick={() => setActiveSlide(idx % CAROUSEL_IMAGES.length)}
+                  onClick={() => setActiveSlide(idx % carouselImages.length)}
                   className="sa-gold-box px-5 py-4 cursor-pointer flex items-center justify-between"
                 >
                   <h3 className="sa-gold-box-text font-bebas italic font-medium text-[21px] sm:text-[24px] xl:text-[26px] tracking-[1.2px] leading-tight">
@@ -662,7 +573,7 @@ export default function App() {
                   className="fas fa-arrow-alt-circle-right text-[20px] mr-2.5 sa-btn-icon"
                   aria-hidden="true"
                 ></i>
-                <span>Agendar Aula Experimental</span>
+                <span>{siteData.modalitiesSection?.ctaText || 'Agendar Aula Experimental'}</span>
               </a>
             </div>
           </div>
@@ -678,13 +589,13 @@ export default function App() {
           {/* Heading */}
           <div className="text-center flex flex-col items-center">
             <h2 className="font-bebas italic font-semibold text-[30px] sm:text-[44px] lg:text-[52px] text-[#222222] tracking-[0.5px] leading-none">
-              Quer treinar perto de casa?
+              {siteData.unitsSection?.subtitleTop}
             </h2>
             <h2 className="font-bebas italic font-semibold text-[44px] sm:text-[68px] lg:text-[80px] sa-degrade-title tracking-[0.5px] leading-none mt-1">
-              Escolha a sua unidade!
+              {siteData.unitsSection?.titleMain}
             </h2>
             <p className="font-poppins italic font-normal text-[15px] lg:text-[16px] text-[#222222] mt-2">
-              Conheça nossas modalidades e se surpreenda com a S.A Treinamentos!
+              {siteData.unitsSection?.description}
             </p>
           </div>
 
@@ -711,7 +622,7 @@ export default function App() {
                 <div className="rounded-b-[20px] overflow-hidden shadow-[0_0_10px_rgba(0,0,0,0.5)] bg-[#161616]">
                   <iframe
                     loading="lazy"
-                    src={`https://maps.google.com/maps?q=${unit.mapQuery}&t=m&z=13&output=embed&iwloc=near`}
+                    src={`https://maps.google.com/maps?q=${encodeURIComponent(unit.mapQuery || unit.mapTitle || unit.name)}&t=m&z=13&output=embed&iwloc=near`}
                     title={unit.mapTitle}
                     aria-label={unit.mapTitle}
                     className="w-full h-[180px] border-0 brightness-[0.72] hover:brightness-100 transition duration-300"
@@ -736,17 +647,16 @@ export default function App() {
           {/* Heading for Plans Section at Bottom of White Container (c9f8394) */}
           <div id="planos" className="mt-16 lg:mt-20 text-center flex flex-col items-center">
             <h2 className="font-bebas italic font-semibold text-[32px] sm:text-[44px] lg:text-[52px] text-[#222222] tracking-[0.5px] leading-none">
-              Vem pra S.A treinamento
+              {siteData.plansSection?.subtitleTop}
             </h2>
             <h2 className="font-bebas italic font-semibold text-[46px] sm:text-[68px] lg:text-[80px] sa-degrade-title tracking-[0.5px] leading-none mt-1">
-              Escolha o seu plano!
+              {siteData.plansSection?.titleMain}
             </h2>
           </div>
         </div>
       </section>
 
       {/* ==================== SECTION: ABAS DE PLANOS (765512f) ==================== */}
-      {/* Note: On the live site, the previous developer left this section with elementor-hidden-desktop/tablet/mobile because the bullet points still said "PLUGIN PRO ELEMENTS". In 'completed' mode it is visible and finished! */}
       {(isCompleted || viewMode === 'raw') && (
         <section
           id="oferta"
@@ -765,9 +675,9 @@ export default function App() {
             className="sa-tabs-heading flex flex-wrap items-center justify-center gap-3 sm:gap-10 px-4 py-2"
           >
             {[
-              { id: 'mensal', label: 'Mensal' },
-              { id: 'anual', label: 'Anual' },
-              { id: 'duplas', label: 'Duplas' },
+              { id: 'mensal', label: plans.mensal.label || 'Mensal' },
+              { id: 'anual', label: plans.anual.label || 'Anual' },
+              { id: 'duplas', label: plans.duplas.label || 'Duplas' },
             ].map((tab) => {
               const active = activeTab === tab.id
               return (
@@ -850,7 +760,178 @@ export default function App() {
         </section>
       )}
 
-      {/* ==================== SECTION: O QUE DIZEM NOSSOS ALUNOS? (bf0a35b) ==================== */}
+      {/* ==================== SECTION: BLOG DA S.A (#blog) ==================== */}
+      {isCompleted && blogPosts.length > 0 && (
+        <section
+          id="blog"
+          className="sa-section-notched relative z-20 bg-white text-[#222222] pt-20 lg:pt-28 pb-24 lg:pb-32 -mt-6 lg:-mt-14"
+        >
+          <div className="max-w-[1280px] mx-auto px-4 sm:px-6">
+            {/* Heading */}
+            <div className="text-center flex flex-col items-center">
+              <h2 className="font-bebas italic font-semibold text-[30px] sm:text-[42px] lg:text-[50px] text-[#222222] tracking-[0.5px] leading-none">
+                {siteData.blogSection?.subtitleTop || 'Conteúdos & Dicas'}
+              </h2>
+              <h2 className="font-bebas italic font-semibold text-[48px] sm:text-[68px] lg:text-[84px] sa-degrade-title tracking-[0.5px] leading-none mt-1">
+                {siteData.blogSection?.titleMain || 'Blog da S.A'}
+              </h2>
+              <p className="font-poppins italic font-normal text-[15px] lg:text-[16px] text-[#222222] max-w-[720px] mt-2">
+                {siteData.blogSection?.description}
+              </p>
+            </div>
+
+            {/* Blog Cards Grid */}
+            <div className="mt-10 lg:mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+              {blogPosts.map((post) => (
+                <article
+                  key={post.id}
+                  onClick={() => setSelectedPost(post)}
+                  className="group bg-[#141416] text-white rounded-[24px] overflow-hidden shadow-[0_12px_35px_rgba(0,0,0,0.22)] border border-black/10 flex flex-col cursor-pointer hover:-translate-y-1.5 transition-all duration-300"
+                >
+                  <div className="relative h-[220px] overflow-hidden">
+                    <img
+                      src={post.image || '/images/img4815.jpg'}
+                      alt={post.title}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#141416] via-transparent to-transparent opacity-80" />
+                    {post.category && (
+                      <span className="absolute top-4 left-4 px-3.5 py-1 rounded-full bg-[#D4AF37] text-black font-poppins font-semibold text-[11px] uppercase tracking-wider shadow">
+                        {post.category}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="p-6 flex-1 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center gap-3 text-xs text-white/55 font-poppins mb-2.5">
+                        {post.date && (
+                          <span>
+                            <i className="far fa-calendar-alt text-[#D4AF37] mr-1.5"></i>
+                            {post.date}
+                          </span>
+                        )}
+                        {post.readTime && (
+                          <span>
+                            <i className="far fa-clock text-[#D4AF37] mr-1.5"></i>
+                            {post.readTime}
+                          </span>
+                        )}
+                      </div>
+
+                      <h3 className="font-bebas italic text-[28px] leading-[1.1] tracking-wide text-white group-hover:text-[#D4AF37] transition-colors">
+                        {post.title}
+                      </h3>
+
+                      <p className="font-poppins text-sm text-white/75 mt-2.5 leading-relaxed line-clamp-3">
+                        {post.excerpt}
+                      </p>
+                    </div>
+
+                    <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-poppins font-semibold uppercase tracking-wider text-[#D4AF37]">
+                      <span>Ler matéria completa</span>
+                      <i className="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ==================== MODAL DE LEITURA DO ARTIGO DO BLOG ==================== */}
+      {selectedPost && (
+        <div
+          className="fixed inset-0 z-[90] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+          onClick={() => setSelectedPost(null)}
+        >
+          <div
+            className="relative w-full max-w-3xl bg-[#141416] border border-[#D4AF37]/30 rounded-3xl overflow-hidden shadow-2xl my-auto max-h-[90vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header Image */}
+            <div className="relative h-60 sm:h-72 shrink-0">
+              <img
+                src={selectedPost.image || '/images/img4815.jpg'}
+                alt={selectedPost.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#141416] via-[#141416]/40 to-transparent" />
+              <button
+                type="button"
+                onClick={() => setSelectedPost(null)}
+                aria-label="Fechar artigo"
+                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/70 hover:bg-[#D4AF37] text-white hover:text-black transition flex items-center justify-center text-lg cursor-pointer"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+              {selectedPost.category && (
+                <span className="absolute bottom-4 left-6 px-3.5 py-1 rounded-full bg-[#D4AF37] text-black font-poppins font-semibold text-xs uppercase tracking-wider">
+                  {selectedPost.category}
+                </span>
+              )}
+            </div>
+
+            {/* Article Body */}
+            <div className="p-6 sm:p-8 overflow-y-auto space-y-4">
+              <div className="flex items-center gap-4 text-xs text-white/55 font-poppins">
+                {selectedPost.date && (
+                  <span>
+                    <i className="far fa-calendar-alt text-[#D4AF37] mr-1.5"></i>
+                    {selectedPost.date}
+                  </span>
+                )}
+                {selectedPost.readTime && (
+                  <span>
+                    <i className="far fa-clock text-[#D4AF37] mr-1.5"></i>
+                    {selectedPost.readTime}
+                  </span>
+                )}
+              </div>
+
+              <h2 className="font-bebas italic text-3xl sm:text-5xl leading-[1.08] sa-degrade-hero">
+                {selectedPost.title}
+              </h2>
+
+              {selectedPost.excerpt && (
+                <p className="font-poppins italic text-sm sm:text-base text-white/85 border-l-2 border-[#D4AF37] pl-4 py-1">
+                  {selectedPost.excerpt}
+                </p>
+              )}
+
+              <div className="font-poppins text-sm sm:text-base text-white/85 leading-relaxed space-y-4 pt-2 whitespace-pre-line">
+                {selectedPost.content}
+              </div>
+
+              <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <a
+                  href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+                    `Olá! Li a matéria "${selectedPost.title}" no Blog da S.A e gostaria de agendar uma aula experimental.`
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="sa-btn-gold px-7 py-3.5 text-[22px] w-full sm:w-auto"
+                >
+                  <i className="fab fa-whatsapp text-[20px] mr-2 sa-btn-icon"></i>
+                  <span>Agendar Aula Experimental</span>
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedPost(null)}
+                  className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-poppins text-white/80 cursor-pointer"
+                >
+                  Fechar leitura
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ==================== SECTION: O QUE DIZEM NOSSOS ALUNOS? (bf0a35b - Mantido na página) ==================== */}
       <section
         id="depoimentos"
         className="sa-section-notched relative z-20 bg-[#131313] py-24 lg:py-36 px-6 lg:px-14 -mt-12"
@@ -904,7 +985,7 @@ export default function App() {
                 </h3>
                 <p className="font-poppins text-sm text-[#4C4C4C] mt-1">
                   {isCompleted
-                    ? 'Agende sua aula experimental pelo WhatsApp em qualquer uma de nossas 3 unidades'
+                    ? siteData.footer?.onlineBannerDesc
                     : 'Segunda à Sexta-feira de 09h às 18h'}
                 </p>
               </div>
@@ -974,13 +1055,11 @@ export default function App() {
                 className="w-[140px] rounded-xl mb-4"
               />
               <p className="font-poppins text-sm text-white/80 leading-relaxed">
-                {isCompleted
-                  ? 'Transformando sua qualidade de vida há mais de 8 anos. Viva o agora, viva a S.A!'
-                  : 'Seu melhor texto aqui!'}
+                {isCompleted ? siteData.footer?.brandDescription : 'Seu melhor texto aqui!'}
               </p>
               <div className="mt-4 text-xs text-white/50 space-y-0.5">
-                <p>{isCompleted ? 'S.A TREINAMENTO FUNCIONAL' : 'EMPRESA LTDA'}</p>
-                <p>{isCompleted ? 'Porto Alegre • RS' : '00.999.000/0001-00'}</p>
+                <p>{isCompleted ? siteData.footer?.companyName : 'EMPRESA LTDA'}</p>
+                <p>{isCompleted ? siteData.footer?.companyLocation : '00.999.000/0001-00'}</p>
               </div>
             </div>
 
@@ -1005,12 +1084,17 @@ export default function App() {
                 </li>
                 <li>
                   <a href="#unidades" className="hover:text-[#D4AF37] transition">
-                    Nossas 3 Unidades
+                    Nossas Unidades
                   </a>
                 </li>
                 <li>
                   <a href="#planos" className="hover:text-[#D4AF37] transition">
                     Planos e Valores
+                  </a>
+                </li>
+                <li>
+                  <a href="#blog" className="hover:text-[#D4AF37] transition">
+                    Blog da S.A
                   </a>
                 </li>
               </ul>
@@ -1023,10 +1107,12 @@ export default function App() {
               </h4>
               {isCompleted ? (
                 <ul className="space-y-2 text-sm text-white/80">
-                  <li>• Unidade Protásio</li>
-                  <li>• Unidade Antônio de Carvalho</li>
-                  <li>• Unidade Pasqualini</li>
-                  <li className="pt-2 text-[#D4AF37] font-medium">Porto Alegre - RS</li>
+                  {unitSingleLineNames.map((uName, idx) => (
+                    <li key={idx}>• {uName}</li>
+                  ))}
+                  <li className="pt-2 text-[#D4AF37] font-medium">
+                    {siteData.footer?.companyLocation || 'Porto Alegre - RS'}
+                  </li>
                 </ul>
               ) : (
                 <div className="space-y-2 text-sm text-white/80">
@@ -1052,7 +1138,7 @@ export default function App() {
                   <i className="fab fa-whatsapp" aria-hidden="true"></i>
                 </a>
                 <a
-                  href="https://www.instagram.com/"
+                  href={siteData.footer?.instagramUrl || 'https://www.instagram.com/'}
                   target="_blank"
                   rel="noreferrer"
                   aria-label="Instagram"
@@ -1061,7 +1147,7 @@ export default function App() {
                   <i className="fab fa-instagram" aria-hidden="true"></i>
                 </a>
                 <a
-                  href="https://www.facebook.com/"
+                  href={siteData.footer?.facebookUrl || 'https://www.facebook.com/'}
                   target="_blank"
                   rel="noreferrer"
                   aria-label="Facebook"
@@ -1116,4 +1202,3 @@ export default function App() {
     </div>
   )
 }
-

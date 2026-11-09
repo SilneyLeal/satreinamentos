@@ -1,4 +1,14 @@
 {
+  "rewrites": [
+    {
+      "source": "/painel",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/painel/(.*)",
+      "destination": "/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -15,4 +25,3 @@
     }
   ]
 }
-
