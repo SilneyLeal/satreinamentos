@@ -3,6 +3,8 @@ import React, { useState, useMemo } from 'react'
 export default function BlogPage({
   siteData,
   onBackToHome,
+  onGoToAdmin,
+  isAdminSession,
   activeClowayModel,
   assistantName,
   onOpenCloway,
@@ -48,13 +50,65 @@ export default function BlogPage({
 
   const visiblePosts = filteredPosts.slice(0, visibleCount)
 
+  // Respect empty string ("") when user deletes text in the Admin Panel
+  const headerTitle =
+    blogSection.pageHeaderTitle !== undefined
+      ? blogSection.pageHeaderTitle
+      : blogSection.titleMain !== undefined
+      ? blogSection.titleMain
+      : 'Blog da S.A'
+
+  const headerSubtitle =
+    blogSection.pageHeaderSubtitle !== undefined
+      ? blogSection.pageHeaderSubtitle
+      : 'Portal de Conteúdos, Saúde & Movimento Consciente'
+
+  // If user cleared either pageBannerTag or subtitleTop, respect the empty string
+  const bannerTag =
+    blogSection.pageBannerTag === '' || blogSection.subtitleTop === ''
+      ? blogSection.pageBannerTag === ''
+        ? ''
+        : ''
+      : blogSection.pageBannerTag ?? blogSection.subtitleTop ?? 'Conteúdos & Dicas'
+
+  const bannerTitle =
+    blogSection.pageBannerTitle !== undefined
+      ? blogSection.pageBannerTitle
+      : blogSection.titleMain !== undefined
+      ? blogSection.titleMain
+      : 'Blog da S.A Treinamento'
+
+  const bannerDesc =
+    blogSection.pageBannerDesc !== undefined
+      ? blogSection.pageBannerDesc
+      : blogSection.description !== undefined
+      ? blogSection.description
+      : ''
+
   // If user clicked a specific article to read in full view inside the Blog tab
   if (activePost) {
+    const authorText =
+      activePost.author !== undefined
+        ? activePost.author
+        : blogSection.defaultAuthor !== undefined
+        ? blogSection.defaultAuthor
+        : 'Equipe S.A Treinamento'
+
+    const ctaTitle =
+      blogSection.articleCtaTitle !== undefined
+        ? blogSection.articleCtaTitle
+        : 'Quer colocar essas dicas em prática?'
+
+    const ctaDesc =
+      blogSection.articleCtaDesc !== undefined
+        ? blogSection.articleCtaDesc
+        : 'Agende uma aula experimental gratuita em uma de nossas 3 unidades em Porto Alegre!'
+
     return (
       <div className="min-h-screen bg-[#0D0E11] text-white font-poppins">
         {/* Top Bar */}
         <header className="sticky top-0 z-40 bg-[#141519]/95 backdrop-blur-md border-b border-white/10 px-4 sm:px-8 py-4">
-          <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
+          <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-4">
             <button
               type="button"
               onClick={() => {
@@ -67,13 +121,26 @@ export default function BlogPage({
               <span>Voltar para Todos os Artigos</span>
             </button>
 
-            <button
-              type="button"
-              onClick={onBackToHome}
-              className="text-xs text-[#D4AF37] hover:underline cursor-pointer"
-            >
-              Ir para o Início do Site
-            </button>
+            <div className="flex items-center gap-3">
+              {isAdminSession && onGoToAdmin && (
+                <button
+                  type="button"
+                  onClick={onGoToAdmin}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#D4AF37] text-black text-xs font-semibold shadow cursor-pointer hover:brightness-110 transition"
+                >
+                  <i className="fas fa-sliders-h"></i>
+                  <span>Voltar ao Painel (/painel)</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={onBackToHome}
+                className="text-xs text-[#D4AF37] hover:underline cursor-pointer"
+              >
+                Ir para o Início do Site
+              </button>
+            </div>
           </div>
         </header>
 
@@ -108,14 +175,14 @@ export default function BlogPage({
                     {activePost.readTime}
                   </span>
                 )}
-                <span>
-                  • Por {activePost.author || blogSection.defaultAuthor || 'Equipe S.A Treinamento'}
-                </span>
+                {authorText && <span>• Por {authorText}</span>}
               </div>
 
-              <h1 className="font-bebas italic text-4xl sm:text-6xl leading-[1.05] sa-degrade-hero">
-                {activePost.title}
-              </h1>
+              {activePost.title && (
+                <h1 className="font-bebas italic text-4xl sm:text-6xl leading-[1.05] sa-degrade-hero">
+                  {activePost.title}
+                </h1>
+              )}
 
               {activePost.excerpt && (
                 <p className="font-poppins italic text-base sm:text-lg text-white/90 border-l-4 border-[#D4AF37] pl-4 py-1 leading-relaxed">
@@ -128,44 +195,47 @@ export default function BlogPage({
               </div>
 
               {/* Call to Action Box inside Article */}
-              <div className="mt-10 p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-[#1D1B16] to-[#141416] border border-[#D4AF37]/35 flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div>
-                  <h3 className="font-bebas italic text-3xl text-[#D4AF37]">
-                    {blogSection.articleCtaTitle || 'Quer colocar essas dicas em prática?'}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-white/75 mt-1">
-                    {blogSection.articleCtaDesc ||
-                      'Agende uma aula experimental gratuita em uma de nossas 3 unidades em Porto Alegre!'}
-                  </p>
-                </div>
+              {(ctaTitle || ctaDesc) && (
+                <div className="mt-10 p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-[#1D1B16] to-[#141416] border border-[#D4AF37]/35 flex flex-col sm:flex-row items-center justify-between gap-6">
+                  <div>
+                    {ctaTitle && (
+                      <h3 className="font-bebas italic text-3xl text-[#D4AF37]">
+                        {ctaTitle}
+                      </h3>
+                    )}
+                    {ctaDesc && (
+                      <p className="text-xs sm:text-sm text-white/75 mt-1">{ctaDesc}</p>
+                    )}
+                  </div>
 
-                {activeClowayModel ? (
-                  <button
-                    type="button"
-                    onClick={() => onOpenCloway('📅 Agendar Aula Experimental')}
-                    className="sa-btn-gold px-7 py-4 text-[22px] shrink-0 cursor-pointer"
-                  >
-                    <img
-                      src="/images/cloway-clo.webp"
-                      alt={assistantName}
-                      className="w-6 h-6 rounded-full object-cover border border-black/30 mr-2"
-                    />
-                    <span>Agendar com a {assistantName}</span>
-                  </button>
-                ) : (
-                  <a
-                    href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-                      `Olá! Li o artigo "${activePost.title}" no Blog da S.A e gostaria de agendar uma aula experimental.`
-                    )}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="sa-btn-gold px-7 py-4 text-[22px] shrink-0"
-                  >
-                    <i className="fab fa-whatsapp text-[20px] mr-2 sa-btn-icon"></i>
-                    <span>Agendar Aula Experimental</span>
-                  </a>
-                )}
-              </div>
+                  {activeClowayModel ? (
+                    <button
+                      type="button"
+                      onClick={() => onOpenCloway('📅 Agendar Aula Experimental')}
+                      className="sa-btn-gold px-7 py-4 text-[22px] shrink-0 cursor-pointer"
+                    >
+                      <img
+                        src="/images/cloway-clo.webp"
+                        alt={assistantName}
+                        className="w-6 h-6 rounded-full object-cover border border-black/30 mr-2"
+                      />
+                      <span>Agendar com a {assistantName}</span>
+                    </button>
+                  ) : (
+                    <a
+                      href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+                        `Olá! Li o artigo "${activePost.title}" no Blog da S.A e gostaria de agendar uma aula experimental.`
+                      )}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="sa-btn-gold px-7 py-4 text-[22px] shrink-0"
+                    >
+                      <i className="fab fa-whatsapp text-[20px] mr-2 sa-btn-icon"></i>
+                      <span>Agendar Aula Experimental</span>
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           </article>
         </main>
@@ -178,7 +248,7 @@ export default function BlogPage({
       {/* ==================== HEADER DA PÁGINA DO BLOG (/blog) ==================== */}
       <header className="sticky top-0 z-40 bg-[#141519]/95 backdrop-blur-md border-b border-white/10 px-4 sm:px-8 py-3.5">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <button
               type="button"
               onClick={onBackToHome}
@@ -188,6 +258,17 @@ export default function BlogPage({
               <span>Voltar ao Site</span>
             </button>
 
+            {isAdminSession && onGoToAdmin && (
+              <button
+                type="button"
+                onClick={onGoToAdmin}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#D4AF37] text-black text-xs font-semibold shadow-md hover:brightness-110 transition cursor-pointer"
+              >
+                <i className="fas fa-sliders-h"></i>
+                <span>Voltar para o Painel (/painel)</span>
+              </button>
+            )}
+
             <div className="flex items-center gap-3">
               <img
                 src="/images/logo-sa.png"
@@ -195,13 +276,14 @@ export default function BlogPage({
                 className="w-10 h-10 rounded-xl object-cover border border-[#D4AF37]/40"
               />
               <div>
-                <h1 className="font-bebas italic text-2xl text-[#D4AF37] leading-none">
-                  {blogSection.pageHeaderTitle || blogSection.titleMain || 'Blog da S.A'}
-                </h1>
-                <p className="text-[11px] text-white/55">
-                  {blogSection.pageHeaderSubtitle ||
-                    'Portal de Conteúdos, Saúde & Movimento Consciente'}
-                </p>
+                {headerTitle && (
+                  <h1 className="font-bebas italic text-2xl text-[#D4AF37] leading-none">
+                    {headerTitle}
+                  </h1>
+                )}
+                {headerSubtitle && (
+                  <p className="text-[11px] text-white/55">{headerSubtitle}</p>
+                )}
               </div>
             </div>
           </div>
@@ -241,20 +323,24 @@ export default function BlogPage({
       <div className="flex-1">
         <section className="relative py-14 sm:py-20 px-4 border-b border-white/10 bg-gradient-to-b from-[#171613] to-[#0D0E11]">
           <div className="max-w-5xl mx-auto text-center space-y-4">
-            <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-xs uppercase tracking-widest text-[#FFF2CD]">
-              <i className="fas fa-newspaper text-[#D4AF37]"></i>
-              <span>{blogSection.pageBannerTag || blogSection.subtitleTop || 'Conteúdos & Dicas'}</span>
-            </span>
+            {bannerTag && bannerTag.trim().length > 0 && (
+              <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-xs uppercase tracking-widest text-[#FFF2CD]">
+                <i className="fas fa-newspaper text-[#D4AF37]"></i>
+                <span>{bannerTag}</span>
+              </span>
+            )}
 
-            <h2 className="font-bebas italic text-5xl sm:text-7xl sa-degrade-hero leading-none">
-              {blogSection.pageBannerTitle || blogSection.titleMain || 'Blog da S.A Treinamento'}
-            </h2>
+            {bannerTitle && bannerTitle.trim().length > 0 && (
+              <h2 className="font-bebas italic text-5xl sm:text-7xl sa-degrade-hero leading-none">
+                {bannerTitle}
+              </h2>
+            )}
 
-            <p className="text-sm sm:text-base text-white/75 max-w-2xl mx-auto">
-              {blogSection.pageBannerDesc ||
-                blogSection.description ||
-                'Artigos, dicas práticas de treino, saúde e qualidade de vida preparados pela equipe da S.A Treinamento.'}
-            </p>
+            {bannerDesc && bannerDesc.trim().length > 0 && (
+              <p className="text-sm sm:text-base text-white/75 max-w-2xl mx-auto">
+                {bannerDesc}
+              </p>
+            )}
 
             {/* Barra de Pesquisa + Filtro de Categorias */}
             <div className="pt-4 max-w-2xl mx-auto space-y-4">
@@ -268,8 +354,9 @@ export default function BlogPage({
                     setVisibleCount(perPage)
                   }}
                   placeholder={
-                    blogSection.searchPlaceholder ||
-                    'Pesquisar artigo por assunto, palavra-chave ou título...'
+                    blogSection.searchPlaceholder !== undefined
+                      ? blogSection.searchPlaceholder
+                      : 'Pesquisar artigo por assunto, palavra-chave ou título...'
                   }
                   className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-[#141519] border border-white/15 focus:border-[#D4AF37] text-sm text-white placeholder-white/40 outline-none shadow-lg"
                 />
@@ -415,7 +502,9 @@ export default function BlogPage({
       <footer className="bg-[#141519] border-t border-white/10 py-6 px-6 text-xs text-white/50">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <span>
-            {blogSection.pageFooterText || '© S.A Treinamento — Blog Oficial & Conteúdos'}
+            {blogSection.pageFooterText !== undefined
+              ? blogSection.pageFooterText
+              : '© S.A Treinamento — Blog Oficial & Conteúdos'}
           </span>
           <button
             type="button"

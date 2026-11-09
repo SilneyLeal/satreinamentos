@@ -34,6 +34,13 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  const openAdminTab = () => {
+    setIsBlogRoute(false)
+    setIsAdminRoute(true)
+    window.history.pushState({}, '', '/painel')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   // Detect Modelo 2 (/cloway or ?cloway) vs Modelo 1 (Padrão WhatsApp)
   const [isClowayModel, setIsClowayModel] = useState(() => {
     const path = window.location.pathname.toLowerCase()
@@ -325,14 +332,23 @@ export default function App() {
   const showModelSwitcher =
     !clowayDisabled && siteData.clowayConfig?.showModelSwitcher !== false
   const activeClowayModel = !clowayDisabled && isClowayModel
+  const isAdminSession = (() => {
+    try {
+      return sessionStorage.getItem('sa_admin_logged') === 'true'
+    } catch {
+      return false
+    }
+  })()
 
-  // Se o visitante clicou em "Blog" (ou acessou /blog), abre a Aba Exclusiva do Blog
+  // Se o visitante clicou no botão "Ver Todos os Artigos no Blog" (ou acessou /blog), abre a Aba Exclusiva do Blog
   if (isBlogRoute) {
     return (
       <>
         <BlogPage
           siteData={siteData}
           onBackToHome={closeBlogTab}
+          onGoToAdmin={openAdminTab}
+          isAdminSession={isAdminSession}
           activeClowayModel={activeClowayModel}
           assistantName={assistantName}
           onOpenCloway={(prompt) => openClowayWithPrompt(prompt)}
@@ -377,16 +393,13 @@ export default function App() {
 
           <nav className="hidden lg:flex flex-wrap items-center justify-center gap-6 xl:gap-8 font-bebas tracking-wider text-xl text-white/90 italic">
             {(siteData.header?.navLinks || []).map((navItem, idx) => {
-              const isBlogLink =
-                (navItem.href || '').toLowerCase() === '#blog' ||
-                (navItem.href || '').toLowerCase() === '/blog' ||
-                (navItem.label || '').trim().toLowerCase() === 'blog'
+              const isDirectBlogPage = (navItem.href || '').toLowerCase() === '/blog'
               return (
                 <a
                   key={idx}
-                  href={isBlogLink ? '/blog' : navItem.href || '#topo'}
+                  href={navItem.href || '#topo'}
                   onClick={(e) => {
-                    if (isBlogLink) {
+                    if (isDirectBlogPage) {
                       e.preventDefault()
                       openBlogTab()
                     }
@@ -914,15 +927,21 @@ export default function App() {
           <div className="max-w-[1280px] mx-auto px-4 sm:px-6">
             {/* Heading */}
             <div className="text-center flex flex-col items-center">
-              <h2 className="font-bebas italic font-semibold text-[30px] sm:text-[42px] lg:text-[50px] text-[#222222] tracking-[0.5px] leading-none">
-                {siteData.blogSection?.subtitleTop || 'Conteúdos & Dicas'}
-              </h2>
-              <h2 className="font-bebas italic font-semibold text-[48px] sm:text-[68px] lg:text-[84px] sa-degrade-title tracking-[0.5px] leading-none mt-1">
-                {siteData.blogSection?.titleMain || 'Blog da S.A'}
-              </h2>
-              <p className="font-poppins italic font-normal text-[15px] lg:text-[16px] text-[#222222] max-w-[720px] mt-2">
-                {siteData.blogSection?.description}
-              </p>
+              {siteData.blogSection?.subtitleTop && (
+                <h2 className="font-bebas italic font-semibold text-[30px] sm:text-[42px] lg:text-[50px] text-[#222222] tracking-[0.5px] leading-none">
+                  {siteData.blogSection.subtitleTop}
+                </h2>
+              )}
+              {siteData.blogSection?.titleMain && (
+                <h2 className="font-bebas italic font-semibold text-[48px] sm:text-[68px] lg:text-[84px] sa-degrade-title tracking-[0.5px] leading-none mt-1">
+                  {siteData.blogSection.titleMain}
+                </h2>
+              )}
+              {siteData.blogSection?.description && (
+                <p className="font-poppins italic font-normal text-[15px] lg:text-[16px] text-[#222222] max-w-[720px] mt-2">
+                  {siteData.blogSection.description}
+                </p>
+              )}
             </div>
 
             {/* Blog Cards Grid (Exibe apenas os mais recentes na Home para não poluir a página inicial) */}
@@ -1240,16 +1259,13 @@ export default function App() {
               </h4>
               <ul className="space-y-2.5 text-sm text-white/80">
                 {(siteData.footer?.usefulLinks || []).map((linkItem, idx) => {
-                  const isBlogFooterLink =
-                    (linkItem.href || '').toLowerCase() === '#blog' ||
-                    (linkItem.href || '').toLowerCase() === '/blog' ||
-                    (linkItem.label || '').toLowerCase().includes('blog')
+                  const isDirectBlogPage = (linkItem.href || '').toLowerCase() === '/blog'
                   return (
                     <li key={idx}>
                       <a
-                        href={isBlogFooterLink ? '/blog' : linkItem.href || '#topo'}
+                        href={linkItem.href || '#topo'}
                         onClick={(e) => {
-                          if (isBlogFooterLink) {
+                          if (isDirectBlogPage) {
                             e.preventDefault()
                             openBlogTab()
                           }
@@ -1346,6 +1362,20 @@ export default function App() {
           initialContext={cleanClowayContext}
           siteData={siteData}
         />
+      )}
+
+      {/* ==================== BOTÃO FLUTUANTE PARA VOLTAR AO PAINEL (QUANDO ADMIN ESTÁ LOGADO) ==================== */}
+      {isAdminSession && (
+        <div className="fixed top-4 right-4 z-[90]">
+          <button
+            type="button"
+            onClick={openAdminTab}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#141519]/95 hover:bg-[#D4AF37] text-[#FFF2CD] hover:text-black border border-[#D4AF37] shadow-[0_10px_30px_rgba(0,0,0,0.85)] text-xs font-poppins font-semibold transition cursor-pointer"
+          >
+            <i className="fas fa-sliders-h"></i>
+            <span>Voltar para o Painel (/painel)</span>
+          </button>
+        </div>
       )}
 
       {/* ==================== SELETOR DE APRESENTAÇÃO DOS 2 MODELOS (CANTO INFERIOR ESQUERDO) ==================== */}
