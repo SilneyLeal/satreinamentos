@@ -201,6 +201,21 @@ export const DEFAULT_SITE_DATA = {
     titleMain: 'Blog da S.A',
     description:
       'Artigos, dicas práticas de treino, saúde e qualidade de vida preparados pela equipe da S.A Treinamento.',
+    homeButtonText: 'Ver Todos os Artigos no Blog',
+    homePreviewCount: 3,
+    pageHeaderTitle: 'Blog da S.A',
+    pageHeaderSubtitle: 'Portal de Conteúdos, Saúde & Movimento Consciente',
+    pageBannerTag: 'Conteúdos & Dicas',
+    pageBannerTitle: 'Blog da S.A Treinamento',
+    pageBannerDesc:
+      'Artigos, dicas práticas de treino, saúde e qualidade de vida preparados pela equipe da S.A Treinamento.',
+    searchPlaceholder: 'Pesquisar artigo por assunto, palavra-chave ou título...',
+    postsPerPage: 6,
+    defaultAuthor: 'Equipe S.A Treinamento',
+    articleCtaTitle: 'Quer colocar essas dicas em prática?',
+    articleCtaDesc:
+      'Agende uma aula experimental gratuita em uma de nossas 3 unidades em Porto Alegre!',
+    pageFooterText: '© S.A Treinamento — Blog Oficial & Conteúdos',
     posts: [
       {
         id: 'beneficios-treinamento-funcional-personalizado',

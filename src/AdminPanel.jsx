@@ -53,7 +53,7 @@ function handleImageFileUpload(file, callback) {
   reader.readAsDataURL(file)
 }
 
-export default function AdminPanel({ onBackToSite }) {
+export default function AdminPanel({ onBackToSite, onGoToBlog }) {
   const [isLogged, setIsLogged] = useState(() => {
     try {
       return sessionStorage.getItem('sa_admin_logged') === 'true'
@@ -283,7 +283,7 @@ export default function AdminPanel({ onBackToSite }) {
     },
     {
       id: 'blog',
-      label: `6. Blog & Matérias (${siteData.blogSection.posts.length})`,
+      label: `6. Página /blog & Matérias (${siteData.blogSection.posts.length})`,
       icon: 'fa-newspaper',
     },
     {
@@ -344,6 +344,21 @@ export default function AdminPanel({ onBackToSite }) {
             >
               Restaurar Padrão
             </button>
+
+            <a
+              href="/blog"
+              onClick={(e) => {
+                if (onGoToBlog) {
+                  e.preventDefault()
+                  handleSave()
+                  onGoToBlog()
+                }
+              }}
+              className="px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/15 text-xs font-medium text-white transition inline-flex items-center gap-2 cursor-pointer"
+            >
+              <i className="fas fa-newspaper text-[#D4AF37]"></i>
+              <span>Ver Página /blog</span>
+            </a>
 
             <a
               href="/"
@@ -1516,112 +1531,517 @@ export default function AdminPanel({ onBackToSite }) {
               </div>
             )}
 
-            {/* ==================== ABA 6: BLOG & MATÉRIAS ==================== */}
+            {/* ==================== ABA 6: PÁGINA /BLOG & MATÉRIAS ==================== */}
             {activeSection === 'blog' && (
               <div className="space-y-6">
                 <div className="border-b border-white/10 pb-4 flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <h2 className="font-bebas italic text-3xl text-[#D4AF37]">
-                      6. Blog S.A Treinamento — Publicar &amp; Editar Matérias
+                      6. Aba Exclusiva do Blog (/blog) &amp; Matérias Publicadas
                     </h2>
                     <p className="text-xs text-white/60">
-                      Adicione artigos, dicas de treino, fotos de capa e conteúdos completos para os
-                      alunos.
+                      Edite todos os textos da página <strong>/blog</strong>, a vitrine da Home e
+                      publique ou edite quantos artigos quiser.
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newPost = {
-                        id: 'post-' + Date.now(),
-                        title: 'Nova Matéria do Blog S.A Treinamento',
-                        category: 'Dicas de Treino',
-                        date: new Date().toLocaleDateString('pt-BR', {
-                          day: '2-digit',
-                          month: 'short',
-                          year: 'numeric',
-                        }),
-                        readTime: '3 min de leitura',
-                        image: '/images/img9825.jpg',
-                        excerpt:
-                          'Resumo curto da matéria que aparece no card da página inicial.',
-                        content:
-                          'Escreva aqui o conteúdo completo do artigo. Você pode separar os parágrafos pulando uma linha.',
-                      }
-                      setSiteData({
-                        ...siteData,
-                        blogSection: {
-                          ...siteData.blogSection,
-                          posts: [newPost, ...siteData.blogSection.posts],
-                        },
-                      })
-                    }}
-                    className="px-4 py-2 rounded-lg bg-[#D4AF37] text-black font-semibold text-xs cursor-pointer shadow-md"
-                  >
-                    + Incluir Nova Matéria no Blog
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-xs text-white/70 mb-1">Subtítulo da Seção</label>
-                    <input
-                      type="text"
-                      value={siteData.blogSection.subtitleTop}
-                      onChange={(e) =>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <a
+                      href="/blog"
+                      onClick={(e) => {
+                        if (onGoToBlog) {
+                          e.preventDefault()
+                          handleSave()
+                          onGoToBlog()
+                        }
+                      }}
+                      className="px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/15 text-xs text-white font-medium inline-flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <i className="fas fa-external-link-alt text-[#D4AF37]"></i>
+                      <span>Abrir /blog ao Vivo</span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newPost = {
+                          id: 'post-' + Date.now(),
+                          title: 'Nova Matéria do Blog S.A Treinamento',
+                          category: 'Dicas de Treino',
+                          author: siteData.blogSection.defaultAuthor || 'Equipe S.A Treinamento',
+                          date: new Date().toLocaleDateString('pt-BR', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                          }),
+                          readTime: '3 min de leitura',
+                          image: '/images/img9825.jpg',
+                          excerpt:
+                            'Resumo curto da matéria que aparece no card da página inicial e no /blog.',
+                          content:
+                            'Escreva aqui o conteúdo completo do artigo. Você pode separar os parágrafos pulando uma linha.',
+                        }
                         setSiteData({
                           ...siteData,
                           blogSection: {
                             ...siteData.blogSection,
-                            subtitleTop: e.target.value,
+                            posts: [newPost, ...siteData.blogSection.posts],
                           },
                         })
-                      }
-                      className="w-full px-3 py-2 rounded-lg bg-[#0B0C0E] border border-white/15 text-sm text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-white/70 mb-1">Título Principal</label>
-                    <input
-                      type="text"
-                      value={siteData.blogSection.titleMain}
-                      onChange={(e) =>
-                        setSiteData({
-                          ...siteData,
-                          blogSection: {
-                            ...siteData.blogSection,
-                            titleMain: e.target.value,
-                          },
-                        })
-                      }
-                      className="w-full px-3 py-2 rounded-lg bg-[#0B0C0E] border border-white/15 text-sm text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-white/70 mb-1">Descrição</label>
-                    <input
-                      type="text"
-                      value={siteData.blogSection.description}
-                      onChange={(e) =>
-                        setSiteData({
-                          ...siteData,
-                          blogSection: {
-                            ...siteData.blogSection,
-                            description: e.target.value,
-                          },
-                        })
-                      }
-                      className="w-full px-3 py-2 rounded-lg bg-[#0B0C0E] border border-white/15 text-sm text-white"
-                    />
+                      }}
+                      className="px-4 py-2 rounded-lg bg-[#D4AF37] text-black font-semibold text-xs cursor-pointer shadow-md"
+                    >
+                      + Incluir Nova Matéria no Blog
+                    </button>
                   </div>
                 </div>
 
+                {/* Bloco 1: Textos e Aparência da Aba Exclusiva /blog */}
+                <div className="p-5 rounded-xl bg-[#0B0C0E] border border-[#D4AF37]/30 space-y-4">
+                  <div className="border-b border-white/10 pb-3">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#D4AF37]/15 text-[#D4AF37] text-[10px] font-semibold uppercase tracking-wider mb-1">
+                      <i className="fas fa-globe"></i> Página Dedicada (/blog)
+                    </span>
+                    <h3 className="text-sm font-semibold text-white">
+                      Textos e Configurações da Página Exclusiva do Blog (/blog)
+                    </h3>
+                    <p className="text-[11px] text-white/55">
+                      Tudo o que aparece no cabeçalho, banner, barra de pesquisa, chamada interna e
+                      rodapé de <strong>satreinamentos.vercel.app/blog</strong>.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-white/70 mb-1">
+                        Título no Topo do Cabeçalho (/blog)
+                      </label>
+                      <input
+                        type="text"
+                        value={siteData.blogSection.pageHeaderTitle ?? 'Blog da S.A'}
+                        onChange={(e) =>
+                          setSiteData({
+                            ...siteData,
+                            blogSection: {
+                              ...siteData.blogSection,
+                              pageHeaderTitle: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-white/70 mb-1">
+                        Subtítulo no Topo do Cabeçalho (/blog)
+                      </label>
+                      <input
+                        type="text"
+                        value={
+                          siteData.blogSection.pageHeaderSubtitle ??
+                          'Portal de Conteúdos, Saúde & Movimento Consciente'
+                        }
+                        onChange={(e) =>
+                          setSiteData({
+                            ...siteData,
+                            blogSection: {
+                              ...siteData.blogSection,
+                              pageHeaderSubtitle: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs text-white/70 mb-1">
+                        Selo Dourado do Banner (/blog)
+                      </label>
+                      <input
+                        type="text"
+                        value={siteData.blogSection.pageBannerTag ?? 'Conteúdos & Dicas'}
+                        onChange={(e) =>
+                          setSiteData({
+                            ...siteData,
+                            blogSection: {
+                              ...siteData.blogSection,
+                              pageBannerTag: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-[#D4AF37]"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs text-white/70 mb-1">
+                        Título Principal do Banner (/blog)
+                      </label>
+                      <input
+                        type="text"
+                        value={
+                          siteData.blogSection.pageBannerTitle ?? 'Blog da S.A Treinamento'
+                        }
+                        onChange={(e) =>
+                          setSiteData({
+                            ...siteData,
+                            blogSection: {
+                              ...siteData.blogSection,
+                              pageBannerTitle: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs text-white/70 mb-1">
+                      Descrição do Banner da Página (/blog)
+                    </label>
+                    <input
+                      type="text"
+                      value={
+                        siteData.blogSection.pageBannerDesc ??
+                        siteData.blogSection.description ??
+                        ''
+                      }
+                      onChange={(e) =>
+                        setSiteData({
+                          ...siteData,
+                          blogSection: {
+                            ...siteData.blogSection,
+                            pageBannerDesc: e.target.value,
+                          },
+                        })
+                      }
+                      className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-white"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs text-white/70 mb-1">
+                        Texto da Barra de Busca (/blog)
+                      </label>
+                      <input
+                        type="text"
+                        value={
+                          siteData.blogSection.searchPlaceholder ??
+                          'Pesquisar artigo por assunto, palavra-chave ou título...'
+                        }
+                        onChange={(e) =>
+                          setSiteData({
+                            ...siteData,
+                            blogSection: {
+                              ...siteData.blogSection,
+                              searchPlaceholder: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-xs text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-white/70 mb-1">
+                        Artigos por Página no /blog
+                      </label>
+                      <input
+                        type="number"
+                        min={3}
+                        max={30}
+                        value={siteData.blogSection.postsPerPage ?? 6}
+                        onChange={(e) =>
+                          setSiteData({
+                            ...siteData,
+                            blogSection: {
+                              ...siteData.blogSection,
+                              postsPerPage: Number(e.target.value) || 6,
+                            },
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-[#D4AF37]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-white/70 mb-1">
+                        Título da Chamada (CTA) no Final de Cada Artigo
+                      </label>
+                      <input
+                        type="text"
+                        value={
+                          siteData.blogSection.articleCtaTitle ??
+                          'Quer colocar essas dicas em prática?'
+                        }
+                        onChange={(e) =>
+                          setSiteData({
+                            ...siteData,
+                            blogSection: {
+                              ...siteData.blogSection,
+                              articleCtaTitle: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-xs text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-white/70 mb-1">
+                        Subtítulo da Chamada (CTA) no Final de Cada Artigo
+                      </label>
+                      <input
+                        type="text"
+                        value={
+                          siteData.blogSection.articleCtaDesc ??
+                          'Agende uma aula experimental gratuita em uma de nossas 3 unidades em Porto Alegre!'
+                        }
+                        onChange={(e) =>
+                          setSiteData({
+                            ...siteData,
+                            blogSection: {
+                              ...siteData.blogSection,
+                              articleCtaDesc: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-xs text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-white/70 mb-1">
+                        Assinatura / Autor Padrão dos Artigos
+                      </label>
+                      <input
+                        type="text"
+                        value={siteData.blogSection.defaultAuthor ?? 'Equipe S.A Treinamento'}
+                        onChange={(e) =>
+                          setSiteData({
+                            ...siteData,
+                            blogSection: {
+                              ...siteData.blogSection,
+                              defaultAuthor: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-xs text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-white/70 mb-1">
+                        Texto do Rodapé da Página (/blog)
+                      </label>
+                      <input
+                        type="text"
+                        value={
+                          siteData.blogSection.pageFooterText ??
+                          '© S.A Treinamento — Blog Oficial & Conteúdos'
+                        }
+                        onChange={(e) =>
+                          setSiteData({
+                            ...siteData,
+                            blogSection: {
+                              ...siteData.blogSection,
+                              pageFooterText: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-xs text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bloco 2: Vitrine Resumida do Blog na Página Inicial (Home) */}
+                <div className="p-5 rounded-xl bg-[#0B0C0E] border border-white/10 space-y-4">
+                  <div className="border-b border-white/10 pb-2">
+                    <h3 className="text-xs uppercase tracking-wider text-[#D4AF37] font-semibold">
+                      Vitrine do Blog na Página Inicial (Home)
+                    </h3>
+                    <p className="text-[11px] text-white/50">
+                      Configura o título da seção na Home e quantos artigos recentes aparecem antes
+                      do botão &ldquo;Ver Todos&rdquo;.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs text-white/70 mb-1">
+                        Subtítulo na Home
+                      </label>
+                      <input
+                        type="text"
+                        value={siteData.blogSection.subtitleTop}
+                        onChange={(e) =>
+                          setSiteData({
+                            ...siteData,
+                            blogSection: {
+                              ...siteData.blogSection,
+                              subtitleTop: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-white/70 mb-1">
+                        Título Principal na Home
+                      </label>
+                      <input
+                        type="text"
+                        value={siteData.blogSection.titleMain}
+                        onChange={(e) =>
+                          setSiteData({
+                            ...siteData,
+                            blogSection: {
+                              ...siteData.blogSection,
+                              titleMain: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-white/70 mb-1">
+                        Qtd. de Artigos na Home
+                      </label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={9}
+                        value={siteData.blogSection.homePreviewCount ?? 3}
+                        onChange={(e) =>
+                          setSiteData({
+                            ...siteData,
+                            blogSection: {
+                              ...siteData.blogSection,
+                              homePreviewCount: Number(e.target.value) || 3,
+                            },
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-[#D4AF37]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-white/70 mb-1">
+                        Descrição na Home
+                      </label>
+                      <input
+                        type="text"
+                        value={siteData.blogSection.description}
+                        onChange={(e) =>
+                          setSiteData({
+                            ...siteData,
+                            blogSection: {
+                              ...siteData.blogSection,
+                              description: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-xs text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-white/70 mb-1">
+                        Texto do Botão Dourado na Home (que abre o /blog)
+                      </label>
+                      <input
+                        type="text"
+                        value={
+                          siteData.blogSection.homeButtonText ?? 'Ver Todos os Artigos no Blog'
+                        }
+                        onChange={(e) =>
+                          setSiteData({
+                            ...siteData,
+                            blogSection: {
+                              ...siteData.blogSection,
+                              homeButtonText: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-xs text-[#D4AF37]"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Lista de Matérias Publicadas */}
                 <div className="space-y-5">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-semibold text-[#D4AF37] uppercase tracking-wider">
+                      Matérias Publicadas no /blog ({siteData.blogSection.posts.length})
+                    </h3>
+                    <span className="text-[11px] text-white/50">
+                      As {siteData.blogSection.homePreviewCount ?? 3} primeiras matérias também
+                      aparecem em destaque na Página Inicial
+                    </span>
+                  </div>
                   {siteData.blogSection.posts.map((post, idx) => (
                     <div
                       key={post.id || idx}
                       className="p-5 rounded-xl bg-[#0B0C0E] border border-white/10 space-y-4"
                     >
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
+                        <span className="text-xs font-semibold text-[#D4AF37]">
+                          Matéria #{idx + 1}{' '}
+                          {idx < (siteData.blogSection.homePreviewCount ?? 3) && (
+                            <span className="ml-2 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 text-[10px]">
+                              Destaque na Home + /blog
+                            </span>
+                          )}
+                        </span>
+                        <div className="flex items-center gap-1.5">
+                          {idx > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const next = [...siteData.blogSection.posts]
+                                const temp = next[idx - 1]
+                                next[idx - 1] = next[idx]
+                                next[idx] = temp
+                                setSiteData({
+                                  ...siteData,
+                                  blogSection: { ...siteData.blogSection, posts: next },
+                                })
+                              }}
+                              title="Subir posição da matéria"
+                              className="px-2.5 py-1 rounded bg-white/5 hover:bg-white/15 text-xs text-white/75 cursor-pointer"
+                            >
+                              ↑ Subir
+                            </button>
+                          )}
+                          {idx < siteData.blogSection.posts.length - 1 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const next = [...siteData.blogSection.posts]
+                                const temp = next[idx + 1]
+                                next[idx + 1] = next[idx]
+                                next[idx] = temp
+                                setSiteData({
+                                  ...siteData,
+                                  blogSection: { ...siteData.blogSection, posts: next },
+                                })
+                              }}
+                              title="Descer posição da matéria"
+                              className="px-2.5 py-1 rounded bg-white/5 hover:bg-white/15 text-xs text-white/75 cursor-pointer"
+                            >
+                              ↓ Descer
+                            </button>
+                          )}
+                        </div>
+                      </div>
                       <div className="flex flex-col sm:flex-row gap-4 items-start">
                         <div className="w-full sm:w-44 shrink-0 space-y-2">
                           <img

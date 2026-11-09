@@ -153,7 +153,14 @@ export default function App() {
         onBackToSite={() => {
           window.history.pushState({}, '', '/')
           setSiteData(loadSiteData())
+          setIsBlogRoute(false)
           setIsAdminRoute(false)
+        }}
+        onGoToBlog={() => {
+          window.history.pushState({}, '', '/blog')
+          setSiteData(loadSiteData())
+          setIsAdminRoute(false)
+          setIsBlogRoute(true)
         }}
       />
     )
@@ -918,9 +925,11 @@ export default function App() {
               </p>
             </div>
 
-            {/* Blog Cards Grid (Exibe apenas os 3 mais recentes na Home para não poluir a página inicial) */}
+            {/* Blog Cards Grid (Exibe apenas os mais recentes na Home para não poluir a página inicial) */}
             <div className="mt-10 lg:mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-              {blogPosts.slice(0, 3).map((post) => (
+              {blogPosts
+                .slice(0, Number(siteData.blogSection?.homePreviewCount) || 3)
+                .map((post) => (
                 <article
                   key={post.id}
                   onClick={() => setSelectedPost(post)}
@@ -983,7 +992,10 @@ export default function App() {
                 onClick={openBlogTab}
                 className="sa-btn-gold px-9 py-4 text-[23px] tracking-wider cursor-pointer"
               >
-                <span>Ver Todos os Artigos no Blog ({blogPosts.length})</span>
+                <span>
+                  {siteData.blogSection?.homeButtonText || 'Ver Todos os Artigos no Blog'} (
+                  {blogPosts.length})
+                </span>
                 <i className="fas fa-arrow-right text-[18px] ml-2.5 sa-btn-icon"></i>
               </button>
             </div>

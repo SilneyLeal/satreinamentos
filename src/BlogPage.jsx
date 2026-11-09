@@ -10,10 +10,11 @@ export default function BlogPage({
   const blogSection = siteData?.blogSection || {}
   const posts = blogSection.posts || []
   const whatsappNumber = siteData?.whatsappNumber || '5551999009900'
+  const perPage = Number(blogSection.postsPerPage) > 0 ? Number(blogSection.postsPerPage) : 6
 
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('Todas')
-  const [visibleCount, setVisibleCount] = useState(6)
+  const [visibleCount, setVisibleCount] = useState(perPage)
   const [activePost, setActivePost] = useState(null)
 
   // Extract unique categories dynamically from all posts
@@ -107,7 +108,9 @@ export default function BlogPage({
                     {activePost.readTime}
                   </span>
                 )}
-                <span>• Por Equipe S.A Treinamento</span>
+                <span>
+                  • Por {activePost.author || blogSection.defaultAuthor || 'Equipe S.A Treinamento'}
+                </span>
               </div>
 
               <h1 className="font-bebas italic text-4xl sm:text-6xl leading-[1.05] sa-degrade-hero">
@@ -128,11 +131,11 @@ export default function BlogPage({
               <div className="mt-10 p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-[#1D1B16] to-[#141416] border border-[#D4AF37]/35 flex flex-col sm:flex-row items-center justify-between gap-6">
                 <div>
                   <h3 className="font-bebas italic text-3xl text-[#D4AF37]">
-                    Quer colocar essas dicas em prática?
+                    {blogSection.articleCtaTitle || 'Quer colocar essas dicas em prática?'}
                   </h3>
                   <p className="text-xs sm:text-sm text-white/75 mt-1">
-                    Agende uma aula experimental gratuita em uma de nossas 3 unidades em Porto
-                    Alegre!
+                    {blogSection.articleCtaDesc ||
+                      'Agende uma aula experimental gratuita em uma de nossas 3 unidades em Porto Alegre!'}
                   </p>
                 </div>
 
@@ -193,10 +196,11 @@ export default function BlogPage({
               />
               <div>
                 <h1 className="font-bebas italic text-2xl text-[#D4AF37] leading-none">
-                  {blogSection.titleMain || 'Blog da S.A'}
+                  {blogSection.pageHeaderTitle || blogSection.titleMain || 'Blog da S.A'}
                 </h1>
                 <p className="text-[11px] text-white/55">
-                  Portal de Conteúdos, Saúde &amp; Movimento Consciente
+                  {blogSection.pageHeaderSubtitle ||
+                    'Portal de Conteúdos, Saúde & Movimento Consciente'}
                 </p>
               </div>
             </div>
@@ -239,15 +243,16 @@ export default function BlogPage({
           <div className="max-w-5xl mx-auto text-center space-y-4">
             <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-xs uppercase tracking-widest text-[#FFF2CD]">
               <i className="fas fa-newspaper text-[#D4AF37]"></i>
-              <span>{blogSection.subtitleTop || 'Conteúdos & Dicas'}</span>
+              <span>{blogSection.pageBannerTag || blogSection.subtitleTop || 'Conteúdos & Dicas'}</span>
             </span>
 
             <h2 className="font-bebas italic text-5xl sm:text-7xl sa-degrade-hero leading-none">
-              {blogSection.titleMain || 'Blog da S.A Treinamento'}
+              {blogSection.pageBannerTitle || blogSection.titleMain || 'Blog da S.A Treinamento'}
             </h2>
 
             <p className="text-sm sm:text-base text-white/75 max-w-2xl mx-auto">
-              {blogSection.description ||
+              {blogSection.pageBannerDesc ||
+                blogSection.description ||
                 'Artigos, dicas práticas de treino, saúde e qualidade de vida preparados pela equipe da S.A Treinamento.'}
             </p>
 
@@ -260,9 +265,12 @@ export default function BlogPage({
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value)
-                    setVisibleCount(6)
+                    setVisibleCount(perPage)
                   }}
-                  placeholder="Pesquisar artigo por assunto, palavra-chave ou título..."
+                  placeholder={
+                    blogSection.searchPlaceholder ||
+                    'Pesquisar artigo por assunto, palavra-chave ou título...'
+                  }
                   className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-[#141519] border border-white/15 focus:border-[#D4AF37] text-sm text-white placeholder-white/40 outline-none shadow-lg"
                 />
               </div>
@@ -276,7 +284,7 @@ export default function BlogPage({
                       type="button"
                       onClick={() => {
                         setSelectedCategory(cat)
-                        setVisibleCount(6)
+                        setVisibleCount(perPage)
                       }}
                       className={`px-4 py-1.5 rounded-full text-xs font-medium transition cursor-pointer ${
                         active
@@ -391,7 +399,7 @@ export default function BlogPage({
                 <div className="mt-12 text-center">
                   <button
                     type="button"
-                    onClick={() => setVisibleCount((prev) => prev + 6)}
+                    onClick={() => setVisibleCount((prev) => prev + perPage)}
                     className="px-8 py-4 rounded-2xl bg-[#141519] hover:bg-[#D4AF37] text-[#D4AF37] hover:text-black border border-[#D4AF37]/40 font-bebas italic text-2xl tracking-wider transition cursor-pointer shadow-lg"
                   >
                     Carregar Mais Artigos ({filteredPosts.length - visibleCount} restantes)
@@ -406,7 +414,9 @@ export default function BlogPage({
       {/* ==================== RODAPÉ SIMPLIFICADO DO BLOG ==================== */}
       <footer className="bg-[#141519] border-t border-white/10 py-6 px-6 text-xs text-white/50">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span>© S.A Treinamento — Blog Oficial &amp; Conteúdos</span>
+          <span>
+            {blogSection.pageFooterText || '© S.A Treinamento — Blog Oficial & Conteúdos'}
+          </span>
           <button
             type="button"
             onClick={onBackToHome}
