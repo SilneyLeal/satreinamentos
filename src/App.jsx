@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import AdminPanel from './AdminPanel'
+import ClowayWidget from './ClowayWidget'
 import { loadSiteData } from './defaultSiteData'
 
 const ACCESS_CODE = 'sa2026'
@@ -12,6 +13,34 @@ export default function App() {
     return path === '/painel' || path.startsWith('/painel/') || search.includes('painel')
   })
 
+  // Detect Modelo 2 (/cloway or ?cloway) vs Modelo 1 (Padrão WhatsApp)
+  const [isClowayModel, setIsClowayModel] = useState(() => {
+    const path = window.location.pathname.toLowerCase()
+    const search = window.location.search.toLowerCase()
+    return path === '/cloway' || path.startsWith('/cloway/') || search.includes('cloway')
+  })
+
+  // Cloway Chat Window open/close & context trigger
+  const [clowayOpen, setClowayOpen] = useState(false)
+  const [clowayContext, setClowayContext] = useState('')
+
+  const openClowayWithPrompt = (promptText = '') => {
+    setClowayOpen(true)
+    if (promptText) {
+      setClowayContext(promptText + ' [' + Date.now() + ']')
+    }
+  }
+
+  const switchModel = (useCloway) => {
+    setIsClowayModel(useCloway)
+    if (!useCloway) {
+      setClowayOpen(false)
+      window.history.pushState({}, '', '/')
+    } else {
+      window.history.pushState({}, '', '/cloway')
+    }
+  }
+
   // Editable CMS site data loaded from localStorage (with full default fallback)
   const [siteData, setSiteData] = useState(() => loadSiteData())
 
@@ -23,6 +52,9 @@ export default function App() {
       const path = window.location.pathname.toLowerCase()
       const search = window.location.search.toLowerCase()
       setIsAdminRoute(path === '/painel' || path.startsWith('/painel/') || search.includes('painel'))
+      setIsClowayModel(
+        path === '/cloway' || path.startsWith('/cloway/') || search.includes('cloway')
+      )
       setSiteData(loadSiteData())
     }
     const handleStorage = () => {
@@ -47,12 +79,9 @@ export default function App() {
   const [accessInput, setAccessInput] = useState('')
   const [accessError, setAccessError] = useState(false)
 
-  // 'completed' shows the finished/editable version; 'raw' shows the exact unfinished texts from satreinamento.com.br
-  const [viewMode, setViewMode] = useState('completed')
   const [activeSlide, setActiveSlide] = useState(0)
   const [activePlanIndex, setActivePlanIndex] = useState(0)
 
-  const isCompleted = viewMode === 'completed'
   const whatsappNumber = siteData.whatsappNumber || '5551999009900'
 
   const carouselImages = siteData.modalitiesSection?.carouselImages?.length
@@ -77,7 +106,6 @@ export default function App() {
     const handleKeyDown = (e) => {
       const key = (e.key || '').toLowerCase()
       const ctrlOrMeta = e.ctrlKey || e.metaKey
-      // Bloqueia F12, Ctrl+Shift+I/J/C, Ctrl+U (Exibir código-fonte) e Ctrl+S (Salvar página)
       if (
         e.key === 'F12' ||
         (ctrlOrMeta && e.shiftKey && ['i', 'j', 'c'].includes(key)) ||
@@ -243,45 +271,10 @@ export default function App() {
           'Unidade Pasqualini',
         ]
 
-  const bentoCards = isCompleted
-    ? siteData.about.cards
-    : siteData.about.cards.map((c, idx) => ({
-        ...c,
-        title: 'What is Lorem Ipsum?',
-        desc:
-          idx >= 5
-            ? 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s thrilling chapters awaiting you in our package.'
-            : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s',
-      }))
-
-  const modalities = isCompleted
-    ? siteData.modalitiesSection.items
-    : [
-        'Adicione nome da modalidade',
-        'Adicione nome da modalidade',
-        'Adicione nome da modalidade',
-        'Adicione nome da modalidade',
-        'Adicione nome da modalidade',
-        'Adicione nome da modalidade',
-      ]
-
-  const units = (siteData.unitsSection?.items || []).map((u) => ({
-    ...u,
-    img: isCompleted ? u.img : '/images/img9825.jpg',
-  }))
-
-  const rawFeatures = [
-    'ACESSO A BIBLIOTECA DE SEÇÕES',
-    'PLUGIN PRO ELEMENTS',
-    'AULAS DE PERSONALIZAÇÃO E OTIMIZAÇÃO',
-    'ATUALIZAÇÕES SEMANAIS',
-  ]
-
-  const plansList = (siteData.plansSection?.plansList || []).map((p) => ({
-    ...p,
-    note: isCompleted ? p.note : null,
-    features: isCompleted ? p.features || [] : rawFeatures,
-  }))
+  const bentoCards = siteData.about.cards || []
+  const modalities = siteData.modalitiesSection.items || []
+  const units = siteData.unitsSection?.items || []
+  const plansList = siteData.plansSection?.plansList || []
   const currentPlan = plansList[activePlanIndex] || plansList[0] || {
     label: 'Mensal',
     title: 'Plano Mensal',
@@ -290,28 +283,11 @@ export default function App() {
     note: '',
     features: [],
   }
-
-  const testimonials = isCompleted
-    ? siteData.testimonials
-    : [
-        {
-          name: 'Amanda Alves',
-          avatar: '/images/avatar-depoimento.png',
-          text: 'Lorem ipsum dolor sit amet. Qui aperiam quibusdam cum unde facere a voluptas sint ut galisum officia quo sunt adipisci. Est tenetur culpa quo sunt nihil et voluptates accusamus in ratione necessitatibus quo eaque fugiat.',
-        },
-        {
-          name: 'Amanda Alves',
-          avatar: '/images/avatar-depoimento.png',
-          text: 'Lorem ipsum dolor sit amet. Qui aperiam quibusdam cum unde facere a voluptas sint ut galisum officia quo sunt adipisci. Est tenetur culpa quo sunt nihil et voluptates accusamus in ratione necessitatibus quo eaque fugiat.',
-        },
-        {
-          name: 'Amanda Alves',
-          avatar: '/images/avatar-depoimento.png',
-          text: 'Lorem ipsum dolor sit amet. Qui aperiam quibusdam cum unde facere a voluptas sint ut galisum officia quo sunt adipisci. Est tenetur culpa quo sunt nihil et voluptates accusamus in ratione necessitatibus quo eaque fugiat.',
-        },
-      ]
-
+  const testimonials = siteData.testimonials || []
   const blogPosts = siteData.blogSection?.posts || []
+
+  // Strip timestamp suffix when passing initialContext to ClowayWidget
+  const cleanClowayContext = clowayContext ? clowayContext.replace(/\s*\[\d+\]$/, '') : ''
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white relative overflow-x-hidden">
@@ -338,27 +314,40 @@ export default function App() {
             />
           </a>
 
-          {isCompleted && (
-            <nav className="hidden lg:flex flex-wrap items-center justify-center gap-6 xl:gap-8 font-bebas tracking-wider text-xl text-white/90 italic">
-              {(siteData.header?.navLinks || []).map((navItem, idx) => (
-                <a
-                  key={idx}
-                  href={navItem.href || '#topo'}
-                  className="hover:text-[#D4AF37] transition"
-                >
-                  {navItem.label}
-                </a>
-              ))}
-            </nav>
-          )}
+          <nav className="hidden lg:flex flex-wrap items-center justify-center gap-6 xl:gap-8 font-bebas tracking-wider text-xl text-white/90 italic">
+            {(siteData.header?.navLinks || []).map((navItem, idx) => (
+              <a
+                key={idx}
+                href={navItem.href || '#topo'}
+                className="hover:text-[#D4AF37] transition"
+              >
+                {navItem.label}
+              </a>
+            ))}
+          </nav>
 
-          <a
-            href="#oferta"
-            className="sa-btn-gold px-8 py-3.5 text-[20px] tracking-[0.6px] leading-[0.9em]"
-          >
-            <i className="fab fa-whatsapp text-[20px] mr-2.5 sa-btn-icon" aria-hidden="true"></i>
-            <span>{siteData.header?.ctaText || 'Contato pelo WhatsApp'}</span>
-          </a>
+          {isClowayModel ? (
+            <button
+              type="button"
+              onClick={() => openClowayWithPrompt('Olá Clô! Quero tirar uma dúvida e agendar minha aula experimental.')}
+              className="sa-btn-gold px-7 py-3 text-[20px] tracking-[0.6px] leading-[0.9em] cursor-pointer"
+            >
+              <img
+                src="/images/cloway-clo.webp"
+                alt="Clô"
+                className="w-6 h-6 rounded-full object-cover border border-black/30 mr-2.5"
+              />
+              <span>Falar com a Clô • IA 24h</span>
+            </button>
+          ) : (
+            <a
+              href="#oferta"
+              className="sa-btn-gold px-8 py-3.5 text-[20px] tracking-[0.6px] leading-[0.9em]"
+            >
+              <i className="fab fa-whatsapp text-[20px] mr-2.5 sa-btn-icon" aria-hidden="true"></i>
+              <span>{siteData.header?.ctaText || 'Contato pelo WhatsApp'}</span>
+            </a>
+          )}
         </div>
       </header>
 
@@ -396,13 +385,28 @@ export default function App() {
               {siteData.hero?.description}
             </p>
 
-            <a
-              href="#oferta"
-              className="sa-btn-gold px-8 sm:px-10 py-5 text-[22px] lg:text-[27px] tracking-wide"
-            >
-              <i className="fab fa-whatsapp text-[22px] mr-2.5 sa-btn-icon" aria-hidden="true"></i>
-              <span>{siteData.hero?.ctaText || 'Agendar Aula Experimental'}</span>
-            </a>
+            {isClowayModel ? (
+              <button
+                type="button"
+                onClick={() => openClowayWithPrompt('📅 Agendar Aula Experimental')}
+                className="sa-btn-gold px-8 sm:px-10 py-5 text-[22px] lg:text-[27px] tracking-wide cursor-pointer"
+              >
+                <img
+                  src="/images/cloway-clo.webp"
+                  alt="Clô"
+                  className="w-7 h-7 rounded-full object-cover border border-black/30 mr-2.5"
+                />
+                <span>Agendar Aula com a Clô (IA)</span>
+              </button>
+            ) : (
+              <a
+                href="#oferta"
+                className="sa-btn-gold px-8 sm:px-10 py-5 text-[22px] lg:text-[27px] tracking-wide"
+              >
+                <i className="fab fa-whatsapp text-[22px] mr-2.5 sa-btn-icon" aria-hidden="true"></i>
+                <span>{siteData.hero?.ctaText || 'Agendar Aula Experimental'}</span>
+              </a>
+            )}
 
             {/* Client Avatars + Quote (c497cf0) */}
             <div className="mt-7 flex flex-col sm:flex-row items-center gap-4">
@@ -582,25 +586,38 @@ export default function App() {
                   <h3 className="sa-gold-box-text font-bebas italic font-medium text-[21px] sm:text-[24px] xl:text-[26px] tracking-[1.2px] leading-tight">
                     {modName}
                   </h3>
-                  {isCompleted && (
-                    <i
-                      className="fas fa-dumbbell sa-gold-box-text text-lg opacity-80"
-                      aria-hidden="true"
-                    ></i>
-                  )}
+                  <i
+                    className="fas fa-dumbbell sa-gold-box-text text-lg opacity-80"
+                    aria-hidden="true"
+                  ></i>
                 </div>
               ))}
 
-              <a
-                href="#oferta"
-                className="sa-btn-gold w-full py-5 px-8 text-[22px] lg:text-[27px] mt-2"
-              >
-                <i
-                  className="fas fa-arrow-alt-circle-right text-[20px] mr-2.5 sa-btn-icon"
-                  aria-hidden="true"
-                ></i>
-                <span>{siteData.modalitiesSection?.ctaText || 'Agendar Aula Experimental'}</span>
-              </a>
+              {isClowayModel ? (
+                <button
+                  type="button"
+                  onClick={() => openClowayWithPrompt('🏋️ Como funciona o treino na S.A?')}
+                  className="sa-btn-gold w-full py-5 px-8 text-[22px] lg:text-[27px] mt-2 cursor-pointer"
+                >
+                  <img
+                    src="/images/cloway-clo.webp"
+                    alt="Clô"
+                    className="w-6 h-6 rounded-full object-cover border border-black/30 mr-2.5"
+                  />
+                  <span>Tirar Dúvidas &amp; Agendar com a Clô</span>
+                </button>
+              ) : (
+                <a
+                  href="#oferta"
+                  className="sa-btn-gold w-full py-5 px-8 text-[22px] lg:text-[27px] mt-2"
+                >
+                  <i
+                    className="fas fa-arrow-alt-circle-right text-[20px] mr-2.5 sa-btn-icon"
+                    aria-hidden="true"
+                  ></i>
+                  <span>{siteData.modalitiesSection?.ctaText || 'Agendar Aula Experimental'}</span>
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -627,47 +644,67 @@ export default function App() {
 
           {/* 3 Units Grid (88ddfd8) */}
           <div className="mt-8 lg:mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-[1216px] w-[96%] mx-auto">
-            {units.map((unit, idx) => (
-              <div key={idx} className="flex flex-col">
-                {/* Unit Title Box */}
-                <div className="sa-gold-box p-5 text-center mb-2.5">
-                  <h3 className="sa-gold-box-text font-bebas italic font-medium text-[30px] tracking-[1.3px] leading-[1.1] whitespace-pre-line">
-                    {unit.name}
-                  </h3>
-                </div>
+            {units.map((unit, idx) => {
+              const cleanUnitName = (unit.name || '').replace(/\s*\n\s*/g, ' ').trim()
+              return (
+                <div key={idx} className="flex flex-col">
+                  {/* Unit Title Box */}
+                  <div className="sa-gold-box p-5 text-center mb-2.5">
+                    <h3 className="sa-gold-box-text font-bebas italic font-medium text-[30px] tracking-[1.3px] leading-[1.1] whitespace-pre-line">
+                      {unit.name}
+                    </h3>
+                  </div>
 
-                {/* Unit Image */}
-                <img
-                  src={unit.img}
-                  alt={unit.mapTitle}
-                  loading="lazy"
-                  className="w-full h-[220px] object-cover rounded-t-[20px] shadow-[0_0_10px_rgba(0,0,0,0.5)]"
-                />
-
-                {/* Google Maps Embed */}
-                <div className="rounded-b-[20px] overflow-hidden shadow-[0_0_10px_rgba(0,0,0,0.5)] bg-[#161616]">
-                  <iframe
+                  {/* Unit Image */}
+                  <img
+                    src={unit.img}
+                    alt={unit.mapTitle}
                     loading="lazy"
-                    src={`https://maps.google.com/maps?q=${encodeURIComponent(unit.mapQuery || unit.mapTitle || unit.name)}&t=m&z=13&output=embed&iwloc=near`}
-                    title={unit.mapTitle}
-                    aria-label={unit.mapTitle}
-                    className="w-full h-[180px] border-0 brightness-[0.72] hover:brightness-100 transition duration-300"
+                    className="w-full h-[220px] object-cover rounded-t-[20px] shadow-[0_0_10px_rgba(0,0,0,0.5)]"
                   />
-                </div>
 
-                {/* CTA Button */}
-                <a
-                  href="#oferta"
-                  className="sa-btn-gold w-full py-5 px-6 text-[22px] lg:text-[26px] mt-3"
-                >
-                  <i
-                    className="fas fa-arrow-alt-circle-right text-[20px] mr-2.5 sa-btn-icon"
-                    aria-hidden="true"
-                  ></i>
-                  <span>{unit.ctaText || 'Agendar Aula Experimental'}</span>
-                </a>
-              </div>
-            ))}
+                  {/* Google Maps Embed */}
+                  <div className="rounded-b-[20px] overflow-hidden shadow-[0_0_10px_rgba(0,0,0,0.5)] bg-[#161616]">
+                    <iframe
+                      loading="lazy"
+                      src={`https://maps.google.com/maps?q=${encodeURIComponent(unit.mapQuery || unit.mapTitle || unit.name)}&t=m&z=13&output=embed&iwloc=near`}
+                      title={unit.mapTitle}
+                      aria-label={unit.mapTitle}
+                      className="w-full h-[180px] border-0 brightness-[0.72] hover:brightness-100 transition duration-300"
+                    />
+                  </div>
+
+                  {/* CTA Button */}
+                  {isClowayModel ? (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openClowayWithPrompt(`Quero agendar aula experimental na ${cleanUnitName}`)
+                      }
+                      className="sa-btn-gold w-full py-5 px-6 text-[22px] lg:text-[25px] mt-3 cursor-pointer"
+                    >
+                      <img
+                        src="/images/cloway-clo.webp"
+                        alt="Clô"
+                        className="w-6 h-6 rounded-full object-cover border border-black/30 mr-2"
+                      />
+                      <span>Agendar com a Clô</span>
+                    </button>
+                  ) : (
+                    <a
+                      href="#oferta"
+                      className="sa-btn-gold w-full py-5 px-6 text-[22px] lg:text-[26px] mt-3"
+                    >
+                      <i
+                        className="fas fa-arrow-alt-circle-right text-[20px] mr-2.5 sa-btn-icon"
+                        aria-hidden="true"
+                      ></i>
+                      <span>{unit.ctaText || 'Agendar Aula Experimental'}</span>
+                    </a>
+                  )}
+                </div>
+              )
+            })}
           </div>
 
           {/* Heading for Plans Section at Bottom of White Container (c9f8394) */}
@@ -683,17 +720,11 @@ export default function App() {
       </section>
 
       {/* ==================== SECTION: ABAS DE PLANOS (765512f) ==================== */}
-      {(isCompleted || viewMode === 'raw') && plansList.length > 0 && (
+      {plansList.length > 0 && (
         <section
           id="oferta"
           className="relative z-10 bg-[#131313] pt-16 lg:pt-20 pb-28 -mt-12 lg:-mt-16 flex flex-col items-center px-4"
         >
-          {!isCompleted && (
-            <div className="mb-6 px-4 py-2 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-poppins">
-              Nota: No site atual em WordPress, o antigo dev ocultou este bloco porque deixou os textos de curso Elementor abaixo.
-            </div>
-          )}
-
           {/* Glassmorphic Tabs Bar (8f9b4e3) */}
           <div
             role="tablist"
@@ -758,20 +789,39 @@ export default function App() {
               ))}
             </ul>
 
-            <a
-              href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-                `Olá! Gostaria de agendar uma aula experimental na S.A Treinamento e saber mais sobre o ${currentPlan.title}.`
-              )}`}
-              target="_blank"
-              rel="noreferrer"
-              className="sa-btn-gold w-full py-5 px-8 text-[25px] lg:text-[27px]"
-            >
-              <i
-                className="fas fa-arrow-alt-circle-right text-[20px] mr-2.5 sa-btn-icon"
-                aria-hidden="true"
-              ></i>
-              <span>Agendar Aula Experimental</span>
-            </a>
+            {isClowayModel ? (
+              <button
+                type="button"
+                onClick={() =>
+                  openClowayWithPrompt(
+                    `Quero saber mais sobre o ${currentPlan.title} e agendar uma aula experimental`
+                  )
+                }
+                className="sa-btn-gold w-full py-5 px-8 text-[24px] lg:text-[26px] cursor-pointer"
+              >
+                <img
+                  src="/images/cloway-clo.webp"
+                  alt="Clô"
+                  className="w-6 h-6 rounded-full object-cover border border-black/30 mr-2.5"
+                />
+                <span>Agendar Aula com a Clô</span>
+              </button>
+            ) : (
+              <a
+                href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+                  `Olá! Gostaria de agendar uma aula experimental na S.A Treinamento e saber mais sobre o ${currentPlan.title}.`
+                )}`}
+                target="_blank"
+                rel="noreferrer"
+                className="sa-btn-gold w-full py-5 px-8 text-[25px] lg:text-[27px]"
+              >
+                <i
+                  className="fas fa-arrow-alt-circle-right text-[20px] mr-2.5 sa-btn-icon"
+                  aria-hidden="true"
+                ></i>
+                <span>Agendar Aula Experimental</span>
+              </a>
+            )}
 
             <img
               src="/images/selos-carts-white.webp"
@@ -783,7 +833,7 @@ export default function App() {
       )}
 
       {/* ==================== SECTION: BLOG DA S.A (#blog) ==================== */}
-      {isCompleted && blogPosts.length > 0 && (
+      {blogPosts.length > 0 && (
         <section
           id="blog"
           className="sa-section-notched relative z-20 bg-white text-[#222222] pt-20 lg:pt-28 pb-24 lg:pb-32 -mt-6 lg:-mt-14"
@@ -928,17 +978,35 @@ export default function App() {
               </div>
 
               <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <a
-                  href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-                    `Olá! Li a matéria "${selectedPost.title}" no Blog da S.A e gostaria de agendar uma aula experimental.`
-                  )}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="sa-btn-gold px-7 py-3.5 text-[22px] w-full sm:w-auto"
-                >
-                  <i className="fab fa-whatsapp text-[20px] mr-2 sa-btn-icon"></i>
-                  <span>Agendar Aula Experimental</span>
-                </a>
+                {isClowayModel ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedPost(null)
+                      openClowayWithPrompt('📅 Agendar Aula Experimental')
+                    }}
+                    className="sa-btn-gold px-7 py-3.5 text-[22px] w-full sm:w-auto cursor-pointer"
+                  >
+                    <img
+                      src="/images/cloway-clo.webp"
+                      alt="Clô"
+                      className="w-6 h-6 rounded-full object-cover border border-black/30 mr-2"
+                    />
+                    <span>Agendar Aula com a Clô</span>
+                  </button>
+                ) : (
+                  <a
+                    href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+                      `Olá! Li a matéria "${selectedPost.title}" no Blog da S.A e gostaria de agendar uma aula experimental.`
+                    )}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="sa-btn-gold px-7 py-3.5 text-[22px] w-full sm:w-auto"
+                  >
+                    <i className="fab fa-whatsapp text-[20px] mr-2 sa-btn-icon"></i>
+                    <span>Agendar Aula Experimental</span>
+                  </a>
+                )}
 
                 <button
                   type="button"
@@ -992,77 +1060,67 @@ export default function App() {
         </div>
       </section>
 
-      {/* ==================== FOOTER (elementor-233) ==================== */}
+      {/* ==================== FOOTER (Sem o bloco "Inscreva-se já", conforme pedido do cliente) ==================== */}
       <footer className="relative z-20">
         {/* Top Online Attendance Banner (elementor-145) */}
         <div className="bg-white text-[#222222] py-8 px-6 border-b border-black/10">
           <div className="max-w-[1216px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
-              <div className="w-14 h-14 rounded-full bg-[#FFD700]/20 flex items-center justify-center text-[#D4AF37] text-3xl">
-                <i className="fab fa-whatsapp" aria-hidden="true"></i>
-              </div>
+              {isClowayModel ? (
+                <img
+                  src="/images/cloway-clo.webp"
+                  alt="Clô - Assistente Virtual"
+                  className="w-14 h-14 rounded-full object-cover border-2 border-[#D4AF37] shadow"
+                />
+              ) : (
+                <div className="w-14 h-14 rounded-full bg-[#FFD700]/20 flex items-center justify-center text-[#D4AF37] text-3xl">
+                  <i className="fab fa-whatsapp" aria-hidden="true"></i>
+                </div>
+              )}
               <div>
                 <h3 className="font-bebas text-[28px] tracking-wide text-[#222222] leading-none">
-                  Atendimento <b className="text-[#D4AF37]">Online</b>
+                  {isClowayModel ? (
+                    <>
+                      Atendimento 24h <b className="text-[#D4AF37]">com a Clô (IA)</b>
+                    </>
+                  ) : (
+                    <>
+                      Atendimento <b className="text-[#D4AF37]">Online</b>
+                    </>
+                  )}
                 </h3>
                 <p className="font-poppins text-sm text-[#4C4C4C] mt-1">
-                  {isCompleted
-                    ? siteData.footer?.onlineBannerDesc
-                    : 'Segunda à Sexta-feira de 09h às 18h'}
+                  {isClowayModel
+                    ? 'Tire dúvidas de planos e agende sua aula experimental agora mesmo com nossa Assistente Virtual'
+                    : siteData.footer?.onlineBannerDesc}
                 </p>
               </div>
             </div>
 
-            <a
-              href={`https://wa.me/${whatsappNumber}`}
-              target="_blank"
-              rel="noreferrer"
-              className="bg-[#222222] hover:bg-[#4C4C4C] text-white font-manrope font-extrabold text-base px-9 py-4 rounded-[6px] transition inline-flex items-center gap-2"
-            >
-              <i className="fab fa-whatsapp text-lg text-[#D4AF37]" aria-hidden="true"></i>
-              <span>Contato via WhatsApp</span>
-            </a>
-          </div>
-        </div>
-
-        {/* Newsletter Section (elementor-894) */}
-        <div className="bg-[#1A1A1A] border-b border-white/10 py-10 px-6">
-          <div className="max-w-[1216px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
-            <div className="text-center lg:text-left">
-              <h2 className="font-bebas text-[40px] font-bold text-[#FFDE59] leading-none">
-                Inscreva-se já!
-              </h2>
-              <p className="font-poppins text-base text-white/80 mt-1">
-                Inscreva-se para ficar sempre atualizado com dicas e novidades da S.A Treinamento
-              </p>
-            </div>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                alert('Inscrição recebida com sucesso!')
-              }}
-              className="w-full lg:w-[58%] grid grid-cols-1 sm:grid-cols-3 gap-3"
-            >
-              <input
-                type="text"
-                placeholder="Nome"
-                required
-                className="bg-white text-[#222222] rounded-[8px] px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-[#D4AF37]"
-              />
-              <input
-                type="email"
-                placeholder="E-mail"
-                required
-                className="bg-white text-[#222222] rounded-[8px] px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-[#D4AF37]"
-              />
+            {isClowayModel ? (
               <button
-                type="submit"
-                className="sa-btn-gold rounded-[8px] py-3.5 px-6 text-[22px] tracking-wider"
+                type="button"
+                onClick={() => openClowayWithPrompt('📅 Agendar Aula Experimental')}
+                className="bg-[#222222] hover:bg-[#383838] text-white font-manrope font-extrabold text-base px-8 py-4 rounded-[8px] transition inline-flex items-center gap-2.5 cursor-pointer shadow-md"
               >
-                ASSINAR
+                <img
+                  src="/images/cloway-clo.webp"
+                  alt="Clô"
+                  className="w-6 h-6 rounded-full object-cover border border-[#D4AF37]"
+                />
+                <span>Conversar com a Clô Agora</span>
               </button>
-            </form>
+            ) : (
+              <a
+                href={`https://wa.me/${whatsappNumber}`}
+                target="_blank"
+                rel="noreferrer"
+                className="bg-[#222222] hover:bg-[#4C4C4C] text-white font-manrope font-extrabold text-base px-9 py-4 rounded-[6px] transition inline-flex items-center gap-2"
+              >
+                <i className="fab fa-whatsapp text-lg text-[#D4AF37]" aria-hidden="true"></i>
+                <span>Contato via WhatsApp</span>
+              </a>
+            )}
           </div>
         </div>
 
@@ -1077,11 +1135,11 @@ export default function App() {
                 className="w-[140px] rounded-xl mb-4"
               />
               <p className="font-poppins text-sm text-white/80 leading-relaxed">
-                {isCompleted ? siteData.footer?.brandDescription : 'Seu melhor texto aqui!'}
+                {siteData.footer?.brandDescription}
               </p>
               <div className="mt-4 text-xs text-white/50 space-y-0.5">
-                <p>{isCompleted ? siteData.footer?.companyName : 'EMPRESA LTDA'}</p>
-                <p>{isCompleted ? siteData.footer?.companyLocation : '00.999.000/0001-00'}</p>
+                <p>{siteData.footer?.companyName}</p>
+                <p>{siteData.footer?.companyLocation}</p>
               </div>
             </div>
 
@@ -1107,25 +1165,16 @@ export default function App() {
             {/* Col 3: Unidades & Atendimento */}
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
               <h4 className="font-poppins font-bold text-[#FFDE59] text-lg mb-4">
-                {isCompleted ? 'Nossas Unidades' : 'Atendimento'}
+                Nossas Unidades
               </h4>
-              {isCompleted ? (
-                <ul className="space-y-2 text-sm text-white/80">
-                  {unitSingleLineNames.map((uName, idx) => (
-                    <li key={idx}>• {uName}</li>
-                  ))}
-                  <li className="pt-2 text-[#D4AF37] font-medium">
-                    {siteData.footer?.companyLocation || 'Porto Alegre - RS'}
-                  </li>
-                </ul>
-              ) : (
-                <div className="space-y-2 text-sm text-white/80">
-                  <p>(11) 99900-9900</p>
-                  <p>contato@email.com</p>
-                  <p>Rua Teste, 00</p>
-                  <p>Segunda à Sexta-feira de 09h às 18h</p>
-                </div>
-              )}
+              <ul className="space-y-2 text-sm text-white/80">
+                {unitSingleLineNames.map((uName, idx) => (
+                  <li key={idx}>• {uName}</li>
+                ))}
+                <li className="pt-2 text-[#D4AF37] font-medium">
+                  {siteData.footer?.companyLocation || 'Porto Alegre - RS'}
+                </li>
+              </ul>
             </div>
 
             {/* Col 4: Redes Sociais */}
@@ -1134,19 +1183,39 @@ export default function App() {
                 {siteData.footer?.socialTitle || 'Redes sociais'}
               </h4>
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-                {(siteData.footer?.socialLinks || []).map((soc, idx) => (
-                  <a
-                    key={idx}
-                    href={soc.url || '#'}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={soc.platform || 'Rede Social'}
-                    title={soc.platform || 'Rede Social'}
-                    className="w-11 h-11 rounded-lg bg-[#1F1F1F] border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition text-xl"
-                  >
-                    <i className={soc.icon || 'fas fa-globe'} aria-hidden="true"></i>
-                  </a>
-                ))}
+                {(siteData.footer?.socialLinks || []).map((soc, idx) => {
+                  const isWa = (soc.icon || '').includes('whatsapp')
+                  if (isClowayModel && isWa) {
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => openClowayWithPrompt('📅 Agendar Aula Experimental')}
+                        title="Atendimento Inteligente Cloway"
+                        className="w-11 h-11 rounded-lg bg-[#1F1F1F] border border-[#D4AF37]/40 flex items-center justify-center hover:bg-[#D4AF37] transition cursor-pointer overflow-hidden"
+                      >
+                        <img
+                          src="/images/cloway-clo.webp"
+                          alt="Clô"
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    )
+                  }
+                  return (
+                    <a
+                      key={idx}
+                      href={soc.url || '#'}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={soc.platform || 'Rede Social'}
+                      title={soc.platform || 'Rede Social'}
+                      className="w-11 h-11 rounded-lg bg-[#1F1F1F] border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition text-xl"
+                    >
+                      <i className={soc.icon || 'fas fa-globe'} aria-hidden="true"></i>
+                    </a>
+                  )
+                })}
               </div>
             </div>
           </div>
@@ -1156,7 +1225,7 @@ export default function App() {
         <div className="bg-white text-[#222222] py-5 px-6 text-sm">
           <div className="max-w-[1216px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex flex-wrap items-center justify-center gap-1.5">
-              <strong>© {isCompleted ? 'S.A Treinamento' : 'Modelo WP'} –</strong>
+              <strong>© S.A Treinamento –</strong>
               <span>Todos os direitos reservados.</span>
             </div>
             <div className="text-xs text-[#4C4C4C]">
@@ -1166,29 +1235,45 @@ export default function App() {
         </div>
       </footer>
 
-      {/* ==================== FLOATING MODE SWITCHER FOR PREVIEW ==================== */}
-      <div className="fixed bottom-4 right-4 z-50 flex items-center gap-1.5 bg-black/90 backdrop-blur-md border border-[#D4AF37]/50 rounded-full p-1.5 shadow-2xl text-xs font-poppins">
+      {/* ==================== WIDGET CLOWAY AI (ATIVO NO MODELO 2) ==================== */}
+      {isClowayModel && (
+        <ClowayWidget
+          isOpen={clowayOpen}
+          onOpen={() => setClowayOpen(true)}
+          onClose={() => setClowayOpen(false)}
+          initialContext={cleanClowayContext}
+          siteData={siteData}
+        />
+      )}
+
+      {/* ==================== SELETOR DE APRESENTAÇÃO DOS 2 MODELOS (CANTO INFERIOR ESQUERDO) ==================== */}
+      <div className="fixed bottom-4 left-4 z-50 flex items-center gap-1 bg-[#111216]/95 backdrop-blur-md border border-[#D4AF37]/40 rounded-full p-1 shadow-2xl text-[11px] font-poppins">
         <button
           type="button"
-          onClick={() => setViewMode('completed')}
-          className={`px-3.5 py-1.5 rounded-full font-medium transition cursor-pointer ${
-            isCompleted
+          onClick={() => switchModel(false)}
+          className={`px-3 py-1.5 rounded-full font-medium transition cursor-pointer ${
+            !isClowayModel
               ? 'bg-[#D4AF37] text-black font-semibold'
-              : 'text-white/75 hover:text-white'
+              : 'text-white/70 hover:text-white'
           }`}
         >
-          ✓ Site Finalizado
+          Modelo 1: Padrão
         </button>
         <button
           type="button"
-          onClick={() => setViewMode('raw')}
-          className={`px-3.5 py-1.5 rounded-full font-medium transition cursor-pointer ${
-            !isCompleted
-              ? 'bg-[#D4AF37] text-black font-semibold'
-              : 'text-white/75 hover:text-white'
+          onClick={() => switchModel(true)}
+          className={`px-3 py-1.5 rounded-full font-medium transition flex items-center gap-1.5 cursor-pointer ${
+            isClowayModel
+              ? 'bg-gradient-to-r from-[#7C3AED] to-[#D4AF37] text-white font-semibold shadow'
+              : 'text-white/70 hover:text-white'
           }`}
         >
-          Espelho Original (Inacabado)
+          <img
+            src="/images/cloway-clo.webp"
+            alt=""
+            className="w-4 h-4 rounded-full object-cover border border-white/40"
+          />
+          <span>Modelo 2: + Cloway IA</span>
         </button>
       </div>
     </div>
