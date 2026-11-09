@@ -8,6 +8,14 @@ export const DEFAULT_SITE_DATA = {
     gateEnabled: true,
     gatePass: 'sa2026',
   },
+  clowayConfig: {
+    mode: 'DEMO_COMERCIAL', // 'DEMO_COMERCIAL' | 'PRODUCAO_API' | 'DESATIVADO'
+    assistantName: 'SA Virtual',
+    apiUrl: 'https://api.cloway.com.br/v1',
+    tenantId: '',
+    licenseKey: '',
+    showModelSwitcher: true,
+  },
   header: {
     ctaText: 'Contato pelo WhatsApp',
     navLinks: [
@@ -330,6 +338,10 @@ export function loadSiteData() {
       security: {
         ...DEFAULT_SITE_DATA.security,
         ...(parsed.security || {}),
+      },
+      clowayConfig: {
+        ...DEFAULT_SITE_DATA.clowayConfig,
+        ...(parsed.clowayConfig || {}),
       },
       header: {
         ...DEFAULT_SITE_DATA.header,

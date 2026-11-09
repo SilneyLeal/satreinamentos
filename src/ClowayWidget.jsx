@@ -28,6 +28,18 @@ function getCurrentTimeStr() {
 }
 
 export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, siteData }) {
+  const clowayConfig = siteData?.clowayConfig || {}
+  const assistantName = clowayConfig.assistantName || 'SA Virtual'
+  const integrationMode = clowayConfig.mode || 'DEMO_COMERCIAL' // 'DEMO_COMERCIAL' | 'PRODUCAO_API' | 'DESATIVADO'
+  const apiUrl = (clowayConfig.apiUrl || 'https://api.cloway.com.br/v1').replace(/\/+$/, '')
+  const tenantId = (clowayConfig.tenantId || '').trim()
+  const licenseKey = (clowayConfig.licenseKey || '').trim()
+
+  // License check when running in PRODUCAO_API mode
+  const isLicenseReleased =
+    integrationMode === 'DEMO_COMERCIAL' ||
+    (integrationMode === 'PRODUCAO_API' && tenantId.length >= 3 && licenseKey.length >= 6)
+
   const [mascotType, setMascotType] = useState('clo') // 'clo' (bonequinha 3D) or 'bot' (robozinho 3D)
   const [teaserVisible, setTeaserVisible] = useState(true)
   const [inputText, setInputText] = useState('')
@@ -43,12 +55,12 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
     phone: '',
   })
 
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState(() => [
     {
       id: 'welcome-1',
       sender: 'ai',
       time: getCurrentTimeStr(),
-      text: 'Oi! 👋 Eu sou a **Clô**, assistente virtual com IA da **S.A Treinamento**!\n\nEstou online 24h para tirar suas dúvidas sobre modalidades, unidades, planos ou **agendar sua Aula Experimental gratuita** agora mesmo. Como posso te ajudar hoje?',
+      text: `Oi! 👋 Eu sou a **${assistantName}**, assistente virtual com IA da **S.A Treinamento**!\n\nEstou online 24h para tirar suas dúvidas sobre modalidades, unidades, planos ou **agendar sua Aula Experimental gratuita** agora mesmo. Como posso te ajudar hoje?`,
     },
   ])
 
@@ -62,7 +74,7 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
     }
   }, [messages, isTyping, isOpen])
 
-  // Handle when user clicks a specific CTA button on the site (e.g. "Agendar na Unidade Protásio" or "Plano Mensal")
+  // Handle when user clicks a specific CTA button on the site
   useEffect(() => {
     if (initialContext && isOpen) {
       handleUserMessage(initialContext)
@@ -87,6 +99,34 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
     }, 650)
   }
 
+  // Send booking or message to real Cloway backend when in PRODUCAO_API mode
+  const syncWithClowayBackend = async (endpoint, payload) => {
+    if (integrationMode !== 'PRODUCAO_API' || !isLicenseReleased) return null
+    try {
+      const res = await fetch(`${apiUrl}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${licenseKey}`,
+          'X-Cloway-Tenant': tenantId,
+        },
+        body: JSON.stringify({
+          tenantId,
+          assistantName,
+          domain: window.location.hostname,
+          ...payload,
+        }),
+      })
+      if (res.status === 401 || res.status === 403) {
+        return { error: 'LICENSE_BLOCKED' }
+      }
+      if (!res.ok) return null
+      return await res.json()
+    } catch {
+      return null
+    }
+  }
+
   const startBookingFlow = (preselectedUnit = '') => {
     if (preselectedUnit) {
       setBookingData((prev) => ({ ...prev, unit: preselectedUnit }))
@@ -106,7 +146,7 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
     }
   }
 
-  const handleUserMessage = (rawText) => {
+  const handleUserMessage = async (rawText) => {
     const text = String(rawText || '').trim()
     if (!text) return
 
@@ -120,6 +160,42 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
         text,
       },
     ])
+
+    // Block execution if set to PRODUCAO_API without an active Cloway license
+    if (!isLicenseReleased) {
+      pushAiReply(
+        `🔒 **Atendimento ${assistantName} aguardando liberação na Cloway**\n\nPara que a inteligência artificial responda aos alunos e registre agendamentos na agenda oficial, o cadastro da **S.A Treinamento** precisa estar ativo e liberado na plataforma **Cloway AI**.`
+      )
+      return
+    }
+
+    // If connected in PRODUCAO_API mode, try real-time Cloway API first
+    if (integrationMode === 'PRODUCAO_API' && !bookingStep) {
+      setIsTyping(true)
+      const remoteReply = await syncWithClowayBackend('/webchat/message', { message: text })
+      setIsTyping(false)
+
+      if (remoteReply?.error === 'LICENSE_BLOCKED') {
+        pushAiReply(
+          `🔒 **Licença Cloway suspensa ou não autorizada**\n\nVerifique a situação cadastral desta conta no painel da **Cloway AI**.`
+        )
+        return
+      }
+
+      if (remoteReply?.reply) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: 'ai-' + Date.now(),
+            sender: 'ai',
+            time: getCurrentTimeStr(),
+            text: remoteReply.reply,
+            options: remoteReply.options || undefined,
+          },
+        ])
+        return
+      }
+    }
 
     const lower = text.toLowerCase()
 
@@ -178,6 +254,15 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
       setBookingData(finalData)
       setBookingStep('DONE')
       const protocol = 'SA-' + Math.floor(1000 + Math.random() * 9000)
+
+      // Sync booking with Cloway CRM & Agenda if in PRODUCAO_API mode
+      if (integrationMode === 'PRODUCAO_API') {
+        await syncWithClowayBackend('/webchat/booking', {
+          protocol,
+          booking: finalData,
+        })
+      }
+
       pushAiReply(
         `🎉 **Aula Experimental Agendada com Sucesso!**\n\nConfira os dados da sua reserva:\n• **Aluno(a):** ${finalData.name}\n• **Unidade:** ${finalData.unit}\n• **Dia e Turno:** ${finalData.day} — ${finalData.shift}\n• **WhatsApp:** ${finalData.phone}\n• **Protocolo:** #${protocol}\n\nNossa equipe de professores da **${finalData.unit}** já recebeu seu agendamento na agenda e vai te esperar! Se tiver mais alguma dúvida sobre roupa de treino ou estacionamento, é só perguntar aqui. Viva o agora, viva a S.A! 💛🖤`,
         {
@@ -381,11 +466,11 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
           <div className="flex items-center gap-2.5 mb-1.5">
             <img
               src={avatarSrc}
-              alt="Clô - Cloway AI"
+              alt={`${assistantName} - Cloway AI`}
               className="w-7 h-7 rounded-full object-cover border border-[#D4AF37]"
             />
             <span className="text-xs font-poppins font-bold text-[#D4AF37]">
-              Clô • Assistente IA 24h
+              {assistantName} • IA 24h
             </span>
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           </div>
@@ -395,18 +480,18 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
         </div>
       )}
 
-      {/* ==================== BOTÃO FLUTUANTE DO BONEQUINHO CLOWAY ==================== */}
+      {/* ==================== BOTÃO FLUTUANTE DO BONEQUINHO SA VIRTUAL ==================== */}
       <div className="fixed bottom-5 right-5 sm:right-6 z-[80] flex items-center gap-3">
         <button
           type="button"
           onClick={() => (isOpen ? onClose() : onOpen())}
-          aria-label="Abrir atendimento inteligente Cloway"
+          aria-label={`Abrir atendimento inteligente ${assistantName}`}
           className="group relative flex items-center gap-3 pl-2 pr-5 py-2 rounded-full bg-gradient-to-r from-[#1A1822] via-[#231F2E] to-[#1A1822] border-2 border-[#D4AF37] shadow-[0_0_30px_rgba(212,175,55,0.45)] hover:scale-105 transition-all cursor-pointer"
         >
           <div className="relative">
             <img
               src={avatarSrc}
-              alt="Clô - Assistente Virtual Cloway"
+              alt={assistantName}
               className="w-14 h-14 rounded-full object-cover border-2 border-[#D4AF37] shadow-md"
             />
             <span
@@ -417,7 +502,7 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
           <div className="text-left">
             <div className="flex items-center gap-1.5">
               <span className="font-bebas italic text-xl tracking-wider text-[#FFD700] leading-none">
-                Falar com a Clô
+                Falar com a {assistantName}
               </span>
               <span className="text-[9px] font-poppins font-bold uppercase px-1.5 py-0.5 rounded bg-[#7C3AED] text-white">
                 IA 24h
@@ -430,16 +515,16 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
         </button>
       </div>
 
-      {/* ==================== JANELA DO CHAT INTELIGENTE CLOWAY ==================== */}
+      {/* ==================== JANELA DO CHAT INTELIGENTE SA VIRTUAL (CLOWAY) ==================== */}
       {isOpen && (
         <div className="fixed bottom-24 right-4 sm:right-6 z-[85] w-[93vw] max-w-[410px] h-[580px] max-h-[80vh] rounded-3xl bg-[#111217] border border-[#D4AF37]/40 shadow-[0_25px_80px_rgba(0,0,0,0.92)] flex flex-col overflow-hidden font-poppins">
-          {/* Header da Janela Cloway */}
+          {/* Header da Janela */}
           <div className="bg-gradient-to-r from-[#1B162A] via-[#2A1F3D] to-[#1E192B] border-b border-[#D4AF37]/30 px-4 py-3.5 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="relative">
                 <img
                   src={avatarSrc}
-                  alt="Clô"
+                  alt={assistantName}
                   className="w-11 h-11 rounded-full object-cover border-2 border-[#D4AF37]"
                 />
                 <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#1B162A]" />
@@ -447,7 +532,7 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
               <div>
                 <div className="flex items-center gap-2">
                   <h4 className="font-bold text-sm text-white leading-tight">
-                    Clô • S.A Treinamento
+                    {assistantName}
                   </h4>
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#7C3AED]/30 border border-[#A78BFA]/40 text-[#DDD6FE] font-semibold">
                     Cloway AI
@@ -461,14 +546,14 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
             </div>
 
             <div className="flex items-center gap-1.5">
-              {/* Alternar Bonequinho (Clô 3D / Robô 3D) para demonstração */}
+              {/* Alternar Bonequinho (Avatar 3D / Robô 3D) para demonstração */}
               <button
                 type="button"
                 onClick={() => setMascotType((prev) => (prev === 'clo' ? 'bot' : 'clo'))}
-                title="Trocar avatar do bonequinho (Clô / Robô)"
+                title="Trocar avatar (Treinadora / Robô)"
                 className="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[10px] text-white/80 cursor-pointer transition"
               >
-                {mascotType === 'clo' ? '🤖 Robô' : '👩 Clô'}
+                {mascotType === 'clo' ? '🤖 Robô' : '👩 Avatar'}
               </button>
               <button
                 type="button"
@@ -493,6 +578,21 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
               </span>
             </div>
 
+            {/* Aviso caso esteja em modo PRODUCAO_API mas sem licença liberada */}
+            {!isLicenseReleased && (
+              <div className="p-3.5 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-200 text-xs space-y-1">
+                <div className="font-semibold flex items-center gap-1.5 text-amber-300">
+                  <i className="fas fa-lock"></i>
+                  <span>Integração Cloway AI Aguardando Liberação</span>
+                </div>
+                <p className="text-[11px] text-amber-100/80 leading-relaxed">
+                  Para ativar o atendimento inteligente e o agendamento automático da{' '}
+                  <strong>{assistantName}</strong>, o cadastro precisa estar liberado e ativo na
+                  plataforma <strong>Cloway</strong>.
+                </p>
+              </div>
+            )}
+
             {messages.map((msg) => (
               <div key={msg.id} className="space-y-2">
                 <div
@@ -503,7 +603,7 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
                   {msg.sender === 'ai' && (
                     <img
                       src={avatarSrc}
-                      alt="Clô"
+                      alt={assistantName}
                       className="w-7 h-7 rounded-full object-cover border border-[#D4AF37]/60 shrink-0 mb-1"
                     />
                   )}
@@ -559,7 +659,7 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
               <div className="flex items-center gap-2">
                 <img
                   src={avatarSrc}
-                  alt="Clô"
+                  alt={assistantName}
                   className="w-7 h-7 rounded-full object-cover border border-[#D4AF37]/60"
                 />
                 <div className="px-3.5 py-2 rounded-2xl bg-[#1A1C23] border border-white/10 text-xs text-white/60 flex items-center gap-1.5">
@@ -572,7 +672,7 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
                     className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-bounce"
                     style={{ animationDelay: '300ms' }}
                   />
-                  <span className="ml-1 text-[11px]">Clô está digitando...</span>
+                  <span className="ml-1 text-[11px]">{assistantName} está digitando...</span>
                 </div>
               </div>
             )}
@@ -608,7 +708,7 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
                   ? 'Digite seu nome...'
                   : bookingStep === 'ASK_PHONE'
                   ? 'Digite seu WhatsApp com DDD...'
-                  : 'Pergunte algo ou agende sua aula...'
+                  : `Pergunte algo para a ${assistantName}...`
               }
               className="flex-1 bg-[#0B0C0E] border border-white/15 focus:border-[#D4AF37] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/40 outline-none"
             />
@@ -634,4 +734,3 @@ export default function ClowayWidget({ isOpen, onOpen, onClose, initialContext, 
     </>
   )
 }
-

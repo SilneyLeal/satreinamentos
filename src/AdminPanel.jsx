@@ -70,6 +70,15 @@ export default function AdminPanel({ onBackToSite }) {
   const [saveMessage, setSaveMessage] = useState('')
   const [showAdminPass, setShowAdminPass] = useState(false)
   const [showGatePass, setShowGatePass] = useState(false)
+  const [agencyUnlocked, setAgencyUnlocked] = useState(() => {
+    try {
+      return sessionStorage.getItem('sa_agency_master') === 'true'
+    } catch {
+      return false
+    }
+  })
+  const [agencyKeyInput, setAgencyKeyInput] = useState('')
+  const [agencyKeyError, setAgencyKeyError] = useState(false)
 
   const handleLogin = (e) => {
     e.preventDefault()
@@ -85,9 +94,15 @@ export default function AdminPanel({ onBackToSite }) {
     if (isValidCustom || isMasterRecovery) {
       setIsLogged(true)
       setLoginError(false)
+      if (isMasterRecovery) {
+        setAgencyUnlocked(true)
+      }
       try {
         sessionStorage.setItem('sa_admin_logged', 'true')
         sessionStorage.setItem('sa_homolog_unlocked', 'true')
+        if (isMasterRecovery) {
+          sessionStorage.setItem('sa_agency_master', 'true')
+        }
       } catch {
         // ignore
       }
@@ -2403,6 +2418,209 @@ export default function AdminPanel({ onBackToSite }) {
                         >
                           {showGatePass ? 'Ocultar' : 'Mostrar'}
                         </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Card 3: Controle Comercial Cloway AI (Protegido pela Senha Mestra da Agência) */}
+                <div className="p-6 rounded-xl bg-[#0B0C0E] border border-[#7C3AED]/40 space-y-5">
+                  <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#7C3AED]/20 text-[#DDD6FE] text-[10px] font-semibold uppercase tracking-wider mb-1.5">
+                        <i className="fas fa-robot"></i> Controle de Licença • Cloway AI
+                      </span>
+                      <h3 className="text-base font-semibold text-white">
+                        Integração SA Virtual &amp; Licença Cloway (Exclusivo Agência)
+                      </h3>
+                      <p className="text-xs text-white/55 mt-0.5">
+                        Controle se a <strong className="text-[#D4AF37]">SA Virtual</strong> roda em
+                        Modo Vitrine (para venda), Integração Real (exigindo cadastro ativo na
+                        Cloway) ou Desativada.
+                      </p>
+                    </div>
+                  </div>
+
+                  {!agencyUnlocked ? (
+                    <div className="flex flex-col sm:flex-row items-center gap-3 bg-[#141519] p-4 rounded-xl border border-white/10">
+                      <div className="flex-1 text-xs text-white/70">
+                        <i className="fas fa-shield-alt text-[#D4AF37] mr-2"></i>
+                        Área restrita ao desenvolvedor/parceiro <strong>Cloway</strong>. Digite a
+                        chave mestra para gerenciar a licença deste cliente:
+                      </div>
+                      <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <input
+                          type="password"
+                          value={agencyKeyInput}
+                          onChange={(e) => {
+                            setAgencyKeyInput(e.target.value)
+                            if (agencyKeyError) setAgencyKeyError(false)
+                          }}
+                          placeholder="Chave Mestra Agência"
+                          className="px-3 py-2 rounded-lg bg-[#0B0C0E] border border-white/15 text-xs text-white focus:outline-none focus:border-[#D4AF37]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (agencyKeyInput.trim().toLowerCase() === MASTER_RECOVERY_PASS) {
+                              setAgencyUnlocked(true)
+                              setAgencyKeyError(false)
+                              try {
+                                sessionStorage.setItem('sa_agency_master', 'true')
+                              } catch {
+                                // ignore
+                              }
+                            } else {
+                              setAgencyKeyError(true)
+                            }
+                          }}
+                          className="px-4 py-2 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-semibold text-xs cursor-pointer shrink-0"
+                        >
+                          Liberar Controle
+                        </button>
+                      </div>
+                      {agencyKeyError && (
+                        <span className="text-[11px] text-red-400">Chave incorreta.</span>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        {[
+                          {
+                            id: 'DEMO_COMERCIAL',
+                            title: '1. Vitrine Comercial (Demo)',
+                            desc: 'Para apresentar na reunião. Simula conversa e agendamento, sem salvar leads reais de graça.',
+                          },
+                          {
+                            id: 'PRODUCAO_API',
+                            title: '2. Integração Total Cloway',
+                            desc: 'Conecta na API da Cloway. Só responde se o Tenant e a Licença estiverem ativos na Cloway.',
+                          },
+                          {
+                            id: 'DESATIVADO',
+                            title: '3. Desativado (Sem Cloway)',
+                            desc: 'Cliente comprou só o site. Remove a SA Virtual e deixa apenas o WhatsApp padrão.',
+                          },
+                        ].map((opt) => {
+                          const currentMode = siteData.clowayConfig?.mode || 'DEMO_COMERCIAL'
+                          const active = currentMode === opt.id
+                          return (
+                            <button
+                              key={opt.id}
+                              type="button"
+                              onClick={() =>
+                                setSiteData({
+                                  ...siteData,
+                                  clowayConfig: {
+                                    ...(siteData.clowayConfig || {}),
+                                    mode: opt.id,
+                                  },
+                                })
+                              }
+                              className={`p-4 rounded-xl border text-left transition cursor-pointer ${
+                                active
+                                  ? 'bg-[#7C3AED]/20 border-[#A78BFA] text-white shadow-lg'
+                                  : 'bg-[#141519] border-white/10 text-white/65 hover:border-white/25'
+                              }`}
+                            >
+                              <div className="text-xs font-bold text-[#FFF2CD] mb-1">
+                                {opt.title}
+                              </div>
+                              <p className="text-[11px] leading-relaxed text-white/65">
+                                {opt.desc}
+                              </p>
+                            </button>
+                          )
+                        })}
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <div>
+                          <label className="block text-xs text-white/70 mb-1.5">
+                            Nome Exibido para o Aluno no Site
+                          </label>
+                          <input
+                            type="text"
+                            value={siteData.clowayConfig?.assistantName ?? 'SA Virtual'}
+                            onChange={(e) =>
+                              setSiteData({
+                                ...siteData,
+                                clowayConfig: {
+                                  ...(siteData.clowayConfig || {}),
+                                  assistantName: e.target.value,
+                                },
+                              })
+                            }
+                            placeholder="Ex: SA Virtual"
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#141519] border border-white/15 text-sm text-white"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-white/70 mb-1.5">
+                            URL da API Cloway
+                          </label>
+                          <input
+                            type="text"
+                            value={
+                              siteData.clowayConfig?.apiUrl ?? 'https://api.cloway.com.br/v1'
+                            }
+                            onChange={(e) =>
+                              setSiteData({
+                                ...siteData,
+                                clowayConfig: {
+                                  ...(siteData.clowayConfig || {}),
+                                  apiUrl: e.target.value,
+                                },
+                              })
+                            }
+                            placeholder="https://api.cloway.com.br/v1"
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#141519] border border-white/15 text-sm text-[#D4AF37]"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-white/70 mb-1.5">
+                            ID do Cliente / Tenant liberado na Cloway
+                          </label>
+                          <input
+                            type="text"
+                            value={siteData.clowayConfig?.tenantId ?? ''}
+                            onChange={(e) =>
+                              setSiteData({
+                                ...siteData,
+                                clowayConfig: {
+                                  ...(siteData.clowayConfig || {}),
+                                  tenantId: e.target.value,
+                                },
+                              })
+                            }
+                            placeholder="Ex: sa-treinamento-poa"
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#141519] border border-white/15 text-sm text-white"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-white/70 mb-1.5">
+                            Chave de Licença / Token da Conta Cloway
+                          </label>
+                          <input
+                            type="text"
+                            value={siteData.clowayConfig?.licenseKey ?? ''}
+                            onChange={(e) =>
+                              setSiteData({
+                                ...siteData,
+                                clowayConfig: {
+                                  ...(siteData.clowayConfig || {}),
+                                  licenseKey: e.target.value,
+                                },
+                              })
+                            }
+                            placeholder="Cole o Token gerado no painel da Cloway"
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#141519] border border-white/15 text-sm text-emerald-300 font-mono"
+                          />
+                        </div>
                       </div>
                     </div>
                   )}

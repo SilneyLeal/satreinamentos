@@ -292,6 +292,11 @@ export default function App() {
 
   // Strip timestamp suffix when passing initialContext to ClowayWidget
   const cleanClowayContext = clowayContext ? clowayContext.replace(/\s*\[\d+\]$/, '') : ''
+  const assistantName = siteData.clowayConfig?.assistantName || 'SA Virtual'
+  const clowayDisabled = siteData.clowayConfig?.mode === 'DESATIVADO'
+  const showModelSwitcher =
+    !clowayDisabled && siteData.clowayConfig?.showModelSwitcher !== false
+  const activeClowayModel = !clowayDisabled && isClowayModel
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white relative overflow-x-hidden">
@@ -330,18 +335,18 @@ export default function App() {
             ))}
           </nav>
 
-          {isClowayModel ? (
+          {activeClowayModel ? (
             <button
               type="button"
-              onClick={() => openClowayWithPrompt('Olá Clô! Quero tirar uma dúvida e agendar minha aula experimental.')}
+              onClick={() => openClowayWithPrompt(`Olá ${assistantName}! Quero tirar uma dúvida e agendar minha aula experimental.`)}
               className="sa-btn-gold px-7 py-3 text-[20px] tracking-[0.6px] leading-[0.9em] cursor-pointer"
             >
               <img
                 src="/images/cloway-clo.webp"
-                alt="Clô"
+                alt={assistantName}
                 className="w-6 h-6 rounded-full object-cover border border-black/30 mr-2.5"
               />
-              <span>Falar com a Clô • IA 24h</span>
+              <span>Falar com a {assistantName} • IA 24h</span>
             </button>
           ) : (
             <a
@@ -389,7 +394,7 @@ export default function App() {
               {siteData.hero?.description}
             </p>
 
-            {isClowayModel ? (
+            {activeClowayModel ? (
               <button
                 type="button"
                 onClick={() => openClowayWithPrompt('📅 Agendar Aula Experimental')}
@@ -397,10 +402,10 @@ export default function App() {
               >
                 <img
                   src="/images/cloway-clo.webp"
-                  alt="Clô"
+                  alt={assistantName}
                   className="w-7 h-7 rounded-full object-cover border border-black/30 mr-2.5"
                 />
-                <span>Agendar Aula com a Clô (IA)</span>
+                <span>Agendar Aula com a {assistantName}</span>
               </button>
             ) : (
               <a
@@ -597,7 +602,7 @@ export default function App() {
                 </div>
               ))}
 
-              {isClowayModel ? (
+              {activeClowayModel ? (
                 <button
                   type="button"
                   onClick={() => openClowayWithPrompt('🏋️ Como funciona o treino na S.A?')}
@@ -605,10 +610,10 @@ export default function App() {
                 >
                   <img
                     src="/images/cloway-clo.webp"
-                    alt="Clô"
+                    alt={assistantName}
                     className="w-6 h-6 rounded-full object-cover border border-black/30 mr-2.5"
                   />
-                  <span>Tirar Dúvidas &amp; Agendar com a Clô</span>
+                  <span>Tirar Dúvidas &amp; Agendar com a {assistantName}</span>
                 </button>
               ) : (
                 <a
@@ -679,7 +684,7 @@ export default function App() {
                   </div>
 
                   {/* CTA Button */}
-                  {isClowayModel ? (
+                  {activeClowayModel ? (
                     <button
                       type="button"
                       onClick={() =>
@@ -689,10 +694,10 @@ export default function App() {
                     >
                       <img
                         src="/images/cloway-clo.webp"
-                        alt="Clô"
+                        alt={assistantName}
                         className="w-6 h-6 rounded-full object-cover border border-black/30 mr-2"
                       />
-                      <span>Agendar com a Clô</span>
+                      <span>Agendar com a {assistantName}</span>
                     </button>
                   ) : (
                     <a
@@ -793,7 +798,7 @@ export default function App() {
               ))}
             </ul>
 
-            {isClowayModel ? (
+            {activeClowayModel ? (
               <button
                 type="button"
                 onClick={() =>
@@ -805,10 +810,10 @@ export default function App() {
               >
                 <img
                   src="/images/cloway-clo.webp"
-                  alt="Clô"
+                  alt={assistantName}
                   className="w-6 h-6 rounded-full object-cover border border-black/30 mr-2.5"
                 />
-                <span>Agendar Aula com a Clô</span>
+                <span>Agendar Aula com a {assistantName}</span>
               </button>
             ) : (
               <a
@@ -1070,10 +1075,10 @@ export default function App() {
         <div className="bg-white text-[#222222] py-8 px-6 border-b border-black/10">
           <div className="max-w-[1216px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
-              {isClowayModel ? (
+              {activeClowayModel ? (
                 <img
                   src="/images/cloway-clo.webp"
-                  alt="Clô - Assistente Virtual"
+                  alt={assistantName}
                   className="w-14 h-14 rounded-full object-cover border-2 border-[#D4AF37] shadow"
                 />
               ) : (
@@ -1083,9 +1088,9 @@ export default function App() {
               )}
               <div>
                 <h3 className="font-bebas text-[28px] tracking-wide text-[#222222] leading-none">
-                  {isClowayModel ? (
+                  {activeClowayModel ? (
                     <>
-                      Atendimento 24h <b className="text-[#D4AF37]">com a Clô (IA)</b>
+                      Atendimento 24h <b className="text-[#D4AF37]">com a {assistantName}</b>
                     </>
                   ) : (
                     <>
@@ -1094,14 +1099,14 @@ export default function App() {
                   )}
                 </h3>
                 <p className="font-poppins text-sm text-[#4C4C4C] mt-1">
-                  {isClowayModel
+                  {activeClowayModel
                     ? 'Tire dúvidas de planos e agende sua aula experimental agora mesmo com nossa Assistente Virtual'
                     : siteData.footer?.onlineBannerDesc}
                 </p>
               </div>
             </div>
 
-            {isClowayModel ? (
+            {activeClowayModel ? (
               <button
                 type="button"
                 onClick={() => openClowayWithPrompt('📅 Agendar Aula Experimental')}
@@ -1109,10 +1114,10 @@ export default function App() {
               >
                 <img
                   src="/images/cloway-clo.webp"
-                  alt="Clô"
+                  alt={assistantName}
                   className="w-6 h-6 rounded-full object-cover border border-[#D4AF37]"
                 />
-                <span>Conversar com a Clô Agora</span>
+                <span>Conversar com a {assistantName} Agora</span>
               </button>
             ) : (
               <a
@@ -1189,18 +1194,18 @@ export default function App() {
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
                 {(siteData.footer?.socialLinks || []).map((soc, idx) => {
                   const isWa = (soc.icon || '').includes('whatsapp')
-                  if (isClowayModel && isWa) {
+                  if (activeClowayModel && isWa) {
                     return (
                       <button
                         key={idx}
                         type="button"
                         onClick={() => openClowayWithPrompt('📅 Agendar Aula Experimental')}
-                        title="Atendimento Inteligente Cloway"
+                        title={`Atendimento ${assistantName}`}
                         className="w-11 h-11 rounded-lg bg-[#1F1F1F] border border-[#D4AF37]/40 flex items-center justify-center hover:bg-[#D4AF37] transition cursor-pointer overflow-hidden"
                       >
                         <img
                           src="/images/cloway-clo.webp"
-                          alt="Clô"
+                          alt={assistantName}
                           className="w-full h-full object-cover"
                         />
                       </button>
@@ -1239,8 +1244,8 @@ export default function App() {
         </div>
       </footer>
 
-      {/* ==================== WIDGET CLOWAY AI (ATIVO NO MODELO 2) ==================== */}
-      {isClowayModel && (
+      {/* ==================== WIDGET SA VIRTUAL / CLOWAY AI (ATIVO NO MODELO 2) ==================== */}
+      {activeClowayModel && (
         <ClowayWidget
           isOpen={clowayOpen}
           onOpen={() => setClowayOpen(true)}
@@ -1251,35 +1256,37 @@ export default function App() {
       )}
 
       {/* ==================== SELETOR DE APRESENTAÇÃO DOS 2 MODELOS (CANTO INFERIOR ESQUERDO) ==================== */}
-      <div className="fixed bottom-4 left-4 z-50 flex items-center gap-1 bg-[#111216]/95 backdrop-blur-md border border-[#D4AF37]/40 rounded-full p-1 shadow-2xl text-[11px] font-poppins">
-        <button
-          type="button"
-          onClick={() => switchModel(false)}
-          className={`px-3 py-1.5 rounded-full font-medium transition cursor-pointer ${
-            !isClowayModel
-              ? 'bg-[#D4AF37] text-black font-semibold'
-              : 'text-white/70 hover:text-white'
-          }`}
-        >
-          Modelo 1: Padrão
-        </button>
-        <button
-          type="button"
-          onClick={() => switchModel(true)}
-          className={`px-3 py-1.5 rounded-full font-medium transition flex items-center gap-1.5 cursor-pointer ${
-            isClowayModel
-              ? 'bg-gradient-to-r from-[#7C3AED] to-[#D4AF37] text-white font-semibold shadow'
-              : 'text-white/70 hover:text-white'
-          }`}
-        >
-          <img
-            src="/images/cloway-clo.webp"
-            alt=""
-            className="w-4 h-4 rounded-full object-cover border border-white/40"
-          />
-          <span>Modelo 2: + Cloway IA</span>
-        </button>
-      </div>
+      {showModelSwitcher && (
+        <div className="fixed bottom-4 left-4 z-50 flex items-center gap-1 bg-[#111216]/95 backdrop-blur-md border border-[#D4AF37]/40 rounded-full p-1 shadow-2xl text-[11px] font-poppins">
+          <button
+            type="button"
+            onClick={() => switchModel(false)}
+            className={`px-3 py-1.5 rounded-full font-medium transition cursor-pointer ${
+              !activeClowayModel
+                ? 'bg-[#D4AF37] text-black font-semibold'
+                : 'text-white/70 hover:text-white'
+            }`}
+          >
+            Modelo 1: Padrão
+          </button>
+          <button
+            type="button"
+            onClick={() => switchModel(true)}
+            className={`px-3 py-1.5 rounded-full font-medium transition flex items-center gap-1.5 cursor-pointer ${
+              activeClowayModel
+                ? 'bg-gradient-to-r from-[#7C3AED] to-[#D4AF37] text-white font-semibold shadow'
+                : 'text-white/70 hover:text-white'
+            }`}
+          >
+            <img
+              src="/images/cloway-clo.webp"
+              alt=""
+              className="w-4 h-4 rounded-full object-cover border border-white/40"
+            />
+            <span>Modelo 2: + {assistantName}</span>
+          </button>
+        </div>
+      )}
     </div>
   )
 }
