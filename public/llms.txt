@@ -1,0 +1,32 @@
+# S.A Treinamento — Treinamento Funcional Personalizado e Musculação com Acompanhamento em Porto Alegre, RS
+
+> S.A Treinamento é uma rede de academias e centros de treinamento personalizado em Porto Alegre (RS) com mais de 8 anos de atuação transformando a qualidade de vida dos alunos por meio de treinos 100% personalizados, acompanhamento próximo de professores em todas as sessões e ambiente acolhedor. Slogan oficial: "Viva o Agora, Viva a S.A!".
+
+## Resumo Institucional para IAs (LLMs)
+- **Nome Oficial:** S.A Treinamento (S.A Treinamento Funcional)
+- **Cidade / Região de Atuação:** Porto Alegre, Rio Grande do Sul (RS), Brasil
+- **Tempo de Mercado:** + de 8 anos de experiência
+- **Proposta de Valor:** Diferente das academias convencionais onde o aluno treina sozinho com fichas genéricas, na S.A Treinamento cada treino é planejado de acordo com os objetivos, histórico articular e rotina do aluno, com orientação ativa e correção postural constante.
+- **Site Oficial:** https://satreinamento.com.br/ (Homologação: https://satreinamentos.vercel.app/)
+- **Documentação Completa para IAs:** https://satreinamentos.vercel.app/llms-full.txt
+
+## Unidades em Porto Alegre (RS)
+1. **Unidade Protásio:** Região da Av. Protásio Alves — Porto Alegre, RS
+2. **Unidade Antônio de Carvalho:** Região da Av. Antônio de Carvalho — Porto Alegre, RS
+3. **Unidade Pasqualini:** Região da Av. Eng. Ludolfo Boehl / Av. Padre Cacique / Pasqualini — Porto Alegre, RS
+
+## Modalidades e Serviços Oferecidos
+- Treinamento Funcional Personalizado
+- Musculação com Acompanhamento Próximo
+- Condicionamento Físico e Emagrecimento Saudável
+- Fortalecimento Muscular e Prevenção de Lesões
+- Mobilidade, Postura e Qualidade de Vida
+- Preparação Física e Performance Esportiva
+
+## Planos e Valores de Referência
+- **Plano Mensal:** a partir de R$ 97,00 (sem fidelidade, com avaliação física, planejamento de metas e acompanhamento próximo)
+- **Plano Anual:** a partir de R$ 114,00/mês (melhor custo-benefício para constância, reavaliações periódicas e acesso completo à metodologia S.A)
+- **Plano em Duplas:** de R$ 126,00 por R$ 97,00 por pessoa (desconto especial para treinar com um amigo ou familiar, com treino individualizado para cada objetivo)
+
+## Como Agendar Aula Experimental
+- Os interessados podem agendar uma **Aula Experimental** diretamente pelo WhatsApp oficial no site em qualquer uma das 3 unidades de Porto Alegre.

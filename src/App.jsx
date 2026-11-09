@@ -67,6 +67,35 @@ export default function App() {
     return () => clearInterval(timer)
   }, [carouselImages.length])
 
+  // Proteção do HTML / Código-fonte contra inspeção, cópia ou salvamento indevido
+  useEffect(() => {
+    const handleContextMenu = (e) => {
+      if (!isUnlocked) {
+        e.preventDefault()
+      }
+    }
+    const handleKeyDown = (e) => {
+      const key = (e.key || '').toLowerCase()
+      const ctrlOrMeta = e.ctrlKey || e.metaKey
+      // Bloqueia F12, Ctrl+Shift+I/J/C, Ctrl+U (Exibir código-fonte) e Ctrl+S (Salvar página)
+      if (
+        e.key === 'F12' ||
+        (ctrlOrMeta && e.shiftKey && ['i', 'j', 'c'].includes(key)) ||
+        (ctrlOrMeta && ['u', 's'].includes(key)) ||
+        (!isUnlocked && ctrlOrMeta && key === 'p')
+      ) {
+        e.preventDefault()
+        e.stopPropagation()
+      }
+    }
+    window.addEventListener('contextmenu', handleContextMenu)
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('contextmenu', handleContextMenu)
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isUnlocked])
+
   // If user is on /painel, render the Admin CMS Panel directly
   if (isAdminRoute) {
     return (
@@ -93,6 +122,96 @@ export default function App() {
     } else {
       setAccessError(true)
     }
+  }
+
+  // Bloqueio Real de DOM: Enquanto não digitar a senha, o HTML do site NÃO é renderizado na página
+  if (!isUnlocked) {
+    return (
+      <div
+        onContextMenu={(e) => e.preventDefault()}
+        className="fixed inset-0 z-[100] bg-[#0B0C0E] text-white flex flex-col justify-between p-6 overflow-hidden select-none"
+      >
+        {/* Glow Dourado de Fundo */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full bg-[#D4AF37]/12 blur-[140px]"
+        />
+
+        {/* Top Bar */}
+        <div className="relative z-10 max-w-7xl w-full mx-auto flex items-center justify-between pt-2">
+          <div className="flex items-center gap-2 text-xs font-poppins uppercase tracking-[0.16em] text-white/60">
+            <i className="fas fa-lock text-[#D4AF37]" aria-hidden="true"></i>
+            <span>Ambiente de Homologação Restrito</span>
+          </div>
+          <span className="text-xs font-poppins tracking-widest text-white/40">
+            PROJETO EXCLUSIVO • 2026
+          </span>
+        </div>
+
+        {/* Center Card */}
+        <div className="relative z-10 w-full max-w-md mx-auto my-auto">
+          <div className="rounded-2xl bg-[#141416]/95 border border-[#D4AF37]/25 shadow-[0_30px_90px_-15px_rgba(0,0,0,0.95)] p-8 sm:p-10 backdrop-blur-xl text-center">
+            <div className="flex justify-center mb-6">
+              <img
+                src="/images/logo-sa.png"
+                alt="S.A Treinamento"
+                className="w-24 rounded-2xl shadow-[0_0_20px_rgba(212,175,55,0.25)] border border-[#D4AF37]/30"
+              />
+            </div>
+
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-[11px] font-poppins uppercase tracking-[0.14em] text-[#FFF2CD] mb-4">
+              <span>Apresentação &amp; Acompanhamento Ao Vivo</span>
+            </div>
+
+            <h2 className="font-bebas italic text-4xl sm:text-5xl font-semibold sa-degrade-hero mb-2">
+              Acesso Exclusivo S.A Treinamento
+            </h2>
+            <p className="text-xs sm:text-sm text-white/70 font-poppins leading-relaxed mb-7">
+              Insira a credencial de acesso fornecida para visualizar a evolução e finalização do
+              novo site oficial.
+            </p>
+
+            <form onSubmit={handleUnlock} className="space-y-4 text-left">
+              <div>
+                <label className="block text-[11px] font-poppins uppercase tracking-wider text-white/60 mb-1.5">
+                  Credencial de Acesso
+                </label>
+                <input
+                  type="password"
+                  value={accessInput}
+                  onChange={(e) => {
+                    setAccessInput(e.target.value)
+                    if (accessError) setAccessError(false)
+                  }}
+                  placeholder="Digite a senha de acesso..."
+                  autoFocus
+                  className="w-full px-4 py-3.5 rounded-xl bg-[#0B0C0E] border border-white/15 text-sm text-white placeholder-white/35 focus:outline-none focus:border-[#D4AF37] transition"
+                />
+                {accessError && (
+                  <p className="text-xs text-red-400 mt-2 font-poppins">
+                    Credencial inválida. Verifique a senha informada e tente novamente.
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                className="sa-btn-gold w-full py-4 px-6 text-[24px] tracking-wider"
+              >
+                <span>Acessar Ambiente do Projeto</span>
+                <i className="fas fa-arrow-right text-[18px] ml-2.5 sa-btn-icon" aria-hidden="true"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="relative z-10 max-w-7xl w-full mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-white/40 pb-2">
+          <span>© 2026 S.A Treinamento • Ambiente de Homologação</span>
+          <span>Viva o agora, viva a S.A!</span>
+        </div>
+      </div>
+    )
   }
 
   const prevSlide = () => {
@@ -196,90 +315,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white relative overflow-x-hidden">
-      {/* ==================== TELA DE ACESSO EXCLUSIVO (GATE DE HOMOLOGAÇÃO) ==================== */}
-      {!isUnlocked && (
-        <div className="fixed inset-0 z-[100] bg-[#0B0C0E] text-white flex flex-col justify-between p-6 overflow-hidden select-none">
-          {/* Glow Dourado de Fundo */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full bg-[#D4AF37]/12 blur-[140px]"
-          />
-
-          {/* Top Bar */}
-          <div className="relative z-10 max-w-7xl w-full mx-auto flex items-center justify-between pt-2">
-            <div className="flex items-center gap-2 text-xs font-poppins uppercase tracking-[0.16em] text-white/60">
-              <i className="fas fa-lock text-[#D4AF37]" aria-hidden="true"></i>
-              <span>Ambiente de Homologação Restrito</span>
-            </div>
-            <span className="text-xs font-poppins tracking-widest text-white/40">
-              PROJETO EXCLUSIVO • 2026
-            </span>
-          </div>
-
-          {/* Center Card */}
-          <div className="relative z-10 w-full max-w-md mx-auto my-auto">
-            <div className="rounded-2xl bg-[#141416]/95 border border-[#D4AF37]/25 shadow-[0_30px_90px_-15px_rgba(0,0,0,0.95)] p-8 sm:p-10 backdrop-blur-xl text-center">
-              <div className="flex justify-center mb-6">
-                <img
-                  src="/images/logo-sa.png"
-                  alt="S.A Treinamento"
-                  className="w-24 rounded-2xl shadow-[0_0_20px_rgba(212,175,55,0.25)] border border-[#D4AF37]/30"
-                />
-              </div>
-
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-[11px] font-poppins uppercase tracking-[0.14em] text-[#FFF2CD] mb-4">
-                <span>Apresentação &amp; Acompanhamento Ao Vivo</span>
-              </div>
-
-              <h2 className="font-bebas italic text-4xl sm:text-5xl font-semibold sa-degrade-hero mb-2">
-                Acesso Exclusivo S.A Treinamento
-              </h2>
-              <p className="text-xs sm:text-sm text-white/70 font-poppins leading-relaxed mb-7">
-                Insira a credencial de acesso fornecida para visualizar a evolução e finalização do novo site oficial.
-              </p>
-
-              <form onSubmit={handleUnlock} className="space-y-4 text-left">
-                <div>
-                  <label className="block text-[11px] font-poppins uppercase tracking-wider text-white/60 mb-1.5">
-                    Credencial de Acesso
-                  </label>
-                  <input
-                    type="password"
-                    value={accessInput}
-                    onChange={(e) => {
-                      setAccessInput(e.target.value)
-                      if (accessError) setAccessError(false)
-                    }}
-                    placeholder="Digite a senha de acesso..."
-                    autoFocus
-                    className="w-full px-4 py-3.5 rounded-xl bg-[#0B0C0E] border border-white/15 text-sm text-white placeholder-white/35 focus:outline-none focus:border-[#D4AF37] transition"
-                  />
-                  {accessError && (
-                    <p className="text-xs text-red-400 mt-2 font-poppins">
-                      Credencial inválida. Verifique a senha informada e tente novamente.
-                    </p>
-                  )}
-                </div>
-
-                <button
-                  type="submit"
-                  className="sa-btn-gold w-full py-4 px-6 text-[24px] tracking-wider"
-                >
-                  <span>Acessar Ambiente do Projeto</span>
-                  <i className="fas fa-arrow-right text-[18px] ml-2.5 sa-btn-icon" aria-hidden="true"></i>
-                </button>
-              </form>
-            </div>
-          </div>
-
-          {/* Bottom Bar */}
-          <div className="relative z-10 max-w-7xl w-full mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-white/40 pb-2">
-            <span>© 2026 S.A Treinamento • Ambiente de Homologação</span>
-            <span>Viva o agora, viva a S.A!</span>
-          </div>
-        </div>
-      )}
-
       {/* ==================== FLOATING HEADER (elementor-228) ==================== */}
       <header className="relative z-30 w-full">
         {/* Mobile Logo Header */}

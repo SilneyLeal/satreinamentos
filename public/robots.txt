@@ -1,0 +1,49 @@
+# robots.txt - S.A Treinamento (Otimizado para Buscadores e IAs / LLMs)
+User-agent: *
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /painel
+
+# Permissão explícita para Agentes e Buscadores de IA (GEO / LLMs)
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /painel
+
+User-agent: OAI-SearchBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /painel
+
+User-agent: ChatGPT-User
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+User-agent: Google-Extended
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+User-agent: anthropic-ai
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+User-agent: Applebot-Extended
+Allow: /
+
+Sitemap: https://satreinamentos.vercel.app/sitemap.xml
