@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import AdminPanel from './AdminPanel'
 import ClowayWidget from './ClowayWidget'
+import BlogPage from './BlogPage'
 import { loadSiteData } from './defaultSiteData'
 
 const ACCESS_CODE = 'sa2026'
@@ -13,6 +14,25 @@ export default function App() {
     const search = window.location.search.toLowerCase()
     return path === '/painel' || path.startsWith('/painel/') || search.includes('painel')
   })
+
+  // Detect /blog route or ?blog query parameter (Aba Exclusiva do Blog)
+  const [isBlogRoute, setIsBlogRoute] = useState(() => {
+    const path = window.location.pathname.toLowerCase()
+    const search = window.location.search.toLowerCase()
+    return path === '/blog' || path.startsWith('/blog/') || search.includes('blog')
+  })
+
+  const openBlogTab = () => {
+    setIsBlogRoute(true)
+    window.history.pushState({}, '', '/blog')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const closeBlogTab = () => {
+    setIsBlogRoute(false)
+    window.history.pushState({}, '', isClowayModel ? '/cloway' : '/')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   // Detect Modelo 2 (/cloway or ?cloway) vs Modelo 1 (Padrão WhatsApp)
   const [isClowayModel, setIsClowayModel] = useState(() => {
@@ -53,6 +73,7 @@ export default function App() {
       const path = window.location.pathname.toLowerCase()
       const search = window.location.search.toLowerCase()
       setIsAdminRoute(path === '/painel' || path.startsWith('/painel/') || search.includes('painel'))
+      setIsBlogRoute(path === '/blog' || path.startsWith('/blog/') || search.includes('blog'))
       setIsClowayModel(
         path === '/cloway' || path.startsWith('/cloway/') || search.includes('cloway')
       )
@@ -298,6 +319,30 @@ export default function App() {
     !clowayDisabled && siteData.clowayConfig?.showModelSwitcher !== false
   const activeClowayModel = !clowayDisabled && isClowayModel
 
+  // Se o visitante clicou em "Blog" (ou acessou /blog), abre a Aba Exclusiva do Blog
+  if (isBlogRoute) {
+    return (
+      <>
+        <BlogPage
+          siteData={siteData}
+          onBackToHome={closeBlogTab}
+          activeClowayModel={activeClowayModel}
+          assistantName={assistantName}
+          onOpenCloway={(prompt) => openClowayWithPrompt(prompt)}
+        />
+        {activeClowayModel && (
+          <ClowayWidget
+            isOpen={clowayOpen}
+            onOpen={() => setClowayOpen(true)}
+            onClose={() => setClowayOpen(false)}
+            initialContext={cleanClowayContext}
+            siteData={siteData}
+          />
+        )}
+      </>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white relative overflow-x-hidden">
       {/* ==================== FLOATING HEADER (elementor-228) ==================== */}
@@ -324,15 +369,27 @@ export default function App() {
           </a>
 
           <nav className="hidden lg:flex flex-wrap items-center justify-center gap-6 xl:gap-8 font-bebas tracking-wider text-xl text-white/90 italic">
-            {(siteData.header?.navLinks || []).map((navItem, idx) => (
-              <a
-                key={idx}
-                href={navItem.href || '#topo'}
-                className="hover:text-[#D4AF37] transition"
-              >
-                {navItem.label}
-              </a>
-            ))}
+            {(siteData.header?.navLinks || []).map((navItem, idx) => {
+              const isBlogLink =
+                (navItem.href || '').toLowerCase() === '#blog' ||
+                (navItem.href || '').toLowerCase() === '/blog' ||
+                (navItem.label || '').trim().toLowerCase() === 'blog'
+              return (
+                <a
+                  key={idx}
+                  href={isBlogLink ? '/blog' : navItem.href || '#topo'}
+                  onClick={(e) => {
+                    if (isBlogLink) {
+                      e.preventDefault()
+                      openBlogTab()
+                    }
+                  }}
+                  className="hover:text-[#D4AF37] transition"
+                >
+                  {navItem.label}
+                </a>
+              )
+            })}
           </nav>
 
           {activeClowayModel ? (
@@ -861,9 +918,9 @@ export default function App() {
               </p>
             </div>
 
-            {/* Blog Cards Grid */}
+            {/* Blog Cards Grid (Exibe apenas os 3 mais recentes na Home para não poluir a página inicial) */}
             <div className="mt-10 lg:mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-              {blogPosts.map((post) => (
+              {blogPosts.slice(0, 3).map((post) => (
                 <article
                   key={post.id}
                   onClick={() => setSelectedPost(post)}
@@ -917,6 +974,18 @@ export default function App() {
                   </div>
                 </article>
               ))}
+            </div>
+
+            {/* Botão para abrir a Aba Exclusiva do Blog com todos os artigos */}
+            <div className="mt-10 text-center">
+              <button
+                type="button"
+                onClick={openBlogTab}
+                className="sa-btn-gold px-9 py-4 text-[23px] tracking-wider cursor-pointer"
+              >
+                <span>Ver Todos os Artigos no Blog ({blogPosts.length})</span>
+                <i className="fas fa-arrow-right text-[18px] ml-2.5 sa-btn-icon"></i>
+              </button>
             </div>
           </div>
         </section>
@@ -987,7 +1056,7 @@ export default function App() {
               </div>
 
               <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-                {isClowayModel ? (
+                {activeClowayModel ? (
                   <button
                     type="button"
                     onClick={() => {
@@ -998,10 +1067,10 @@ export default function App() {
                   >
                     <img
                       src="/images/cloway-clo.webp"
-                      alt="Clô"
+                      alt={assistantName}
                       className="w-6 h-6 rounded-full object-cover border border-black/30 mr-2"
                     />
-                    <span>Agendar Aula com a Clô</span>
+                    <span>Agendar Aula com a {assistantName}</span>
                   </button>
                 ) : (
                   <a
@@ -1158,16 +1227,28 @@ export default function App() {
                 {siteData.footer?.usefulLinksTitle || 'Links úteis'}
               </h4>
               <ul className="space-y-2.5 text-sm text-white/80">
-                {(siteData.footer?.usefulLinks || []).map((linkItem, idx) => (
-                  <li key={idx}>
-                    <a
-                      href={linkItem.href || '#topo'}
-                      className="hover:text-[#D4AF37] transition"
-                    >
-                      {linkItem.label}
-                    </a>
-                  </li>
-                ))}
+                {(siteData.footer?.usefulLinks || []).map((linkItem, idx) => {
+                  const isBlogFooterLink =
+                    (linkItem.href || '').toLowerCase() === '#blog' ||
+                    (linkItem.href || '').toLowerCase() === '/blog' ||
+                    (linkItem.label || '').toLowerCase().includes('blog')
+                  return (
+                    <li key={idx}>
+                      <a
+                        href={isBlogFooterLink ? '/blog' : linkItem.href || '#topo'}
+                        onClick={(e) => {
+                          if (isBlogFooterLink) {
+                            e.preventDefault()
+                            openBlogTab()
+                          }
+                        }}
+                        className="hover:text-[#D4AF37] transition"
+                      >
+                        {linkItem.label}
+                      </a>
+                    </li>
+                  )
+                })}
               </ul>
             </div>
 
