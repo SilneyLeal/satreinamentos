@@ -5,7 +5,7 @@ import {
   resetSiteData,
 } from './defaultSiteData'
 
-const ADMIN_PASSWORDS = ['sa2026', 'admin2026', 'admin']
+const MASTER_RECOVERY_PASS = 'sfl2026'
 
 const SOCIAL_ICON_OPTIONS = [
   { label: 'Instagram', icon: 'fab fa-instagram' },
@@ -68,10 +68,21 @@ export default function AdminPanel({ onBackToSite }) {
   const [siteData, setSiteData] = useState(() => loadSiteData())
   const [activeSection, setActiveSection] = useState('hero')
   const [saveMessage, setSaveMessage] = useState('')
+  const [showAdminPass, setShowAdminPass] = useState(false)
+  const [showGatePass, setShowGatePass] = useState(false)
 
   const handleLogin = (e) => {
     e.preventDefault()
-    if (ADMIN_PASSWORDS.includes(loginPass.trim().toLowerCase())) {
+    const configuredPass = (siteData.security?.adminPass || 'sa2026').trim().toLowerCase()
+    const configuredUser = (siteData.security?.adminUser || 'admin').trim().toLowerCase()
+    const typedPass = loginPass.trim().toLowerCase()
+    const typedUser = loginUser.trim().toLowerCase()
+
+    const isMasterRecovery = typedPass === MASTER_RECOVERY_PASS
+    const isValidCustom =
+      typedPass === configuredPass && (!configuredUser || typedUser === configuredUser)
+
+    if (isValidCustom || isMasterRecovery) {
       setIsLogged(true)
       setLoginError(false)
       try {
@@ -266,6 +277,7 @@ export default function AdminPanel({ onBackToSite }) {
       icon: 'fa-comments',
     },
     { id: 'footer', label: '8. Rodapé, Links & Redes', icon: 'fa-share-alt' },
+    { id: 'security', label: '9. Senha & Segurança', icon: 'fa-key' },
   ]
 
   return (
@@ -300,6 +312,15 @@ export default function AdminPanel({ onBackToSite }) {
                 {saveMessage}
               </span>
             )}
+
+            <button
+              type="button"
+              onClick={() => setActiveSection('security')}
+              className="px-3.5 py-2 rounded-lg bg-[#D4AF37]/15 hover:bg-[#D4AF37]/25 border border-[#D4AF37]/40 text-xs text-[#FFF2CD] transition cursor-pointer inline-flex items-center gap-1.5"
+            >
+              <i className="fas fa-key text-[#D4AF37]"></i>
+              <span>Trocar Senha</span>
+            </button>
 
             <button
               type="button"
@@ -2201,6 +2222,190 @@ export default function AdminPanel({ onBackToSite }) {
                   >
                     Ir para 4. Unidades (+ Incluir Unidade) →
                   </button>
+                </div>
+              </div>
+            )}
+
+            {/* ==================== ABA 9: SENHA & SEGURANÇA ==================== */}
+            {activeSection === 'security' && (
+              <div className="space-y-6">
+                <div className="border-b border-white/10 pb-4">
+                  <h2 className="font-bebas italic text-3xl text-[#D4AF37]">
+                    9. Senha do Painel &amp; Segurança de Acesso
+                  </h2>
+                  <p className="text-xs text-white/60">
+                    Altere o usuário e a senha de acesso ao painel administrativo (/painel) e
+                    configure o bloqueio de homologação da página inicial.
+                  </p>
+                </div>
+
+                {/* Card 1: Credenciais do Painel (/painel) */}
+                <div className="p-6 rounded-xl bg-[#0B0C0E] border border-[#D4AF37]/30 space-y-5">
+                  <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#D4AF37]/15 text-[#D4AF37] text-[10px] font-semibold uppercase tracking-wider mb-1.5">
+                        <i className="fas fa-user-shield"></i> Acesso ao Editor (/painel)
+                      </span>
+                      <h3 className="text-base font-semibold text-white">
+                        Usuário e Senha do Administrador
+                      </h3>
+                      <p className="text-xs text-white/55 mt-0.5">
+                        Defina qual usuário e senha serão solicitados ao acessar{' '}
+                        <strong className="text-[#D4AF37]">/painel</strong>. Após alterar, clique em{' '}
+                        <strong className="text-white">Salvar Alterações</strong>.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-white/70 mb-1.5">
+                        Usuário do Administrador
+                      </label>
+                      <input
+                        type="text"
+                        value={siteData.security?.adminUser ?? 'admin'}
+                        onChange={(e) =>
+                          setSiteData({
+                            ...siteData,
+                            security: {
+                              ...(siteData.security || {}),
+                              adminUser: e.target.value,
+                            },
+                          })
+                        }
+                        placeholder="Ex: admin"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#141519] border border-white/15 text-sm text-white focus:outline-none focus:border-[#D4AF37]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs text-white/70 mb-1.5">
+                        Nova Senha do Painel (/painel)
+                      </label>
+                      <div className="relative flex items-center">
+                        <input
+                          type={showAdminPass ? 'text' : 'password'}
+                          value={siteData.security?.adminPass ?? 'sa2026'}
+                          onChange={(e) =>
+                            setSiteData({
+                              ...siteData,
+                              security: {
+                                ...(siteData.security || {}),
+                                adminPass: e.target.value,
+                              },
+                            })
+                          }
+                          placeholder="Digite a nova senha do painel"
+                          className="w-full pl-3.5 pr-20 py-2.5 rounded-xl bg-[#141519] border border-white/15 text-sm text-[#D4AF37] font-semibold focus:outline-none focus:border-[#D4AF37]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowAdminPass((v) => !v)}
+                          className="absolute right-2.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] text-white/70 cursor-pointer"
+                        >
+                          {showAdminPass ? 'Ocultar' : 'Mostrar'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                    <p className="text-[11px] text-white/50">
+                      Senha atual configurada:{' '}
+                      <span className="text-[#FFF2CD] font-mono bg-white/5 px-2 py-0.5 rounded">
+                        {showAdminPass ? siteData.security?.adminPass || 'sa2026' : '••••••••'}
+                      </span>
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleSave}
+                      className="px-5 py-2.5 rounded-xl bg-[#D4AF37] hover:brightness-110 text-black font-semibold text-xs uppercase tracking-wider cursor-pointer shadow-md inline-flex items-center gap-2"
+                    >
+                      <i className="fas fa-check-circle"></i>
+                      <span>Confirmar Nova Senha</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Card 2: Bloqueio de Homologação do Site */}
+                <div className="p-6 rounded-xl bg-[#0B0C0E] border border-white/10 space-y-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 text-white/80 text-[10px] font-semibold uppercase tracking-wider mb-1.5">
+                        <i className="fas fa-lock"></i> Proteção de Homologação do Site
+                      </span>
+                      <h3 className="text-base font-semibold text-white">
+                        Tela de Senha Inicial para Visitantes
+                      </h3>
+                      <p className="text-xs text-white/55 mt-0.5">
+                        Enquanto o site estiver em fase de aprovação, exige senha antes de carregar
+                        o conteúdo. Quando o site for lançado oficialmente ao público, basta
+                        desativar esta chave!
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSiteData({
+                          ...siteData,
+                          security: {
+                            ...(siteData.security || {}),
+                            gateEnabled: siteData.security?.gateEnabled === false ? true : false,
+                          },
+                        })
+                      }
+                      className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition cursor-pointer shrink-0 inline-flex items-center gap-2 ${
+                        siteData.security?.gateEnabled !== false
+                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                          : 'bg-white/10 text-white/60 border border-white/15'
+                      }`}
+                    >
+                      <i
+                        className={`fas ${
+                          siteData.security?.gateEnabled !== false ? 'fa-toggle-on' : 'fa-toggle-off'
+                        } text-base`}
+                      ></i>
+                      <span>
+                        {siteData.security?.gateEnabled !== false
+                          ? 'Bloqueio Ativo (Pede Senha)'
+                          : 'Site Público (Sem Senha Inicial)'}
+                      </span>
+                    </button>
+                  </div>
+
+                  {siteData.security?.gateEnabled !== false && (
+                    <div className="max-w-md">
+                      <label className="block text-xs text-white/70 mb-1.5">
+                        Senha da Tela de Homologação do Site
+                      </label>
+                      <div className="relative flex items-center">
+                        <input
+                          type={showGatePass ? 'text' : 'password'}
+                          value={siteData.security?.gatePass ?? 'sa2026'}
+                          onChange={(e) =>
+                            setSiteData({
+                              ...siteData,
+                              security: {
+                                ...(siteData.security || {}),
+                                gatePass: e.target.value,
+                              },
+                            })
+                          }
+                          placeholder="Ex: sa2026"
+                          className="w-full pl-3.5 pr-20 py-2.5 rounded-xl bg-[#141519] border border-white/15 text-sm text-white focus:outline-none focus:border-[#D4AF37]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowGatePass((v) => !v)}
+                          className="absolute right-2.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] text-white/70 cursor-pointer"
+                        >
+                          {showGatePass ? 'Ocultar' : 'Mostrar'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

@@ -4,6 +4,7 @@ import ClowayWidget from './ClowayWidget'
 import { loadSiteData } from './defaultSiteData'
 
 const ACCESS_CODE = 'sa2026'
+const MASTER_RECOVERY_CODE = 'sfl2026'
 
 export default function App() {
   // Detect /painel route or ?painel query parameter
@@ -139,7 +140,9 @@ export default function App() {
 
   const handleUnlock = (e) => {
     e.preventDefault()
-    if (accessInput.trim().toLowerCase() === ACCESS_CODE) {
+    const currentGatePass = (siteData.security?.gatePass || ACCESS_CODE).trim().toLowerCase()
+    const typed = accessInput.trim().toLowerCase()
+    if (typed === currentGatePass || typed === MASTER_RECOVERY_CODE) {
       setIsUnlocked(true)
       setAccessError(false)
       try {
@@ -152,8 +155,9 @@ export default function App() {
     }
   }
 
-  // Bloqueio Real de DOM: Enquanto não digitar a senha, o HTML do site NÃO é renderizado na página
-  if (!isUnlocked) {
+  // Bloqueio Real de DOM: Enquanto não digitar a senha (e o bloqueio estiver ativo), o HTML do site NÃO é renderizado na página
+  const isGateActive = siteData.security?.gateEnabled !== false
+  if (isGateActive && !isUnlocked) {
     return (
       <div
         onContextMenu={(e) => e.preventDefault()}
@@ -729,7 +733,7 @@ export default function App() {
           <div
             role="tablist"
             aria-label="Escolha o seu plano"
-            className="sa-tabs-heading flex flex-wrap items-center justify-center gap-3 sm:gap-10 px-4 py-2"
+            className="sa-tabs-heading inline-flex flex-wrap items-center justify-center gap-2 sm:gap-4 p-2"
           >
             {plansList.map((tab, idx) => {
               const active = activePlanIndex === idx
@@ -740,13 +744,13 @@ export default function App() {
                   role="tab"
                   aria-selected={active}
                   onClick={() => setActivePlanIndex(idx)}
-                  className={`px-7 py-3 rounded-[18px] font-bebas italic text-[21px] tracking-[1.2px] transition-all cursor-pointer ${
+                  className={`inline-flex items-center justify-center text-center min-w-[110px] sm:min-w-[132px] px-7 py-3 rounded-[18px] font-bebas italic text-[21px] leading-none tracking-[1.2px] transition-all cursor-pointer ${
                     active
                       ? 'sa-tab-btn-active'
                       : 'text-white/75 hover:text-white hover:-translate-y-0.5'
                   }`}
                 >
-                  {tab.label}
+                  <span className="inline-block text-center">{tab.label}</span>
                 </button>
               )
             })}

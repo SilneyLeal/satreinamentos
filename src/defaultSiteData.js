@@ -2,6 +2,12 @@ export const STORAGE_KEY = 'sa_treinamento_cms_data_v1'
 
 export const DEFAULT_SITE_DATA = {
   whatsappNumber: '5551999009900',
+  security: {
+    adminUser: 'admin',
+    adminPass: 'sa2026',
+    gateEnabled: true,
+    gatePass: 'sa2026',
+  },
   header: {
     ctaText: 'Contato pelo WhatsApp',
     navLinks: [
@@ -321,6 +327,10 @@ export function loadSiteData() {
     return {
       ...DEFAULT_SITE_DATA,
       ...parsed,
+      security: {
+        ...DEFAULT_SITE_DATA.security,
+        ...(parsed.security || {}),
+      },
       header: {
         ...DEFAULT_SITE_DATA.header,
         ...(parsed.header || {}),
