@@ -47,3 +47,4 @@ User-agent: Applebot-Extended
 Allow: /
 
 Sitemap: https://satreinamentos.vercel.app/sitemap.xml
+

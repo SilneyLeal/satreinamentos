@@ -1,0 +1,24 @@
+# Configuração Apache para Hospedagem via FileZilla (cPanel / HostGator / Hostinger / Locaweb)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Permite acesso direto aos arquivos de IA (llms.txt, llms-full.txt, robots.txt, sitemap.xml) e imagens
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-l
+
+  # Redireciona rotas como /painel para o index.html (SPA React)
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# Headers de Segurança e UTF-8 para LLMs
+<IfModule mod_headers.c>
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+AddDefaultCharset UTF-8
+AddType "text/plain; charset=utf-8" .txt
