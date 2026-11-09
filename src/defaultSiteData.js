@@ -403,6 +403,12 @@ export function loadSiteData() {
 export function saveSiteData(data) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    // Grava também no arquivo dados-site.json via PHP quando hospedado no servidor do cliente (FileZilla/Apache)
+    fetch('/api-cms.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }).catch(() => {})
     return true
   } catch {
     return false
@@ -412,8 +418,31 @@ export function saveSiteData(data) {
 export function resetSiteData() {
   try {
     localStorage.removeItem(STORAGE_KEY)
+    fetch('/api-cms.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'reset' }),
+    }).catch(() => {})
   } catch {
     // ignore
   }
   return DEFAULT_SITE_DATA
+}
+
+export async function syncFromPhpServer(onUpdate) {
+  try {
+    const res = await fetch('/api-cms.php?t=' + Date.now(), {
+      headers: { Accept: 'application/json' },
+    })
+    if (!res.ok) return
+    const text = await res.text()
+    if (!text || text.trim().startsWith('<?php') || text.trim().startsWith('<')) return
+    const json = JSON.parse(text)
+    if (json && json.header && json.hero) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(json))
+      if (onUpdate) onUpdate(loadSiteData())
+    }
+  } catch {
+    // Fallback silencioso para localStorage/DEFAULT_SITE_DATA quando em ambiente sem PHP (ex: Vercel)
+  }
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import AdminPanel from './AdminPanel'
 import ClowayWidget from './ClowayWidget'
 import BlogPage from './BlogPage'
-import { loadSiteData } from './defaultSiteData'
+import { loadSiteData, syncFromPhpServer } from './defaultSiteData'
 
 const ACCESS_CODE = 'sa2026'
 const MASTER_RECOVERY_CODE = 'sfl2026'
@@ -89,6 +89,7 @@ export default function App() {
     const handleStorage = () => {
       setSiteData(loadSiteData())
     }
+    syncFromPhpServer((freshData) => setSiteData(freshData))
     window.addEventListener('popstate', handlePopState)
     window.addEventListener('storage', handleStorage)
     return () => {
