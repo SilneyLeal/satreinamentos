@@ -4,6 +4,13 @@ export const DEFAULT_SITE_DATA = {
   whatsappNumber: '5551999009900',
   header: {
     ctaText: 'Contato pelo WhatsApp',
+    navLinks: [
+      { label: 'A S.A Treinamento', href: '#sobre' },
+      { label: 'Modalidades', href: '#modalidades' },
+      { label: 'Unidades', href: '#unidades' },
+      { label: 'Planos', href: '#planos' },
+      { label: 'Blog', href: '#blog' },
+    ],
   },
   hero: {
     titleLine1: 'Viva o Agora',
@@ -89,7 +96,7 @@ export const DEFAULT_SITE_DATA = {
     ],
     items: [
       'Treinamento Funcional Personalizado',
-      'Musculação com Acompanhamento Próximo',
+      'Musculação com Acompamento Próximo',
       'Condicionamento Físico e Emagrecimento',
       'Fortalecimento Muscular e Prevenção de Lesões',
       'Mobilidade, Postura e Qualidade de Vida',
@@ -107,6 +114,7 @@ export const DEFAULT_SITE_DATA = {
         mapQuery: 'S.A Treinamento Unidade Protásio',
         mapTitle: 'S.A Treinamento Unidade Protásio',
         address: 'Av. Protásio Alves — Porto Alegre, RS',
+        ctaText: 'Agendar Aula Experimental',
       },
       {
         name: 'Unidade\nAntônio de Carvalho',
@@ -114,6 +122,7 @@ export const DEFAULT_SITE_DATA = {
         mapQuery: 'S.A Treinamento Antônio',
         mapTitle: 'S.A Treinamento Antônio',
         address: 'Av. Antônio de Carvalho — Porto Alegre, RS',
+        ctaText: 'Agendar Aula Experimental',
       },
       {
         name: 'Unidade\nPasqualini',
@@ -121,14 +130,16 @@ export const DEFAULT_SITE_DATA = {
         mapQuery: 'S.A Treinamento Pasqualini',
         mapTitle: 'S.A Treinamento Pasqualini',
         address: 'Av. Eng. Ludolfo Boehl / Pasqualini — Porto Alegre, RS',
+        ctaText: 'Agendar Aula Experimental',
       },
     ],
   },
   plansSection: {
     subtitleTop: 'Vem pra S.A treinamento',
     titleMain: 'Escolha o seu plano!',
-    plans: {
-      mensal: {
+    plansList: [
+      {
+        id: 'mensal',
         label: 'Mensal',
         title: 'Plano Mensal',
         subtitle: 'à partir de',
@@ -141,7 +152,8 @@ export const DEFAULT_SITE_DATA = {
           'AMBIENTE ACOLHEDOR E ESTRUTURA COMPLETA',
         ],
       },
-      anual: {
+      {
+        id: 'anual',
         label: 'Anual',
         title: 'Plano Anual',
         subtitle: 'à partir de',
@@ -154,7 +166,8 @@ export const DEFAULT_SITE_DATA = {
           'ACESSO COMPLETO À METODOLOGIA S.A TREINAMENTO',
         ],
       },
-      duplas: {
+      {
+        id: 'duplas',
         label: 'Duplas',
         title: 'Plano em duplas',
         subtitle: 'de R$126,00 por apenas',
@@ -167,7 +180,7 @@ export const DEFAULT_SITE_DATA = {
           'ACOMPANHAMENTO COMPLETO DA EQUIPE S.A',
         ],
       },
-    },
+    ],
   },
   blogSection: {
     subtitleTop: 'Conteúdos & Dicas',
@@ -237,8 +250,33 @@ export const DEFAULT_SITE_DATA = {
       'Transformando sua qualidade de vida há mais de 8 anos. Viva o agora, viva a S.A!',
     companyName: 'S.A TREINAMENTO FUNCIONAL',
     companyLocation: 'Porto Alegre • RS',
-    instagramUrl: 'https://www.instagram.com/',
-    facebookUrl: 'https://www.facebook.com/',
+    usefulLinksTitle: 'Links úteis',
+    usefulLinks: [
+      { label: 'Início', href: '#topo' },
+      { label: 'Sobre a S.A', href: '#sobre' },
+      { label: 'Modalidades', href: '#modalidades' },
+      { label: 'Nossas Unidades', href: '#unidades' },
+      { label: 'Planos e Valores', href: '#planos' },
+      { label: 'Blog da S.A', href: '#blog' },
+    ],
+    socialTitle: 'Redes sociais',
+    socialLinks: [
+      {
+        platform: 'WhatsApp',
+        icon: 'fab fa-whatsapp',
+        url: 'https://wa.me/5551999009900',
+      },
+      {
+        platform: 'Instagram',
+        icon: 'fab fa-instagram',
+        url: 'https://www.instagram.com/',
+      },
+      {
+        platform: 'Facebook',
+        icon: 'fab fa-facebook',
+        url: 'https://www.facebook.com/',
+      },
+    ],
   },
 }
 
@@ -247,10 +285,50 @@ export function loadSiteData() {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return DEFAULT_SITE_DATA
     const parsed = JSON.parse(raw)
+
+    // Migrate legacy plans object to plansList array if needed
+    let plansList = DEFAULT_SITE_DATA.plansSection.plansList
+    if (Array.isArray(parsed.plansSection?.plansList) && parsed.plansSection.plansList.length > 0) {
+      plansList = parsed.plansSection.plansList
+    } else if (parsed.plansSection?.plans) {
+      plansList = ['mensal', 'anual', 'duplas']
+        .map((k) =>
+          parsed.plansSection.plans[k] ? { id: k, ...parsed.plansSection.plans[k] } : null
+        )
+        .filter(Boolean)
+    }
+
+    // Migrate legacy instagramUrl / facebookUrl to socialLinks array if needed
+    let socialLinks = DEFAULT_SITE_DATA.footer.socialLinks
+    if (Array.isArray(parsed.footer?.socialLinks) && parsed.footer.socialLinks.length > 0) {
+      socialLinks = parsed.footer.socialLinks
+    } else if (parsed.footer?.instagramUrl || parsed.footer?.facebookUrl) {
+      socialLinks = [
+        {
+          platform: 'WhatsApp',
+          icon: 'fab fa-whatsapp',
+          url: `https://wa.me/${parsed.whatsappNumber || DEFAULT_SITE_DATA.whatsappNumber}`,
+        },
+        ...(parsed.footer.instagramUrl
+          ? [{ platform: 'Instagram', icon: 'fab fa-instagram', url: parsed.footer.instagramUrl }]
+          : []),
+        ...(parsed.footer.facebookUrl
+          ? [{ platform: 'Facebook', icon: 'fab fa-facebook', url: parsed.footer.facebookUrl }]
+          : []),
+      ]
+    }
+
     return {
       ...DEFAULT_SITE_DATA,
       ...parsed,
-      header: { ...DEFAULT_SITE_DATA.header, ...(parsed.header || {}) },
+      header: {
+        ...DEFAULT_SITE_DATA.header,
+        ...(parsed.header || {}),
+        navLinks:
+          Array.isArray(parsed.header?.navLinks) && parsed.header.navLinks.length > 0
+            ? parsed.header.navLinks
+            : DEFAULT_SITE_DATA.header.navLinks,
+      },
       hero: { ...DEFAULT_SITE_DATA.hero, ...(parsed.hero || {}) },
       about: { ...DEFAULT_SITE_DATA.about, ...(parsed.about || {}) },
       modalitiesSection: {
@@ -264,10 +342,7 @@ export function loadSiteData() {
       plansSection: {
         ...DEFAULT_SITE_DATA.plansSection,
         ...(parsed.plansSection || {}),
-        plans: {
-          ...DEFAULT_SITE_DATA.plansSection.plans,
-          ...(parsed.plansSection?.plans || {}),
-        },
+        plansList,
       },
       blogSection: {
         ...DEFAULT_SITE_DATA.blogSection,
@@ -276,6 +351,11 @@ export function loadSiteData() {
       footer: {
         ...DEFAULT_SITE_DATA.footer,
         ...(parsed.footer || {}),
+        usefulLinks:
+          Array.isArray(parsed.footer?.usefulLinks) && parsed.footer.usefulLinks.length > 0
+            ? parsed.footer.usefulLinks
+            : DEFAULT_SITE_DATA.footer.usefulLinks,
+        socialLinks,
       },
     }
   } catch {

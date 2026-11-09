@@ -1,12 +1,25 @@
 import React, { useState } from 'react'
 import {
-  DEFAULT_SITE_DATA,
   loadSiteData,
   saveSiteData,
   resetSiteData,
 } from './defaultSiteData'
 
 const ADMIN_PASSWORDS = ['sa2026', 'admin2026', 'admin']
+
+const SOCIAL_ICON_OPTIONS = [
+  { label: 'Instagram', icon: 'fab fa-instagram' },
+  { label: 'WhatsApp', icon: 'fab fa-whatsapp' },
+  { label: 'Facebook', icon: 'fab fa-facebook' },
+  { label: 'YouTube', icon: 'fab fa-youtube' },
+  { label: 'TikTok', icon: 'fab fa-tiktok' },
+  { label: 'LinkedIn', icon: 'fab fa-linkedin' },
+  { label: 'X / Twitter', icon: 'fab fa-twitter' },
+  { label: 'Spotify', icon: 'fab fa-spotify' },
+  { label: 'Telegram', icon: 'fab fa-telegram' },
+  { label: 'Localização / Mapa', icon: 'fas fa-map-marker-alt' },
+  { label: 'Site / Link Externo', icon: 'fas fa-globe' },
+]
 
 // Helper to compress uploaded image to DataURL so it saves cleanly in browser storage
 function handleImageFileUpload(file, callback) {
@@ -104,6 +117,26 @@ export default function AdminPanel({ onBackToSite }) {
     }
   }
 
+  const addNewUnit = () => {
+    setSiteData({
+      ...siteData,
+      unitsSection: {
+        ...siteData.unitsSection,
+        items: [
+          ...siteData.unitsSection.items,
+          {
+            name: 'Nova\nUnidade',
+            img: '/images/img9825.jpg',
+            mapQuery: 'S.A Treinamento Porto Alegre',
+            mapTitle: 'S.A Treinamento Nova Unidade',
+            address: 'Endereço da Unidade — Porto Alegre, RS',
+            ctaText: 'Agendar Aula Experimental',
+          },
+        ],
+      },
+    })
+  }
+
   // ==================== TELA DE LOGIN DO PAINEL (/painel) ====================
   if (!isLogged) {
     return (
@@ -150,7 +183,7 @@ export default function AdminPanel({ onBackToSite }) {
               Editor S.A Treinamento
             </h1>
             <p className="text-xs sm:text-sm text-white/70 font-poppins leading-relaxed mb-6">
-              Acesse para editar textos, fotos, unidades, planos e publicar matérias no Blog.
+              Acesse para editar textos, fotos, unidades, planos, links e publicar matérias no Blog.
             </p>
 
             <form onSubmit={handleLogin} className="space-y-4 text-left font-poppins">
@@ -209,14 +242,30 @@ export default function AdminPanel({ onBackToSite }) {
   }
 
   const navTabs = [
-    { id: 'hero', label: '1. Topo & Hero', icon: 'fa-home' },
-    { id: 'about', label: '2. Sobre & 7 Fotos', icon: 'fa-th-large' },
+    { id: 'hero', label: '1. Topo, Menu & Hero', icon: 'fa-home' },
+    { id: 'about', label: `2. Sobre & Fotos (${siteData.about.cards.length})`, icon: 'fa-th-large' },
     { id: 'modalities', label: '3. Modalidades & Carrossel', icon: 'fa-dumbbell' },
-    { id: 'units', label: '4. Unidades (3)', icon: 'fa-map-marker-alt' },
-    { id: 'plans', label: '5. Planos & Preços', icon: 'fa-tags' },
-    { id: 'blog', label: '6. Blog & Matérias', icon: 'fa-newspaper' },
-    { id: 'testimonials', label: '7. Depoimentos', icon: 'fa-comments' },
-    { id: 'footer', label: '8. Rodapé & Redes', icon: 'fa-share-alt' },
+    {
+      id: 'units',
+      label: `4. Unidades (${siteData.unitsSection.items.length})`,
+      icon: 'fa-map-marker-alt',
+    },
+    {
+      id: 'plans',
+      label: `5. Planos & Preços (${siteData.plansSection.plansList.length})`,
+      icon: 'fa-tags',
+    },
+    {
+      id: 'blog',
+      label: `6. Blog & Matérias (${siteData.blogSection.posts.length})`,
+      icon: 'fa-newspaper',
+    },
+    {
+      id: 'testimonials',
+      label: `7. Depoimentos (${siteData.testimonials.length})`,
+      icon: 'fa-comments',
+    },
+    { id: 'footer', label: '8. Rodapé, Links & Redes', icon: 'fa-share-alt' },
   ]
 
   return (
@@ -240,7 +289,7 @@ export default function AdminPanel({ onBackToSite }) {
                 </span>
               </div>
               <p className="text-xs text-white/55">
-                Edite textos, fotos, planos, unidades e matérias do Blog em tempo real
+                Edite ou inclua novos itens em qualquer seção da página
               </p>
             </div>
           </div>
@@ -328,13 +377,13 @@ export default function AdminPanel({ onBackToSite }) {
 
           <div className="p-4 rounded-2xl bg-[#141519]/60 border border-[#D4AF37]/20 text-xs text-white/70 space-y-2">
             <div className="flex items-center gap-2 text-[#D4AF37] font-semibold">
-              <i className="fas fa-lightbulb"></i>
-              <span>Dica Rápida</span>
+              <i className="fas fa-plus-circle"></i>
+              <span>Tudo Expansível</span>
             </div>
             <p className="leading-relaxed text-[11px] text-white/60">
-              Você pode subir fotos direto do seu computador ou celular clicando em{' '}
-              <strong className="text-white">Enviar Foto</strong> em qualquer imagem, e depois clicar em{' '}
-              <strong className="text-[#D4AF37]">Salvar Alterações</strong>.
+              Você pode <strong className="text-white">incluir ou remover</strong> links do menu,
+              fotos, unidades, planos, matérias do blog, links úteis e redes sociais a qualquer
+              momento!
             </p>
           </div>
         </aside>
@@ -342,22 +391,23 @@ export default function AdminPanel({ onBackToSite }) {
         {/* Área Principal de Edição */}
         <main className="lg:col-span-9">
           <div className="rounded-2xl bg-[#141519] border border-white/10 p-6 sm:p-8 space-y-6">
-            {/* ==================== ABA 1: TOPO & HERO ==================== */}
+            {/* ==================== ABA 1: TOPO, MENU & HERO ==================== */}
             {activeSection === 'hero' && (
               <div className="space-y-6">
                 <div className="border-b border-white/10 pb-4">
                   <h2 className="font-bebas italic text-3xl text-[#D4AF37]">
-                    1. Topo, WhatsApp &amp; Banner Principal (Hero)
+                    1. Menu Superior, WhatsApp &amp; Banner Principal (Hero)
                   </h2>
                   <p className="text-xs text-white/60">
-                    Altere os títulos principais, botão de chamada, foto de fundo e número de WhatsApp.
+                    Edite ou inclua novos links no menu do topo, número de WhatsApp e textos/fotos do
+                    banner principal.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs text-white/70 mb-1.5">
-                      Número do WhatsApp (com DDD, somente números)
+                      Número do WhatsApp Oficial (com DDD, somente números)
                     </label>
                     <input
                       type="text"
@@ -371,7 +421,7 @@ export default function AdminPanel({ onBackToSite }) {
                   </div>
                   <div>
                     <label className="block text-xs text-white/70 mb-1.5">
-                      Texto do Botão no Menu Superior
+                      Texto do Botão Dourado no Menu Superior
                     </label>
                     <input
                       type="text"
@@ -384,6 +434,87 @@ export default function AdminPanel({ onBackToSite }) {
                       }
                       className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B0C0E] border border-white/15 text-sm text-white"
                     />
+                  </div>
+                </div>
+
+                {/* Links do Menu de Navegação (Nav) */}
+                <div className="p-4 rounded-xl bg-[#0B0C0E] border border-white/10 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <h3 className="text-xs uppercase tracking-wider text-[#D4AF37] font-semibold">
+                        Itens do Menu de Navegação Superior (Nav)
+                      </h3>
+                      <p className="text-[11px] text-white/50">
+                        Adicione, renomeie ou remova links do menu do topo.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSiteData({
+                          ...siteData,
+                          header: {
+                            ...siteData.header,
+                            navLinks: [
+                              ...(siteData.header.navLinks || []),
+                              { label: 'Novo Link', href: '#topo' },
+                            ],
+                          },
+                        })
+                      }
+                      className="px-3.5 py-1.5 rounded-lg bg-[#D4AF37] text-black font-semibold text-xs cursor-pointer"
+                    >
+                      + Incluir Item no Menu
+                    </button>
+                  </div>
+
+                  <div className="space-y-2">
+                    {(siteData.header.navLinks || []).map((navItem, idx) => (
+                      <div key={idx} className="flex flex-col sm:flex-row items-center gap-2">
+                        <input
+                          type="text"
+                          value={navItem.label}
+                          onChange={(e) => {
+                            const next = [...siteData.header.navLinks]
+                            next[idx] = { ...next[idx], label: e.target.value }
+                            setSiteData({
+                              ...siteData,
+                              header: { ...siteData.header, navLinks: next },
+                            })
+                          }}
+                          placeholder="Nome no Menu (ex: Blog)"
+                          className="w-full sm:w-1/2 px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-xs text-white"
+                        />
+                        <input
+                          type="text"
+                          value={navItem.href}
+                          onChange={(e) => {
+                            const next = [...siteData.header.navLinks]
+                            next[idx] = { ...next[idx], href: e.target.value }
+                            setSiteData({
+                              ...siteData,
+                              header: { ...siteData.header, navLinks: next },
+                            })
+                          }}
+                          placeholder="Destino (ex: #blog, #unidades ou https://...)"
+                          className="w-full sm:flex-1 px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-xs text-[#D4AF37]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const next = siteData.header.navLinks.filter((_, i) => i !== idx)
+                            setSiteData({
+                              ...siteData,
+                              header: { ...siteData.header, navLinks: next },
+                            })
+                          }}
+                          className="px-3 py-2 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-300 text-xs cursor-pointer"
+                          title="Remover item do menu"
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
@@ -534,16 +665,42 @@ export default function AdminPanel({ onBackToSite }) {
               </div>
             )}
 
-            {/* ==================== ABA 2: SOBRE & 7 CARDS ==================== */}
+            {/* ==================== ABA 2: SOBRE & CARDS ==================== */}
             {activeSection === 'about' && (
               <div className="space-y-6">
-                <div className="border-b border-white/10 pb-4">
-                  <h2 className="font-bebas italic text-3xl text-[#D4AF37]">
-                    2. Seção &ldquo;Muito prazer, nós somos a S.A Treinamento&rdquo;
-                  </h2>
-                  <p className="text-xs text-white/60">
-                    Edite os títulos da seção e cada um dos 7 blocos de fotos e textos.
-                  </p>
+                <div className="border-b border-white/10 pb-4 flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h2 className="font-bebas italic text-3xl text-[#D4AF37]">
+                      2. Seção &ldquo;Muito prazer, nós somos a S.A Treinamento&rdquo;
+                    </h2>
+                    <p className="text-xs text-white/60">
+                      Edite os títulos da seção, altere fotos ou inclua novos cards na galeria.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSiteData({
+                        ...siteData,
+                        about: {
+                          ...siteData.about,
+                          cards: [
+                            ...siteData.about.cards,
+                            {
+                              img: '/images/img9825.jpg',
+                              pos: 'object-center',
+                              colClass: 'lg:w-[31.5%] min-h-[300px]',
+                              title: 'Novo Diferencial S.A',
+                              desc: 'Descreva aqui mais um diferencial da S.A Treinamento.',
+                            },
+                          ],
+                        },
+                      })
+                    }
+                    className="px-4 py-2 rounded-lg bg-[#D4AF37] text-black font-semibold text-xs cursor-pointer shadow-md"
+                  >
+                    + Incluir Novo Card / Foto
+                  </button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -598,7 +755,7 @@ export default function AdminPanel({ onBackToSite }) {
 
                 <div className="space-y-4">
                   <h3 className="text-xs uppercase tracking-wider text-[#D4AF37] font-semibold">
-                    7 Cards da Galeria (Foto + Texto ao passar o mouse)
+                    Cards da Galeria ({siteData.about.cards.length})
                   </h3>
                   {siteData.about.cards.map((card, idx) => (
                     <div
@@ -632,24 +789,39 @@ export default function AdminPanel({ onBackToSite }) {
                       </div>
 
                       <div className="flex-1 w-full space-y-2.5">
-                        <div>
-                          <label className="block text-[11px] text-white/50 mb-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <label className="block text-[11px] text-white/50">
                             Card #{idx + 1} — Título
                           </label>
-                          <input
-                            type="text"
-                            value={card.title}
-                            onChange={(e) => {
-                              const next = [...siteData.about.cards]
-                              next[idx] = { ...next[idx], title: e.target.value }
-                              setSiteData({
-                                ...siteData,
-                                about: { ...siteData.about, cards: next },
-                              })
-                            }}
-                            className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-white"
-                          />
+                          {siteData.about.cards.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const next = siteData.about.cards.filter((_, i) => i !== idx)
+                                setSiteData({
+                                  ...siteData,
+                                  about: { ...siteData.about, cards: next },
+                                })
+                              }}
+                              className="px-2.5 py-1 rounded bg-red-500/15 hover:bg-red-500/25 text-red-300 text-[11px] cursor-pointer"
+                            >
+                              <i className="fas fa-trash mr-1"></i> Excluir Card
+                            </button>
+                          )}
                         </div>
+                        <input
+                          type="text"
+                          value={card.title}
+                          onChange={(e) => {
+                            const next = [...siteData.about.cards]
+                            next[idx] = { ...next[idx], title: e.target.value }
+                            setSiteData({
+                              ...siteData,
+                              about: { ...siteData.about, cards: next },
+                            })
+                          }}
+                          className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-white"
+                        />
                         <div>
                           <label className="block text-[11px] text-white/50 mb-1">
                             Descrição ao passar o mouse
@@ -683,7 +855,7 @@ export default function AdminPanel({ onBackToSite }) {
                     3. Modalidades &amp; Fotos do Carrossel
                   </h2>
                   <p className="text-xs text-white/60">
-                    Edite os nomes das modalidades e as fotos que passam no carrossel ao lado.
+                    Edite ou inclua novas modalidades e fotos no carrossel.
                   </p>
                 </div>
 
@@ -730,7 +902,7 @@ export default function AdminPanel({ onBackToSite }) {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <label className="text-xs uppercase tracking-wider text-[#D4AF37] font-semibold">
-                      Lista de Modalidades
+                      Lista de Modalidades ({siteData.modalitiesSection.items.length})
                     </label>
                     <button
                       type="button"
@@ -746,9 +918,9 @@ export default function AdminPanel({ onBackToSite }) {
                           },
                         })
                       }
-                      className="px-3 py-1 rounded-lg bg-[#D4AF37]/20 border border-[#D4AF37]/40 text-xs text-[#FFF2CD] cursor-pointer"
+                      className="px-3.5 py-1.5 rounded-lg bg-[#D4AF37] text-black font-semibold text-xs cursor-pointer"
                     >
-                      + Adicionar Modalidade
+                      + Incluir Modalidade
                     </button>
                   </div>
 
@@ -786,7 +958,7 @@ export default function AdminPanel({ onBackToSite }) {
                               },
                             })
                           }}
-                          className="p-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs cursor-pointer"
+                          className="p-2.5 rounded-xl bg-red-500/15 hover:bg-red-500/25 text-red-300 text-xs cursor-pointer"
                         >
                           <i className="fas fa-trash"></i>
                         </button>
@@ -801,8 +973,8 @@ export default function AdminPanel({ onBackToSite }) {
                     <label className="text-xs uppercase tracking-wider text-[#D4AF37] font-semibold">
                       Fotos do Carrossel ({siteData.modalitiesSection.carouselImages.length})
                     </label>
-                    <label className="px-3.5 py-1.5 rounded-lg bg-[#D4AF37]/20 hover:bg-[#D4AF37]/30 border border-[#D4AF37]/40 text-xs text-[#FFF2CD] cursor-pointer">
-                      + Enviar Nova Foto para o Carrossel
+                    <label className="px-3.5 py-1.5 rounded-lg bg-[#D4AF37] text-black font-semibold text-xs cursor-pointer">
+                      + Incluir Foto no Carrossel
                       <input
                         type="file"
                         accept="image/*"
@@ -893,36 +1065,77 @@ export default function AdminPanel({ onBackToSite }) {
                 <div className="border-b border-white/10 pb-4 flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <h2 className="font-bebas italic text-3xl text-[#D4AF37]">
-                      4. Unidades S.A Treinamento
+                      4. Unidades S.A Treinamento ({siteData.unitsSection.items.length})
                     </h2>
                     <p className="text-xs text-white/60">
-                      Edite fotos, nomes e localização no mapa das unidades ativas.
+                      Edite fotos, nomes, endereço e localização no mapa ou inclua novas unidades.
+                      (As unidades adicionadas aqui aparecem automaticamente na faixa rolante do
+                      topo, na seção de Unidades e na lista do Rodapé!)
                     </p>
                   </div>
                   <button
                     type="button"
-                    onClick={() =>
-                      setSiteData({
-                        ...siteData,
-                        unitsSection: {
-                          ...siteData.unitsSection,
-                          items: [
-                            ...siteData.unitsSection.items,
-                            {
-                              name: 'Nova\nUnidade',
-                              img: '/images/img9825.jpg',
-                              mapQuery: 'S.A Treinamento Porto Alegre',
-                              mapTitle: 'S.A Treinamento',
-                              address: 'Porto Alegre, RS',
-                            },
-                          ],
-                        },
-                      })
-                    }
-                    className="px-3.5 py-2 rounded-lg bg-[#D4AF37]/20 border border-[#D4AF37]/40 text-xs text-[#FFF2CD] cursor-pointer"
+                    onClick={addNewUnit}
+                    className="px-4 py-2.5 rounded-lg bg-[#D4AF37] text-black font-semibold text-xs cursor-pointer shadow-md"
                   >
-                    + Adicionar Unidade
+                    + Incluir Nova Unidade
                   </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs text-white/70 mb-1">Subtítulo Superior</label>
+                    <input
+                      type="text"
+                      value={siteData.unitsSection.subtitleTop}
+                      onChange={(e) =>
+                        setSiteData({
+                          ...siteData,
+                          unitsSection: {
+                            ...siteData.unitsSection,
+                            subtitleTop: e.target.value,
+                          },
+                        })
+                      }
+                      className="w-full px-3 py-2 rounded-lg bg-[#0B0C0E] border border-white/15 text-sm text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-white/70 mb-1">
+                      Título Principal Dourado
+                    </label>
+                    <input
+                      type="text"
+                      value={siteData.unitsSection.titleMain}
+                      onChange={(e) =>
+                        setSiteData({
+                          ...siteData,
+                          unitsSection: {
+                            ...siteData.unitsSection,
+                            titleMain: e.target.value,
+                          },
+                        })
+                      }
+                      className="w-full px-3 py-2 rounded-lg bg-[#0B0C0E] border border-white/15 text-sm text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-white/70 mb-1">Descrição</label>
+                    <input
+                      type="text"
+                      value={siteData.unitsSection.description}
+                      onChange={(e) =>
+                        setSiteData({
+                          ...siteData,
+                          unitsSection: {
+                            ...siteData.unitsSection,
+                            description: e.target.value,
+                          },
+                        })
+                      }
+                      className="w-full px-3 py-2 rounded-lg bg-[#0B0C0E] border border-white/15 text-sm text-white"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-4">
@@ -958,10 +1171,33 @@ export default function AdminPanel({ onBackToSite }) {
                       </div>
 
                       <div className="flex-1 w-full space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-semibold text-[#D4AF37]">
+                            Unidade #{idx + 1}
+                          </span>
+                          {siteData.unitsSection.items.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const next = siteData.unitsSection.items.filter(
+                                  (_, i) => i !== idx
+                                )
+                                setSiteData({
+                                  ...siteData,
+                                  unitsSection: { ...siteData.unitsSection, items: next },
+                                })
+                              }}
+                              className="px-3 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-300 text-xs cursor-pointer"
+                            >
+                              <i className="fas fa-trash mr-1"></i> Excluir Unidade
+                            </button>
+                          )}
+                        </div>
+
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
                             <label className="block text-[11px] text-white/50 mb-1">
-                              Nome da Unidade
+                              Nome da Unidade (Exibido na Placa Dourada)
                             </label>
                             <input
                               type="text"
@@ -979,11 +1215,11 @@ export default function AdminPanel({ onBackToSite }) {
                           </div>
                           <div>
                             <label className="block text-[11px] text-white/50 mb-1">
-                              Busca no Google Maps (Endereço ou Nome)
+                              Busca no Google Maps (Endereço ou Nome no Mapa)
                             </label>
                             <input
                               type="text"
-                              value={decodeURIComponent(u.mapQuery)}
+                              value={decodeURIComponent(u.mapQuery || '')}
                               onChange={(e) => {
                                 const next = [...siteData.unitsSection.items]
                                 next[idx] = {
@@ -1001,177 +1237,245 @@ export default function AdminPanel({ onBackToSite }) {
                           </div>
                         </div>
 
-                        {siteData.unitsSection.items.length > 1 && (
-                          <div className="flex justify-end">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const next = siteData.unitsSection.items.filter(
-                                  (_, i) => i !== idx
-                                )
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[11px] text-white/50 mb-1">
+                              Endereço / Referência (Opcional)
+                            </label>
+                            <input
+                              type="text"
+                              value={u.address || ''}
+                              onChange={(e) => {
+                                const next = [...siteData.unitsSection.items]
+                                next[idx] = { ...next[idx], address: e.target.value }
                                 setSiteData({
                                   ...siteData,
                                   unitsSection: { ...siteData.unitsSection, items: next },
                                 })
                               }}
-                              className="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs cursor-pointer"
-                            >
-                              <i className="fas fa-trash mr-1"></i> Excluir Unidade
-                            </button>
+                              className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-xs text-white"
+                            />
                           </div>
-                        )}
+                          <div>
+                            <label className="block text-[11px] text-white/50 mb-1">
+                              Texto do Botão da Unidade
+                            </label>
+                            <input
+                              type="text"
+                              value={u.ctaText || 'Agendar Aula Experimental'}
+                              onChange={(e) => {
+                                const next = [...siteData.unitsSection.items]
+                                next[idx] = { ...next[idx], ctaText: e.target.value }
+                                setSiteData({
+                                  ...siteData,
+                                  unitsSection: { ...siteData.unitsSection, items: next },
+                                })
+                              }}
+                              className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-xs text-white"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
+
+                <button
+                  type="button"
+                  onClick={addNewUnit}
+                  className="w-full py-3 rounded-xl border border-dashed border-[#D4AF37]/50 hover:bg-[#D4AF37]/10 text-[#D4AF37] text-xs font-semibold uppercase tracking-wider transition cursor-pointer"
+                >
+                  + Incluir Mais Uma Unidade
+                </button>
               </div>
             )}
 
             {/* ==================== ABA 5: PLANOS & PREÇOS ==================== */}
             {activeSection === 'plans' && (
               <div className="space-y-6">
-                <div className="border-b border-white/10 pb-4">
-                  <h2 className="font-bebas italic text-3xl text-[#D4AF37]">
-                    5. Planos &amp; Valores (Mensal, Anual e Duplas)
-                  </h2>
-                  <p className="text-xs text-white/60">
-                    Edite preços, títulos, observações e os benefícios de cada plano.
-                  </p>
+                <div className="border-b border-white/10 pb-4 flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h2 className="font-bebas italic text-3xl text-[#D4AF37]">
+                      5. Planos &amp; Valores ({siteData.plansSection.plansList.length})
+                    </h2>
+                    <p className="text-xs text-white/60">
+                      Edite preços, títulos, benefícios ou inclua novas opções de planos.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSiteData({
+                        ...siteData,
+                        plansSection: {
+                          ...siteData.plansSection,
+                          plansList: [
+                            ...siteData.plansSection.plansList,
+                            {
+                              id: 'plano-' + Date.now(),
+                              label: 'Novo Plano',
+                              title: 'Plano Trimestral',
+                              subtitle: 'à partir de',
+                              price: 'R$109,00',
+                              note: 'pagamento mensal',
+                              features: [
+                                'TREINOS PERSONALIZADOS COM ACOMPANHAMENTO',
+                                'AVALIAÇÃO FÍSICA E PLANEJAMENTO DE METAS',
+                                'ACESSO COMPLETO À ESTRUTURA S.A',
+                              ],
+                            },
+                          ],
+                        },
+                      })
+                    }
+                    className="px-4 py-2 rounded-lg bg-[#D4AF37] text-black font-semibold text-xs cursor-pointer shadow-md"
+                  >
+                    + Incluir Novo Plano
+                  </button>
                 </div>
 
                 <div className="space-y-6">
-                  {['mensal', 'anual', 'duplas'].map((planKey) => {
-                    const p = siteData.plansSection.plans[planKey]
-                    return (
-                      <div
-                        key={planKey}
-                        className="p-5 rounded-xl bg-[#0B0C0E] border border-white/10 space-y-4"
-                      >
-                        <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                          <span className="font-bebas italic text-2xl text-[#D4AF37]">
-                            Aba: {p.label || planKey.toUpperCase()}
-                          </span>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                          <div>
-                            <label className="block text-[11px] text-white/50 mb-1">
-                              Título do Card
-                            </label>
-                            <input
-                              type="text"
-                              value={p.title}
-                              onChange={(e) => {
-                                setSiteData({
-                                  ...siteData,
-                                  plansSection: {
-                                    ...siteData.plansSection,
-                                    plans: {
-                                      ...siteData.plansSection.plans,
-                                      [planKey]: { ...p, title: e.target.value },
-                                    },
-                                  },
-                                })
-                              }}
-                              className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-white"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-[11px] text-white/50 mb-1">
-                              Texto Acima do Preço
-                            </label>
-                            <input
-                              type="text"
-                              value={p.subtitle}
-                              onChange={(e) => {
-                                setSiteData({
-                                  ...siteData,
-                                  plansSection: {
-                                    ...siteData.plansSection,
-                                    plans: {
-                                      ...siteData.plansSection.plans,
-                                      [planKey]: { ...p, subtitle: e.target.value },
-                                    },
-                                  },
-                                })
-                              }}
-                              className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-white"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-[11px] text-white/50 mb-1">
-                              Valor em Destaque
-                            </label>
-                            <input
-                              type="text"
-                              value={p.price}
-                              onChange={(e) => {
-                                setSiteData({
-                                  ...siteData,
-                                  plansSection: {
-                                    ...siteData.plansSection,
-                                    plans: {
-                                      ...siteData.plansSection.plans,
-                                      [planKey]: { ...p, price: e.target.value },
-                                    },
-                                  },
-                                })
-                              }}
-                              className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-[#D4AF37]/40 text-sm font-semibold text-[#D4AF37]"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-[11px] text-white/50 mb-1">
-                              Nota abaixo do preço
-                            </label>
-                            <input
-                              type="text"
-                              value={p.note || ''}
-                              onChange={(e) => {
-                                setSiteData({
-                                  ...siteData,
-                                  plansSection: {
-                                    ...siteData.plansSection,
-                                    plans: {
-                                      ...siteData.plansSection.plans,
-                                      [planKey]: { ...p, note: e.target.value },
-                                    },
-                                  },
-                                })
-                              }}
-                              className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-white"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-[11px] text-white/50 mb-1.5">
-                            Benefícios do Plano (1 por linha)
-                          </label>
-                          <textarea
-                            rows={4}
-                            value={p.features.join('\n')}
-                            onChange={(e) => {
+                  {siteData.plansSection.plansList.map((p, planIdx) => (
+                    <div
+                      key={p.id || planIdx}
+                      className="p-5 rounded-xl bg-[#0B0C0E] border border-white/10 space-y-4"
+                    >
+                      <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                        <span className="font-bebas italic text-2xl text-[#D4AF37]">
+                          Plano #{planIdx + 1}: {p.label}
+                        </span>
+                        {siteData.plansSection.plansList.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const next = siteData.plansSection.plansList.filter(
+                                (_, i) => i !== planIdx
+                              )
                               setSiteData({
                                 ...siteData,
-                                plansSection: {
-                                  ...siteData.plansSection,
-                                  plans: {
-                                    ...siteData.plansSection.plans,
-                                    [planKey]: {
-                                      ...p,
-                                      features: e.target.value.split('\n'),
-                                    },
-                                  },
-                                },
+                                plansSection: { ...siteData.plansSection, plansList: next },
                               })
                             }}
-                            className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-xs text-white font-mono"
+                            className="px-3 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-300 text-xs cursor-pointer"
+                          >
+                            <i className="fas fa-trash mr-1"></i> Excluir Plano
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+                        <div>
+                          <label className="block text-[11px] text-white/50 mb-1">
+                            Nome da Aba (Botão)
+                          </label>
+                          <input
+                            type="text"
+                            value={p.label}
+                            onChange={(e) => {
+                              const next = [...siteData.plansSection.plansList]
+                              next[planIdx] = { ...p, label: e.target.value }
+                              setSiteData({
+                                ...siteData,
+                                plansSection: { ...siteData.plansSection, plansList: next },
+                              })
+                            }}
+                            className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] text-white/50 mb-1">
+                            Título do Card
+                          </label>
+                          <input
+                            type="text"
+                            value={p.title}
+                            onChange={(e) => {
+                              const next = [...siteData.plansSection.plansList]
+                              next[planIdx] = { ...p, title: e.target.value }
+                              setSiteData({
+                                ...siteData,
+                                plansSection: { ...siteData.plansSection, plansList: next },
+                              })
+                            }}
+                            className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] text-white/50 mb-1">
+                            Texto Acima do Preço
+                          </label>
+                          <input
+                            type="text"
+                            value={p.subtitle}
+                            onChange={(e) => {
+                              const next = [...siteData.plansSection.plansList]
+                              next[planIdx] = { ...p, subtitle: e.target.value }
+                              setSiteData({
+                                ...siteData,
+                                plansSection: { ...siteData.plansSection, plansList: next },
+                              })
+                            }}
+                            className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] text-white/50 mb-1">
+                            Valor em Destaque
+                          </label>
+                          <input
+                            type="text"
+                            value={p.price}
+                            onChange={(e) => {
+                              const next = [...siteData.plansSection.plansList]
+                              next[planIdx] = { ...p, price: e.target.value }
+                              setSiteData({
+                                ...siteData,
+                                plansSection: { ...siteData.plansSection, plansList: next },
+                              })
+                            }}
+                            className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-[#D4AF37]/40 text-sm font-semibold text-[#D4AF37]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] text-white/50 mb-1">
+                            Nota abaixo do preço
+                          </label>
+                          <input
+                            type="text"
+                            value={p.note || ''}
+                            onChange={(e) => {
+                              const next = [...siteData.plansSection.plansList]
+                              next[planIdx] = { ...p, note: e.target.value }
+                              setSiteData({
+                                ...siteData,
+                                plansSection: { ...siteData.plansSection, plansList: next },
+                              })
+                            }}
+                            className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-white"
                           />
                         </div>
                       </div>
-                    )
-                  })}
+
+                      <div>
+                        <label className="block text-[11px] text-white/50 mb-1.5">
+                          Benefícios do Plano (1 por linha — pule linha para adicionar mais)
+                        </label>
+                        <textarea
+                          rows={4}
+                          value={(p.features || []).join('\n')}
+                          onChange={(e) => {
+                            const next = [...siteData.plansSection.plansList]
+                            next[planIdx] = { ...p, features: e.target.value.split('\n') }
+                            setSiteData({
+                              ...siteData,
+                              plansSection: { ...siteData.plansSection, plansList: next },
+                            })
+                          }}
+                          className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-xs text-white font-mono"
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -1185,7 +1489,8 @@ export default function AdminPanel({ onBackToSite }) {
                       6. Blog S.A Treinamento — Publicar &amp; Editar Matérias
                     </h2>
                     <p className="text-xs text-white/60">
-                      Adicione artigos, dicas de treino, fotos de capa e conteúdos completos para os alunos.
+                      Adicione artigos, dicas de treino, fotos de capa e conteúdos completos para os
+                      alunos.
                     </p>
                   </div>
                   <button
@@ -1217,7 +1522,7 @@ export default function AdminPanel({ onBackToSite }) {
                     }}
                     className="px-4 py-2 rounded-lg bg-[#D4AF37] text-black font-semibold text-xs cursor-pointer shadow-md"
                   >
-                    + Nova Matéria no Blog
+                    + Incluir Nova Matéria no Blog
                   </button>
                 </div>
 
@@ -1424,7 +1729,8 @@ export default function AdminPanel({ onBackToSite }) {
 
                           <div>
                             <label className="block text-[11px] text-white/50 mb-1">
-                              Conteúdo Completo da Matéria (Exibido ao clicar em &ldquo;Ler Artigo&rdquo;)
+                              Conteúdo Completo da Matéria (Exibido ao clicar em &ldquo;Ler
+                              Matéria&rdquo;)
                             </label>
                             <textarea
                               rows={5}
@@ -1460,7 +1766,7 @@ export default function AdminPanel({ onBackToSite }) {
                                     },
                                   })
                                 }}
-                                className="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs cursor-pointer"
+                                className="px-3 py-1.5 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-300 text-xs cursor-pointer"
                               >
                                 <i className="fas fa-trash mr-1"></i> Excluir Matéria
                               </button>
@@ -1477,13 +1783,14 @@ export default function AdminPanel({ onBackToSite }) {
             {/* ==================== ABA 7: DEPOIMENTOS DE ALUNOS ==================== */}
             {activeSection === 'testimonials' && (
               <div className="space-y-6">
-                <div className="border-b border-white/10 pb-4 flex items-center justify-between">
+                <div className="border-b border-white/10 pb-4 flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <h2 className="font-bebas italic text-3xl text-[#D4AF37]">
-                      7. Depoimentos de Alunos
+                      7. Depoimentos de Alunos ({siteData.testimonials.length})
                     </h2>
                     <p className="text-xs text-white/60">
-                      Edite os depoimentos exibidos na seção &ldquo;O que dizem nossos Alunos?&rdquo;.
+                      Edite ou inclua novos depoimentos na seção &ldquo;O que dizem nossos
+                      Alunos?&rdquo;.
                     </p>
                   </div>
                   <button
@@ -1501,9 +1808,9 @@ export default function AdminPanel({ onBackToSite }) {
                         ],
                       })
                     }
-                    className="px-3.5 py-2 rounded-lg bg-[#D4AF37]/20 border border-[#D4AF37]/40 text-xs text-[#FFF2CD] cursor-pointer"
+                    className="px-4 py-2 rounded-lg bg-[#D4AF37] text-black font-semibold text-xs cursor-pointer shadow-md"
                   >
-                    + Adicionar Depoimento
+                    + Incluir Depoimento
                   </button>
                 </div>
 
@@ -1537,21 +1844,33 @@ export default function AdminPanel({ onBackToSite }) {
                       </div>
 
                       <div className="flex-1 w-full space-y-2.5">
-                        <div>
-                          <label className="block text-[11px] text-white/50 mb-1">
-                            Nome do Aluno(a)
+                        <div className="flex items-center justify-between">
+                          <label className="block text-[11px] text-white/50">
+                            Nome do Aluno(a) #{idx + 1}
                           </label>
-                          <input
-                            type="text"
-                            value={item.name}
-                            onChange={(e) => {
-                              const next = [...siteData.testimonials]
-                              next[idx] = { ...next[idx], name: e.target.value }
-                              setSiteData({ ...siteData, testimonials: next })
-                            }}
-                            className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-white"
-                          />
+                          {siteData.testimonials.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const next = siteData.testimonials.filter((_, i) => i !== idx)
+                                setSiteData({ ...siteData, testimonials: next })
+                              }}
+                              className="px-2.5 py-1 rounded bg-red-500/15 hover:bg-red-500/25 text-red-300 text-xs cursor-pointer"
+                            >
+                              <i className="fas fa-trash mr-1"></i> Excluir
+                            </button>
+                          )}
                         </div>
+                        <input
+                          type="text"
+                          value={item.name}
+                          onChange={(e) => {
+                            const next = [...siteData.testimonials]
+                            next[idx] = { ...next[idx], name: e.target.value }
+                            setSiteData({ ...siteData, testimonials: next })
+                          }}
+                          className="w-full px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-sm text-white"
+                        />
                         <div>
                           <label className="block text-[11px] text-white/50 mb-1">
                             Texto do Depoimento
@@ -1574,18 +1893,20 @@ export default function AdminPanel({ onBackToSite }) {
               </div>
             )}
 
-            {/* ==================== ABA 8: RODAPÉ & REDES ==================== */}
+            {/* ==================== ABA 8: RODAPÉ, LINKS ÚTEIS & REDES SOCIAIS ==================== */}
             {activeSection === 'footer' && (
               <div className="space-y-6">
                 <div className="border-b border-white/10 pb-4">
                   <h2 className="font-bebas italic text-3xl text-[#D4AF37]">
-                    8. Rodapé, Atendimento &amp; Redes Sociais
+                    8. Rodapé, Links Úteis, Unidades &amp; Redes Sociais
                   </h2>
                   <p className="text-xs text-white/60">
-                    Edite as informações institucionais e links das redes sociais no rodapé.
+                    Edite os textos institucionais e inclua quantos Links Úteis ou Redes Sociais
+                    desejar no rodapé.
                   </p>
                 </div>
 
+                {/* Bloco 1: Textos Institucionais */}
                 <div className="space-y-4">
                   <div>
                     <label className="block text-xs text-white/70 mb-1.5">
@@ -1655,41 +1976,231 @@ export default function AdminPanel({ onBackToSite }) {
                       />
                     </div>
                   </div>
+                </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Bloco 2: Links Úteis do Rodapé (Expansível) */}
+                <div className="p-5 rounded-xl bg-[#0B0C0E] border border-white/10 space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
                     <div>
-                      <label className="block text-xs text-white/70 mb-1.5">
-                        Link do Instagram
-                      </label>
-                      <input
-                        type="text"
-                        value={siteData.footer.instagramUrl}
-                        onChange={(e) =>
-                          setSiteData({
-                            ...siteData,
-                            footer: { ...siteData.footer, instagramUrl: e.target.value },
-                          })
-                        }
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B0C0E] border border-white/15 text-sm text-white"
-                      />
+                      <h3 className="text-sm font-semibold text-[#D4AF37]">
+                        Coluna &ldquo;Links Úteis&rdquo; do Rodapé (
+                        {(siteData.footer.usefulLinks || []).length})
+                      </h3>
+                      <p className="text-xs text-white/50">
+                        Inclua, edite ou remova qualquer link útil no rodapé.
+                      </p>
                     </div>
-                    <div>
-                      <label className="block text-xs text-white/70 mb-1.5">
-                        Link do Facebook
-                      </label>
-                      <input
-                        type="text"
-                        value={siteData.footer.facebookUrl}
-                        onChange={(e) =>
-                          setSiteData({
-                            ...siteData,
-                            footer: { ...siteData.footer, facebookUrl: e.target.value },
-                          })
-                        }
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B0C0E] border border-white/15 text-sm text-white"
-                      />
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSiteData({
+                          ...siteData,
+                          footer: {
+                            ...siteData.footer,
+                            usefulLinks: [
+                              ...(siteData.footer.usefulLinks || []),
+                              { label: 'Novo Link Útil', href: '#topo' },
+                            ],
+                          },
+                        })
+                      }
+                      className="px-4 py-2 rounded-lg bg-[#D4AF37] text-black font-semibold text-xs cursor-pointer shadow"
+                    >
+                      + Incluir Link Útil
+                    </button>
                   </div>
+
+                  <div className="space-y-2.5">
+                    {(siteData.footer.usefulLinks || []).map((linkItem, idx) => (
+                      <div key={idx} className="flex flex-col sm:flex-row items-center gap-2.5">
+                        <input
+                          type="text"
+                          value={linkItem.label}
+                          onChange={(e) => {
+                            const next = [...siteData.footer.usefulLinks]
+                            next[idx] = { ...next[idx], label: e.target.value }
+                            setSiteData({
+                              ...siteData,
+                              footer: { ...siteData.footer, usefulLinks: next },
+                            })
+                          }}
+                          placeholder="Texto do Link (ex: Trabalhe Conosco)"
+                          className="w-full sm:w-5/12 px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-xs text-white"
+                        />
+                        <input
+                          type="text"
+                          value={linkItem.href}
+                          onChange={(e) => {
+                            const next = [...siteData.footer.usefulLinks]
+                            next[idx] = { ...next[idx], href: e.target.value }
+                            setSiteData({
+                              ...siteData,
+                              footer: { ...siteData.footer, usefulLinks: next },
+                            })
+                          }}
+                          placeholder="Destino (ex: #unidades ou https://...)"
+                          className="w-full sm:flex-1 px-3 py-2 rounded-lg bg-[#141519] border border-white/15 text-xs text-[#D4AF37]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const next = siteData.footer.usefulLinks.filter((_, i) => i !== idx)
+                            setSiteData({
+                              ...siteData,
+                              footer: { ...siteData.footer, usefulLinks: next },
+                            })
+                          }}
+                          className="px-3 py-2 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-300 text-xs cursor-pointer"
+                          title="Excluir Link Útil"
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Bloco 3: Redes Sociais do Rodapé (Expansível) */}
+                <div className="p-5 rounded-xl bg-[#0B0C0E] border border-white/10 space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
+                    <div>
+                      <h3 className="text-sm font-semibold text-[#D4AF37]">
+                        Coluna &ldquo;Redes Sociais&rdquo; do Rodapé (
+                        {(siteData.footer.socialLinks || []).length})
+                      </h3>
+                      <p className="text-xs text-white/50">
+                        Inclua Instagram, Facebook, YouTube, TikTok, LinkedIn, WhatsApp ou qualquer
+                        outra rede social.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSiteData({
+                          ...siteData,
+                          footer: {
+                            ...siteData.footer,
+                            socialLinks: [
+                              ...(siteData.footer.socialLinks || []),
+                              {
+                                platform: 'YouTube',
+                                icon: 'fab fa-youtube',
+                                url: 'https://www.youtube.com/',
+                              },
+                            ],
+                          },
+                        })
+                      }
+                      className="px-4 py-2 rounded-lg bg-[#D4AF37] text-black font-semibold text-xs cursor-pointer shadow"
+                    >
+                      + Incluir Rede Social
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {(siteData.footer.socialLinks || []).map((soc, idx) => (
+                      <div
+                        key={idx}
+                        className="flex flex-col sm:flex-row items-center gap-2.5 p-2.5 rounded-lg bg-[#141519]/70 border border-white/5"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-[#1F1F1F] border border-[#D4AF37]/40 flex items-center justify-center text-[#D4AF37] text-lg shrink-0">
+                          <i className={soc.icon || 'fas fa-globe'}></i>
+                        </div>
+
+                        <select
+                          value={soc.icon}
+                          onChange={(e) => {
+                            const selected = SOCIAL_ICON_OPTIONS.find(
+                              (opt) => opt.icon === e.target.value
+                            )
+                            const next = [...siteData.footer.socialLinks]
+                            next[idx] = {
+                              ...next[idx],
+                              icon: e.target.value,
+                              platform: selected ? selected.label : next[idx].platform,
+                            }
+                            setSiteData({
+                              ...siteData,
+                              footer: { ...siteData.footer, socialLinks: next },
+                            })
+                          }}
+                          className="w-full sm:w-44 px-3 py-2 rounded-lg bg-[#0B0C0E] border border-white/15 text-xs text-white"
+                        >
+                          {SOCIAL_ICON_OPTIONS.map((opt) => (
+                            <option key={opt.icon} value={opt.icon}>
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
+
+                        <input
+                          type="text"
+                          value={soc.platform}
+                          onChange={(e) => {
+                            const next = [...siteData.footer.socialLinks]
+                            next[idx] = { ...next[idx], platform: e.target.value }
+                            setSiteData({
+                              ...siteData,
+                              footer: { ...siteData.footer, socialLinks: next },
+                            })
+                          }}
+                          placeholder="Nome (ex: YouTube)"
+                          className="w-full sm:w-36 px-3 py-2 rounded-lg bg-[#0B0C0E] border border-white/15 text-xs text-white"
+                        />
+
+                        <input
+                          type="text"
+                          value={soc.url}
+                          onChange={(e) => {
+                            const next = [...siteData.footer.socialLinks]
+                            next[idx] = { ...next[idx], url: e.target.value }
+                            setSiteData({
+                              ...siteData,
+                              footer: { ...siteData.footer, socialLinks: next },
+                            })
+                          }}
+                          placeholder="Link completo (https://...)"
+                          className="w-full sm:flex-1 px-3 py-2 rounded-lg bg-[#0B0C0E] border border-white/15 text-xs text-[#D4AF37]"
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const next = siteData.footer.socialLinks.filter((_, i) => i !== idx)
+                            setSiteData({
+                              ...siteData,
+                              footer: { ...siteData.footer, socialLinks: next },
+                            })
+                          }}
+                          className="px-3 py-2 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-300 text-xs cursor-pointer"
+                          title="Excluir Rede Social"
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Bloco 4: Atalho para Unidades no Rodapé */}
+                <div className="p-4 rounded-xl bg-[#0B0C0E] border border-[#D4AF37]/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div>
+                    <h4 className="text-xs font-semibold text-[#D4AF37]">
+                      Coluna &ldquo;Nossas Unidades&rdquo; no Rodapé (
+                      {siteData.unitsSection.items.length} unidades ativas)
+                    </h4>
+                    <p className="text-[11px] text-white/60">
+                      A lista de unidades do rodapé é sincronizada automaticamente com a seção de
+                      Unidades.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setActiveSection('units')}
+                    className="px-4 py-2 rounded-lg bg-[#D4AF37]/20 hover:bg-[#D4AF37]/30 border border-[#D4AF37]/40 text-xs text-[#FFF2CD] font-medium cursor-pointer shrink-0"
+                  >
+                    Ir para 4. Unidades (+ Incluir Unidade) →
+                  </button>
                 </div>
               </div>
             )}

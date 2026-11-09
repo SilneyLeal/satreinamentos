@@ -50,7 +50,7 @@ export default function App() {
   // 'completed' shows the finished/editable version; 'raw' shows the exact unfinished texts from satreinamento.com.br
   const [viewMode, setViewMode] = useState('completed')
   const [activeSlide, setActiveSlide] = useState(0)
-  const [activeTab, setActiveTab] = useState('mensal')
+  const [activePlanIndex, setActivePlanIndex] = useState(0)
 
   const isCompleted = viewMode === 'completed'
   const whatsappNumber = siteData.whatsappNumber || '5551999009900'
@@ -158,21 +158,18 @@ export default function App() {
     'ATUALIZAÇÕES SEMANAIS',
   ]
 
-  const plans = {
-    mensal: {
-      ...siteData.plansSection.plans.mensal,
-      note: isCompleted ? siteData.plansSection.plans.mensal.note : null,
-      features: isCompleted ? siteData.plansSection.plans.mensal.features : rawFeatures,
-    },
-    anual: {
-      ...siteData.plansSection.plans.anual,
-      features: isCompleted ? siteData.plansSection.plans.anual.features : rawFeatures,
-    },
-    duplas: {
-      ...siteData.plansSection.plans.duplas,
-      note: isCompleted ? siteData.plansSection.plans.duplas.note : null,
-      features: isCompleted ? siteData.plansSection.plans.duplas.features : rawFeatures,
-    },
+  const plansList = (siteData.plansSection?.plansList || []).map((p) => ({
+    ...p,
+    note: isCompleted ? p.note : null,
+    features: isCompleted ? p.features || [] : rawFeatures,
+  }))
+  const currentPlan = plansList[activePlanIndex] || plansList[0] || {
+    label: 'Mensal',
+    title: 'Plano Mensal',
+    subtitle: 'à partir de',
+    price: 'R$97,00',
+    note: '',
+    features: [],
   }
 
   const testimonials = isCompleted
@@ -307,22 +304,16 @@ export default function App() {
           </a>
 
           {isCompleted && (
-            <nav className="hidden lg:flex items-center gap-8 font-bebas tracking-wider text-xl text-white/90 italic">
-              <a href="#sobre" className="hover:text-[#D4AF37] transition">
-                A S.A Treinamento
-              </a>
-              <a href="#modalidades" className="hover:text-[#D4AF37] transition">
-                Modalidades
-              </a>
-              <a href="#unidades" className="hover:text-[#D4AF37] transition">
-                Unidades
-              </a>
-              <a href="#planos" className="hover:text-[#D4AF37] transition">
-                Planos
-              </a>
-              <a href="#blog" className="hover:text-[#D4AF37] transition">
-                Blog
-              </a>
+            <nav className="hidden lg:flex flex-wrap items-center justify-center gap-6 xl:gap-8 font-bebas tracking-wider text-xl text-white/90 italic">
+              {(siteData.header?.navLinks || []).map((navItem, idx) => (
+                <a
+                  key={idx}
+                  href={navItem.href || '#topo'}
+                  className="hover:text-[#D4AF37] transition"
+                >
+                  {navItem.label}
+                </a>
+              ))}
             </nav>
           )}
 
@@ -638,7 +629,7 @@ export default function App() {
                     className="fas fa-arrow-alt-circle-right text-[20px] mr-2.5 sa-btn-icon"
                     aria-hidden="true"
                   ></i>
-                  <span>Agendar Aula Experimental</span>
+                  <span>{unit.ctaText || 'Agendar Aula Experimental'}</span>
                 </a>
               </div>
             ))}
@@ -657,7 +648,7 @@ export default function App() {
       </section>
 
       {/* ==================== SECTION: ABAS DE PLANOS (765512f) ==================== */}
-      {(isCompleted || viewMode === 'raw') && (
+      {(isCompleted || viewMode === 'raw') && plansList.length > 0 && (
         <section
           id="oferta"
           className="relative z-10 bg-[#131313] pt-16 lg:pt-20 pb-28 -mt-12 lg:-mt-16 flex flex-col items-center px-4"
@@ -674,19 +665,15 @@ export default function App() {
             aria-label="Escolha o seu plano"
             className="sa-tabs-heading flex flex-wrap items-center justify-center gap-3 sm:gap-10 px-4 py-2"
           >
-            {[
-              { id: 'mensal', label: plans.mensal.label || 'Mensal' },
-              { id: 'anual', label: plans.anual.label || 'Anual' },
-              { id: 'duplas', label: plans.duplas.label || 'Duplas' },
-            ].map((tab) => {
-              const active = activeTab === tab.id
+            {plansList.map((tab, idx) => {
+              const active = activePlanIndex === idx
               return (
                 <button
-                  key={tab.id}
+                  key={tab.id || idx}
                   type="button"
                   role="tab"
                   aria-selected={active}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => setActivePlanIndex(idx)}
                   className={`px-7 py-3 rounded-[18px] font-bebas italic text-[21px] tracking-[1.2px] transition-all cursor-pointer ${
                     active
                       ? 'sa-tab-btn-active'
@@ -701,30 +688,30 @@ export default function App() {
 
           {/* Active Plan Card (45b10b5 / de8ac8f / c7c448a) */}
           <div
-            key={activeTab}
+            key={currentPlan.id || activePlanIndex}
             className="sa-tab-panel-animate mt-8 w-full max-w-[480px] bg-[#1F1F1F] rounded-[25px] shadow-[0_0_25px_rgba(0,0,0,0.75)] border border-white/5 px-6 sm:px-10 pt-8 pb-10 flex flex-col items-center text-center"
           >
             <h3 className="font-bebas font-semibold text-[34px] tracking-[1.3px] text-[#F5F5F5]">
-              {plans[activeTab].title}
+              {currentPlan.title}
             </h3>
 
             <p className="font-poppins text-sm text-[#ACACAC] mt-1">
-              {plans[activeTab].subtitle}
+              {currentPlan.subtitle}
             </p>
 
             <div className="font-bebas font-semibold text-[70px] leading-none sa-degrade-hero tracking-[1px] my-1">
-              {plans[activeTab].price}
+              {currentPlan.price}
             </div>
 
-            {plans[activeTab].note && (
+            {currentPlan.note && (
               <p className="font-poppins italic text-xs text-[#ACACAC] mb-2">
-                {plans[activeTab].note}
+                {currentPlan.note}
               </p>
             )}
 
             {/* Plan Features List */}
             <ul className="w-full text-left space-y-3 my-6 px-2">
-              {plans[activeTab].features.map((feat, i) => (
+              {(currentPlan.features || []).map((feat, i) => (
                 <li key={i} className="flex items-center gap-3">
                   <span className="text-[#D4AF37] text-sm shrink-0">
                     <i className="far fa-arrow-alt-circle-right" aria-hidden="true"></i>
@@ -738,7 +725,7 @@ export default function App() {
 
             <a
               href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-                `Olá! Gostaria de agendar uma aula experimental na S.A Treinamento e saber mais sobre o ${plans[activeTab].title}.`
+                `Olá! Gostaria de agendar uma aula experimental na S.A Treinamento e saber mais sobre o ${currentPlan.title}.`
               )}`}
               target="_blank"
               rel="noreferrer"
@@ -1065,38 +1052,20 @@ export default function App() {
 
             {/* Col 2: Navigation / Links Úteis */}
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
-              <h4 className="font-poppins font-bold text-[#FFDE59] text-lg mb-4">Links úteis</h4>
+              <h4 className="font-poppins font-bold text-[#FFDE59] text-lg mb-4">
+                {siteData.footer?.usefulLinksTitle || 'Links úteis'}
+              </h4>
               <ul className="space-y-2.5 text-sm text-white/80">
-                <li>
-                  <a href="#topo" className="hover:text-[#D4AF37] transition">
-                    Início
-                  </a>
-                </li>
-                <li>
-                  <a href="#sobre" className="hover:text-[#D4AF37] transition">
-                    Sobre a S.A
-                  </a>
-                </li>
-                <li>
-                  <a href="#modalidades" className="hover:text-[#D4AF37] transition">
-                    Modalidades
-                  </a>
-                </li>
-                <li>
-                  <a href="#unidades" className="hover:text-[#D4AF37] transition">
-                    Nossas Unidades
-                  </a>
-                </li>
-                <li>
-                  <a href="#planos" className="hover:text-[#D4AF37] transition">
-                    Planos e Valores
-                  </a>
-                </li>
-                <li>
-                  <a href="#blog" className="hover:text-[#D4AF37] transition">
-                    Blog da S.A
-                  </a>
-                </li>
+                {(siteData.footer?.usefulLinks || []).map((linkItem, idx) => (
+                  <li key={idx}>
+                    <a
+                      href={linkItem.href || '#topo'}
+                      className="hover:text-[#D4AF37] transition"
+                    >
+                      {linkItem.label}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -1126,35 +1095,23 @@ export default function App() {
 
             {/* Col 4: Redes Sociais */}
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
-              <h4 className="font-poppins font-bold text-[#FFDE59] text-lg mb-4">Redes sociais</h4>
-              <div className="flex items-center gap-4">
-                <a
-                  href={`https://wa.me/${whatsappNumber}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="WhatsApp"
-                  className="w-11 h-11 rounded-lg bg-[#1F1F1F] border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition text-xl"
-                >
-                  <i className="fab fa-whatsapp" aria-hidden="true"></i>
-                </a>
-                <a
-                  href={siteData.footer?.instagramUrl || 'https://www.instagram.com/'}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="Instagram"
-                  className="w-11 h-11 rounded-lg bg-[#1F1F1F] border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition text-xl"
-                >
-                  <i className="fab fa-instagram" aria-hidden="true"></i>
-                </a>
-                <a
-                  href={siteData.footer?.facebookUrl || 'https://www.facebook.com/'}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="Facebook"
-                  className="w-11 h-11 rounded-lg bg-[#1F1F1F] border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition text-xl"
-                >
-                  <i className="fab fa-facebook" aria-hidden="true"></i>
-                </a>
+              <h4 className="font-poppins font-bold text-[#FFDE59] text-lg mb-4">
+                {siteData.footer?.socialTitle || 'Redes sociais'}
+              </h4>
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                {(siteData.footer?.socialLinks || []).map((soc, idx) => (
+                  <a
+                    key={idx}
+                    href={soc.url || '#'}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={soc.platform || 'Rede Social'}
+                    title={soc.platform || 'Rede Social'}
+                    className="w-11 h-11 rounded-lg bg-[#1F1F1F] border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition text-xl"
+                  >
+                    <i className={soc.icon || 'fas fa-globe'} aria-hidden="true"></i>
+                  </a>
+                ))}
               </div>
             </div>
           </div>
